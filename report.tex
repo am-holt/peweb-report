@@ -3,6 +3,7 @@
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{syntax}
+\usepackage{xspace}
 
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
@@ -49,28 +50,41 @@
 
 %End of used by listings
 
+
+
 \begin{document}
+
+%New commands for listing requirements
+\newcommand{\RSetup}[0]{R1\xspace}
+\newcommand{\RCustom}[0]{R2\xspace}
+\newcommand{\RLightweight}[0]{R3\xspace}
+\newcommand{\RIntuitive}[0]{R4\xspace}
+\newcommand{\RFamiliarity}{R5\xspace}
+
+\newcommand{\todo}[1]{==TODO: #1 ==}
+
+
 %\include{requirements}
 \section*{Abstract}
-===TODO===
+\todo{}
 
 \section{Introduction}
 \subsection{Relevant Background}
 Here I will discuss, at a high level, the topics which this project pertains too.
 \subsubsection{Domain Specific Languages}
 
-===TODO===
+\todo{}
 \subsubsection{Language Workbenches}
-===TODO===
+\todo{}
 \subsubsection{Projectional Editing}
-===TODO===
+\todo{}
 \subsection{Project Aims and Motivation}
 
 \subsubsection{Problem To Address}\label{problem}
 
-This project seeks to address the following problem. An often cited use case for DSLs is to enable domain experts to write code to solve issues within their domain in an efficient manner ===TODO Reference here===. However, these experts are not necessarily experienced at writing code.  ==TODO reference here the finance case from blog or book== \\
+This project seeks to address the following problem. An often cited use case for DSLs is to enable domain experts to write code to solve issues within their domain in an efficient manner \todo{Reference here}. However, these experts are not necessarily experienced at writing code.  \todo{reference here the finance case from blog or book} \\
 \\
-To those without prior experience, traditional textually based programming can seem alienating and complex ==TODO see if source exists?== making it difficult for language designers to target such users.
+To those without prior experience, traditional textually based programming can seem alienating and complex \todo{ see if source exists} making it difficult for language designers to target such users.
 \\
 \\
 Projectionally editing code is one potential solution to this problem, allowing the user to interact with the code in a way which is intuitive and familiar. Although a projectionally based language workbench, MPS\cite{mps}, exists, it is geared towards projections which look primarily like traditional textual code, which we are trying to prevent in the case of interacting with users as described above. There is also a significant feature disparity between it and it's parser-based rivals (unfortunately this is common between language workbenches). One feature it is notably lacking is the ability to generate a web-based editor application.
@@ -90,7 +104,7 @@ Currently, the ability to automatically generate a projectional editor as a web 
 ===\textbf{TODO} Could mention sprotty here as proof useful, already people trying to take xtext output to view, surely good to edit too===
 
 \subsubsection{Requirements}\label{requirements}
-To be able to evaluate the final implementation I here set out the neccesary requirements we should meet in order to fulfil our goal: 
+To be able to evaluate the final implementation I here set out the necessary requirements we should meet in order to fulfil our goal: 
 
 \begin{itemize}
 \item{\textbf{R1: Quick to setup} - It should be as quick and easy as possible for a language designer to create a projectional editor. Just as language workbenches automatically create eclipse plugins or standalone IDEs with little or no input from the user, so should our editors be generated automatically, so the designer need only worry about language specific concerns.}
@@ -112,16 +126,15 @@ In order to achieve the project's goal my contributions can be split into 3 key 
 
 
 \subsection{Organisation} 
-===TODO===
-
+\todo{}
 \section{Technical Background}
-===TODO===
+\todo{}
 \subsection{MPS}
-===TODO===
+\todo{}
 \subsection{Xtext}
-===TODO===
+\todo{}
 \subsection{Abstract Syntax tree}
-===TODO===
+\todo{}
 
 
 \section{Projectional Editor Web API}
@@ -177,16 +190,16 @@ Given a language definition $\{\mathbb{T},\mathbb{D}\}$ we define:\\
 
 ==TODO Talk about why this is a fair model, based on EMF== 
 ==TODO Maybe move into technical background?== 
-==TODO Give example for language==
+==TODO Give example for language?==
 \subsection{Design}\label{api}
-Having given my modelling assumptions I now discuss the design of the API itself, before giving it's final specification. When designing this API it was necessary to keep in mind the relevant requirements for the project's ultimate goal as given in \ref{requirements}. The goal to produce a lightweight ==R3== and customisable ==R2== editor are clearly relevant here and so the API was designed with these in mind.
+Having given my modelling assumptions I now discuss the design of the API itself, before giving it's final specification. When designing this API it was necessary to keep in mind the relevant requirements for the project's ultimate goal as given in \ref{requirements}. The goal to produce a lightweight (\RLightweight) and customisable (\RCustom) editor are clearly relevant here and so the API was designed with these in mind.
 \\
 \\
 The first consideration was how best to transport the state of the abstract syntax tree between client and server. Existing solutions in textual web editing, such as within LSP or Xtext's own default web editor implementation rely on first synchronising the client with the server by sending the full contents of a document opened as a string. Further requests or edits are then handled by referencing positions within the document as line/position numbers or ranges. This pattern of synchronisation followed by incremental updates between client and server has the advantage of minimising the amount of data required to be transmitted. In order to do this on ASTs directly however we need some way of referencing nodes within a tree. We achieve this by annotating each node within an AST on the server side with a unique identifier. If the client is then aware of this labelling we can use it to communicate incremental changes between client and server, such as changes to attribute values.
 ==TODO Maybe move this discussion of LPS into background and then only discuss relevance here==
 \\
 \\
-Having decided upon this annotation of the ASTs in order to reference incremental updates, we next look at the initial synchronization. In order to keep the client application as lightweight as possible (as per ==R3==) we wish to minimise the data synchronised onto the client. We notice that the client only ever needs to maintain state relating to the parts of the AST(s) that they are actively interacting with. With a textual representation, this is very difficult to determine, and by default we assume the user wishes to display the entire textual contents of a file. However, a projectional editor has no such issue. At any given time a user is interacting only with projections of the AST, these projections define explicitly which nodes of the AST, and which attributes within these, are relevant and should be displayed. Hence we have no need to synchronise all details of the AST with the client initially, only as and when these are required by a projection.
+Having decided upon this annotation of the ASTs in order to reference incremental updates, we next look at the initial synchronization. In order to keep the client application as lightweight as possible (as per \RLightweight) we wish to minimise the data synchronised onto the client. We notice that the client only ever needs to maintain state relating to the parts of the AST(s) that they are actively interacting with. With a textual representation, this is very difficult to determine, and by default we assume the user wishes to display the entire textual contents of a file. However, a projectional editor has no such issue. At any given time a user is interacting only with projections of the AST, these projections define explicitly which nodes of the AST, and which attributes within these, are relevant and should be displayed. Hence we have no need to synchronise all details of the AST with the client initially, only as and when these are required by a projection.
 \\
 \\
 With this in mind then, initial synchronisation happens as follows. Upon opening a file the client application requests a "skeleton" tree, consisting only of node names (generated by the language server, perhaps using certain attribute values or the node's type) and their unique identifiers. This can be used for navigation within the file, enabling the user to request projections for subtrees they wish to edit instead of for the whole file. Through some means then, a subtree is selected to be displayed, the client makes a request to fetch that subtree's root node using the id from the client's skeleton tree, and the server responds with the attributes and references which will be displayed within the projection for that node in some format. From here we are ready to begin transmitting only incremental changes made within this projection between client and server. In the case that the user wishes to edit a different subtree we can then ask for the values relevant to that node using it's id from the skeleton tree which we can keep cached.
@@ -202,7 +215,7 @@ There are two approaches to doing this which place different requirements on the
 Both approaches have advantages, the first allows for more flexibility in the projections that can be written, and if a projection is to be used by many nodes reduces the amount of data to be retrieved from the language server. The second approach however keeps the size of the client application much smaller, especially if the language is large and requires many different projection types. Since projection specification is inherently associated with a language, it is also the case that only the second approach allows a client application to remain language independent while still being able to display language specific projections.
 \\
 \\
-Because both have advantages, in line with our ==R2== requirement to allow as much flexibility as possible for language designers, we decide to design this API such that both approaches are possible.
+Because both have advantages, in line with our \RCustom requirement to allow as much flexibility as possible for language designers, we decide to design this API such that both approaches are possible.
 \\
 \\
 To achieve this the API specifies that a node fetch response should simply be as an arbitrary Json object with a type field. The client should be capable of decoding the object based upon it's type. We then specify two language independent node-fetch types in this project which can be assumed to be standard, and should prove sufficient for most use cases. Language designers can still however create new node-fetch types for the language server to use, provided they extend the client application accordingly to handle these new types.
@@ -352,7 +365,7 @@ I now list the methods available in the API.
 \subsection{Default View Specification}
 ==TODO Extend this if add cross references across files==
 
-The default view follows, as discussed it is the default return type for the get-node call. It simply has a list of the various attributes of a node, alongside their values and types. It also returns a list of the references of the node, giving the nodeId and optional names of the nodes stored for each reference. The intention here is that the client application can display this information in a simple way, perhaps a list of textboxes for attributes and lists for references. By allowing the client to have a generic, default projection we remove the onus on the language designer to create custom projections for every single node type, making language development potentially much quicker, in line with our requirement ==R1==.
+The default view follows, as discussed it is the default return type for the get-node call. It simply has a list of the various attributes of a node, alongside their values and types. It also returns a list of the references of the node, giving the nodeId and optional names of the nodes stored for each reference. The intention here is that the client application can display this information in a simple way, perhaps a list of textboxes for attributes and lists for references. By allowing the client to have a generic, default projection we remove the onus on the language designer to create custom projections for every single node type, making language development potentially much quicker, in line with our requirement \RSetup.
 \lstinputlisting[language=TypeScript, tabsize=2 ]{Listings/default-view-descriptor.ts}
 
 
@@ -362,7 +375,7 @@ In this section I present a DSL developed to specify custom projections for ASTs
 %Ultimately the goal being to provide a standard way for language designers to define projections for their language within a language workbench which can then be used in the automatic generation of a web projectional editor.
 \\
 \\
-With this in mind, the relevant requirements from section \ref{requirements} are ==R1== (ease of setup), ==R2== (customisability), and ==R5== (familiarity). Specifically in this context that translates to ensuring that the designed language is simple and easy to use, requiring as little time as possible to learn. The language should also be as powerful and flexible as possible in terms of the projections it can define.
+With this in mind, the relevant requirements from section \ref{requirements} are \RSetup (ease of setup), \RCustom (customisability), and \RFamiliarity (familiarity). Specifically in this context that translates to ensuring that the designed language is simple and easy to use, requiring as little time as possible to learn. The language should also be as powerful and flexible as possible in terms of the projections it can define.
 
 \subsection{Design}
 
@@ -531,7 +544,7 @@ The client application was designed to offer a simple interface with all default
 \\
 Extensibility was in fact one of the biggest considerations when writing this application. As this will be the UI with which a language's end users directly interact with, we expect a language designer will want to make changes to match their companies/institutions styling and also to build in other  deployment dependent features, like user authentication or training materials etc. To this end, the application is built in a very modular fashion, so that it is easy to modify and extend. This was easy to achieve using Angular components and services. Notably, all interaction with the language server via the API is written as a separate service which maybe imported into a different application implementation. Likewise the actual display and editing of a node via a projection is a separate component, and so the language designer may easily import and place this anywhere within a different client application.
 \subsubsection{UI}
-The UI takes some inspiration from the online IDE Theia==TODO Link here== with navigation all happening on the left hand side leaving a large space for the projections on the right. The intention was for this default UI to be as simple and clean as possible, so that it if a language designer doesn't require additional features or require specific styling the default UI should be appropriate. It was also designed to be easy to use by end users. These two considerations reflect requirements ==R1== and ==R4== respectively.
+The UI takes some inspiration from the online IDE Theia==TODO Link here== with navigation all happening on the left hand side leaving a large space for the projections on the right. The intention was for this default UI to be as simple and clean as possible, so that it if a language designer doesn't require additional features or require specific styling the default UI should be appropriate. It was also designed to be easy to use by end users. These two considerations reflect requirements \RSetup and \RIntuitive respectively.
 ==TODO Screenshot==
 
 
@@ -554,14 +567,14 @@ In this section I discuss the final tool, which makes use of the API, editor lan
 \subsection{Overview}
 The final tool takes the form of an extension to the existing language workbench Xtext. A designer creates a projectional editor by specifying a language grammar and then generating projectional editor artifacts. These consist of:
 \begin{itemize}
-\item A back end web Java servlet which is capable of interacting with a client application using the HTTP API discussed in section ==X==.
+\item A back end web Java servlet which is capable of interacting with a client application using the HTTP API discussed in section \ref{api}.
 \item A Java servlet container to host these servlets
-\item An empty \emph{.editor} file in which a language designer can use the language discussed in section ==X== to specify custom projections for their nodes if desired.  
+\item An empty \emph{.editor} file in which a language designer can use the language discussed in section \ref{EditorLanguage} to specify custom projections for their nodes if desired.  
 \end{itemize}
 I have also created a default web application using Angular which can be used to interact with the server and display custom projections for the designed language. I will now discuss the various parts in more detail.
 
 \subsection{Integration with Xtext}\label{integrationWithXtext}
-The tool has been completely integrated with the open-source Xtext language workbench. This decision was primarily made as by extending an existing language workbench I didn't have to concern myself with rewriting all the core functionality of a workbench from scratch (e.g. the abilities to specify a grammar, building a parser etc.) and instead could focus on the implementation of projectional editing. However, by extending an existing popular workbench we are also working towards our ==R5== requirement of familiarity.
+The tool has been completely integrated with the open-source Xtext language workbench. This decision was primarily made as by extending an existing language workbench I didn't have to concern myself with rewriting all the core functionality of a workbench from scratch (e.g. the abilities to specify a grammar, building a parser etc.) and instead could focus on the implementation of projectional editing. However, by extending an existing popular workbench we are also working towards our \RFamiliarity requirement of familiarity.
  Xtext was a prime candidate for extension due to a number of reasons:
 \begin{itemize}
 \item{It is open-source and so easy to modify}
@@ -570,15 +583,15 @@ The tool has been completely integrated with the open-source Xtext language work
 \end{itemize}
 
 \subsection{The Generation Process}
-To meet our ==R1== requirement the generation process was designed to be as simple as possible, so that a language designer can concentrate their efforts on the DSL specification. The langauge designer first creates an Xtext project as normal, using the new project wizard as shown in figures ==X==, being sure to select the "Projectional Editor Web Integration" facet along with the other facets they require (such as an Eclipse plugin) as usual.
+To meet our \RSetup requirement the generation process was designed to be as simple as possible, so that a language designer can concentrate their efforts on the DSL specification. The langauge designer first creates an Xtext project as normal, using the new project wizard as shown in figures ==X==, being sure to select the "Projectional Editor Web Integration" facet along with the other facets they require (such as an Eclipse plugin) as usual.
 Doing this creates a language project with a \emph{.xtext} file to specify the DSL's grammar and a \emph{.MWE2} file to describe the workflow to generate the neccesary files and facets from the grammar definition file. A number of empty projects are also created which will contain the files generated by the grammar definition. Notice the \emph{org.xtext.example.mydsl.peWeb} project which has been created and populated with a maven \emph{.pom} file which will be responsible for dependency management.
 The generated MWE2 file for the language looks as follows:
 ==CODE LISTING==
 it contains information on the language configuration and how facets for the language should be generated. As we selected the PE facet in the new project notice peWeb is enabled in this file. Because of this when the user generates the language by running this workflow file the peweb folder will automatically be populated with all the necessary files to run a server for web based projectional editing.
 
 >Generated files table? Talk about files that are generated by MWE2, by generating like this at runtime we can use properties of the language. right now only name but could modify other things too.
->Fact they are displayed to user means easily extensible matching requirement ==R??==
->Talk about how the files generated are all commented (TODO) so clear what they are for and so match requirement ==R1==
+>Fact they are displayed to user means easily extensible matching requirement \RCustom
+>Talk about how the files generated are all commented (TODO) so clear what they are for and so easy to customise \RCustom
 \cite{mpsr}
 \cite{art}
 
