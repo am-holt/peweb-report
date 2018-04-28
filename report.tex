@@ -1,9 +1,12 @@
-\documentclass{report}
+\documentclass{article}
 \usepackage[margin=1.3in]{geometry}
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{syntax}
 \usepackage{xspace}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{array}
 
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
@@ -71,7 +74,7 @@
 
 \section{Introduction}
 \subsection{Relevant Background}
-Here I will discuss, at a high level, the topics which this project pertains too.
+Before discussing my project's specific goals and outlining my contributions, I will discuss, at a high level, the topics which this project pertains too.
 \subsubsection{Domain Specific Languages}
 
 \todo{Complete}
@@ -132,467 +135,109 @@ In order to achieve the project's goal my contributions can be split into 3 key 
 \todo{TODO}
 \subsection{Abstract Syntax tree}
 \todo{TODO}
-
-
-\section{Projectional Editor Web API}
-In this section I present the design of a server-side web API to allow a client to display and interact with projections for an arbitrary language. 
-\subsection{Modelling Assumptions}
-==TODO Better to display this section in terms of a model diagram??==
-As this API will be targeting arbitrary languages it is first important to discuss the assumed form of an abstract syntax tree within a programming language. We also must make certain assumptions about the structure of a "project", or collection of files, within that language. As such the following modelling assumptions have been made:
-\\
-\\
-\textbf{Programming Language Definition} = $\{\mathbb{T},\mathbb{D}\}$ 
-\begin{itemize}
-\item $\mathbb{T}$ - Node Types, a finite set of strings representing the different possible node types which may occur within an AST for the language.
-\item $\mathbb{D}$ - Data Types, a finite set of strings representing the different primitive datatypes which may occur within an AST for the language. Note the assumption was made that these datatypes are all serialisable as strings, a fair assumption as most languages are entirely driven by the parsing of strings.
-\end{itemize}
+\subsection{Eclipse}
+\todo{TODO}
+\subsection{EMF}
+\todo{TODO}
+\subsection{MWE2}
+\todo{TODO}
 %
-\textbf{Code Project Definition} = $\{n,F \}$ 
-\begin{itemize}
-\item $n$ - The name of the project as a string
-\item $F$ - A set of files (definition below) which this project contains
-\end{itemize}
 %
-\textbf{File Definition} = $\{n, L, a\}$ 
-\begin{itemize}
-\item $n$ - The name of the file as a string
-\item $L=\{\mathbb{T},\mathbb{D}\}$ - The language to be used in this file
-\item $a$ - An abstract syntax tree node for the language L which represents the root node of the AST in this file
-\end{itemize}
 %
-Given a language definition $\{\mathbb{T},\mathbb{D}\}$ we define:\\
-\\
-\textbf{Abstract Syntax Tree Node Definition} = $\{t,C,R,A\}$ 
-\begin{itemize}
-\item $t\in \mathbb{T}$ - The type of this node in the language
-\item $C$ - A finite set of references (definition below), the node's \emph{containment} references, that is the children nodes of this node which may not exist independently of this node. An example in a general purpose language might be a reference to an Expression node from within an If Statement node.
-\item $R$ - A finite set of references (definition below), the node's \emph{cross} references, that is references to other nodes which exist independently of this node. An example in a general purpose language may be a Function Call node may cross reference a Function Definition node.
-\item $A$ - A finite set of attributes (definition below), the actual data of the node.
-\end{itemize}
+%Overview
 %
-\textbf{Reference Definition} = $\{n,t,R\}$ 
-\begin{itemize}
-\item $n$ - A string giving the name of this reference.
-\item $t\in \mathbb{T}$ - The node type of the nodes being referenced 
-\item $R$ - A finite list of AST nodes such that $\{t',C',R',A'\} \in R \implies t'=t$
-\end{itemize}
 %
-\textbf{Attribute Definition} = $\{n,d,A\}$ 
-\begin{itemize}
-\item $n$ - A string giving the name of this attribute
-\item $d\in \mathbb{D}$ - The datatype for the value stored in this attribute
-\item $v$ - A value from the datatype $d$
-\end{itemize}
+%
+%
+\section{Automatic Generation Of Projectional Web Editors In XText}
+In this section I will discuss my extension to the language workbench XText. I begin by giving a quick overview of the extension before moving onto to it's use from a user's perspective, and then covering the more interesting sections of it's design in detail. This includes the API implemented by the generated language server, and the projection specification DSL. I focus throughout on design decisions that have been made as a result of the requirements outlined in section \ref{requirements}. 
 
 
-==TODO Talk about why this is a fair model, based on EMF== 
-==TODO Maybe move into technical background?== 
-==TODO Give example for language?==
-\subsection{Design}\label{api}
-Having given my modelling assumptions I now discuss the design of the API itself, before giving it's final specification. When designing this API it was necessary to keep in mind the relevant requirements for the project's ultimate goal as given in \ref{requirements}. The goal to produce a lightweight (\RLightweight) and customisable (\RCustom) editor are clearly relevant here and so the API was designed with these in mind.
-\\
-\\
-The first consideration was how best to transport the state of the abstract syntax tree between client and server. Existing solutions in textual web editing, such as within LSP or Xtext's own default web editor implementation rely on first synchronising the client with the server by sending the full contents of a document opened as a string. Further requests or edits are then handled by referencing positions within the document as line/position numbers or ranges. This pattern of synchronisation followed by incremental updates between client and server has the advantage of minimising the amount of data required to be transmitted. In order to do this on ASTs directly however we need some way of referencing nodes within a tree. We achieve this by annotating each node within an AST on the server side with a unique identifier. If the client is then aware of this labelling we can use it to communicate incremental changes between client and server, such as changes to attribute values.
-==TODO Maybe move this discussion of LPS into background and then only discuss relevance here==
-\\
-\\
-Having decided upon this annotation of the ASTs in order to reference incremental updates, we next look at the initial synchronization. In order to keep the client application as lightweight as possible (as per \RLightweight) we wish to minimise the data synchronised onto the client. We notice that the client only ever needs to maintain state relating to the parts of the AST(s) that they are actively interacting with. With a textual representation, this is very difficult to determine, and by default we assume the user wishes to display the entire textual contents of a file. However, a projectional editor has no such issue. At any given time a user is interacting only with projections of the AST, these projections define explicitly which nodes of the AST, and which attributes within these, are relevant and should be displayed. Hence we have no need to synchronise all details of the AST with the client initially, only as and when these are required by a projection.
-\\
-\\
-With this in mind then, initial synchronisation happens as follows. Upon opening a file the client application requests a "skeleton" tree, consisting only of node names (generated by the language server, perhaps using certain attribute values or the node's type) and their unique identifiers. This can be used for navigation within the file, enabling the user to request projections for subtrees they wish to edit instead of for the whole file. Through some means then, a subtree is selected to be displayed, the client makes a request to fetch that subtree's root node using the id from the client's skeleton tree, and the server responds with the attributes and references which will be displayed within the projection for that node in some format. From here we are ready to begin transmitting only incremental changes made within this projection between client and server. In the case that the user wishes to edit a different subtree we can then ask for the values relevant to that node using it's id from the skeleton tree which we can keep cached.
-\\
-\\
-%>Interact directly with AST, assumed to be in form as given in background section
-%> Don't want to send all information about everything in the project, AST graph will be massive if lots of files and cross references, don't want to have to transmit everything all the time. Especially as more boiler plate than in a textual representation, e.g. not just a string but every node is an object probably with multiple features etc.
-%>Interact directly with AST, assumed to be in form as given in background section
-To actually display and interact with an AST on the client side it needs both information about the current state of the relevant nodes, and how to project this state so that the user can interact with it. 
-There are two approaches to doing this which place different requirements on the client side application. The first is to require that the client application itself has definitions for the possible projection types, and so given the state of a node and the name of the projection to use it can create the projection itself. The other option is for information about the projection to be sent along with the state of the node, so the client application need not know anything about the language or projections it may use at compile time as these are supplied by the language server.
-\\
-\\
-Both approaches have advantages, the first allows for more flexibility in the projections that can be written, and if a projection is to be used by many nodes reduces the amount of data to be retrieved from the language server. The second approach however keeps the size of the client application much smaller, especially if the language is large and requires many different projection types. Since projection specification is inherently associated with a language, it is also the case that only the second approach allows a client application to remain language independent while still being able to display language specific projections.
-\\
-\\
-Because both have advantages, in line with our \RCustom requirement to allow as much flexibility as possible for language designers, we decide to design this API such that both approaches are possible.
-\\
-\\
-To achieve this the API specifies that a node fetch response should simply be as an arbitrary Json object with a type field. The client should be capable of decoding the object based upon it's type. We then specify two language independent node-fetch types in this project which can be assumed to be standard, and should prove sufficient for most use cases. Language designers can still however create new node-fetch types for the language server to use, provided they extend the client application accordingly to handle these new types.
-\\
-\\
-The two standard types are:
-\begin{itemize}
-\item \emph{Default Projection}: The client is given all the attributes and references for the node which it then presents to the user in any meaningful way as decided by the client application.
-\item \emph{CustomHtml Projection}: This method involves sending not only relevant attributes for the node to the client, but also sending html to specify how it should be projected. The intention is that these will be automatically generated by the projection specification language given in section \ref{EditorLanguage}, as such they will be discussed in more detail there.
-\end{itemize}
-
-%>Want to interact via custom and potentially complex projections
-%>As such need some way to transmit these projections \& display them on client in succinct way
-%>These projections will be highly customised, want to provide as much functionality out of box as possible while not ruling out options, hence have default and customHtml options as standard, but language designers can create other standards for their own client applications. Maybe a "circuit" or a "financialTable".
-%>Regardless of projection the representation which is stored is the AST and so this information is only relevant to client , to provide updates to server shouldn't need to send back information relating to projection itself
-
-==TODO Mention misc reasons e.g. validation==
-%>Validation on values
-
-
-==TODO List specification of API and justification==
-\subsection{Specification}
-I now list the methods available in the API.
-\subsubsection{ls-projects}
-
-\emph{Parameters}: N/A
-\\
-\emph{Response}: 
-\begin{itemize}
-\item projectnames:String[] - Returns a list of URIs for available projects on the webserver
-\end{itemize} 
-
-\subsubsection{add-projects}
-
-\emph{Parameters}: 
-\begin{itemize}
-\item name:String - Desired URI for the project to create
-\end{itemize}
-\emph{Response}: N/A
-
-\subsubsection{get-project}
-\emph{Parameters}: 
-\begin{itemize}
-\item project-name:String - Desired URI for the project to retrieve
-\end{itemize}
-\emph{Response}: 
-\begin{itemize}
-\item files:String[] - List of URIs for files contained within the project 
-\end{itemize}
-
-\subsubsection{add-file}
-\emph{Parameters}: 
-\begin{itemize}
-\item project-name:String - URI for the project the file should reside in
-\item file-name:String - Desired URI for the file to add
-\end{itemize}
-\emph{Response}: N/A
-
-\subsubsection{get-file}
-\emph{Parameters}: 
-\begin{itemize}
-\item project-name:String - URI of the project the node resides in
-\item file-name:String - URI of the file to retrieve
-\end{itemize}
-\emph{Response}: 
-\begin{itemize}
-\item ast:StructureTree - A tree depicting the underlying AST structure of a file, a tree consisting of nodeId's and names for these nodes (by default their types). The nodId's are used to reference nodes between server and client, the names can be displayed by the client as a method for the user to navigate the AST to pick nodes to edit.
-\end{itemize}
-
-\subsubsection{save-file}
-\emph{Parameters}: 
-\begin{itemize}
-\item project-name:String - URI of the project the file resides in
-\item file-name:String - URI of the file to save
-\end{itemize}
-\emph{Response}: N/A
-
-\subsubsection{get-node}
-\emph{Parameters}: 
-\begin{itemize}
-\item project-name:String - URI of the project the node resides in
-\item file-name:String - URI of the file the node resides in
-\item node-id:String - The identifier of the node to retrieve
-\end{itemize}
-\emph{Response}: 
-\begin{itemize}
-\item type:String - A string describing to the client the kind of projection to be used
-\item Arbitrary other attributes maybe included as required to describe the projection for this node.
-\end{itemize}
-\subsubsection{update-attribute}
-\emph{Parameters}: 
-\begin{itemize}
-\item project-name:String - URI of the project the node resides in
-\item file-name:String - URI of the file the node resides in
-\item node-id:String - The identifier of the node being modified
-\item attribute-name:String - The name of the attribute being modified
-\item value:String - The new value of the attribute
-\end{itemize}
-\emph{Response}: N/A
-\subsubsection{add-containment-ref}
-\emph{Parameters}: 
-\begin{itemize}
-\item project-name:String - URI of the project the node resides in
-\item file-name:String - URI of the file the node resides in
-\item node-id:String - The identifier of the node to add the reference to
-\item reference-name:String - The name of the reference feature to add a new node to
-\end{itemize}
-\emph{Response}: 
-\begin{itemize}
-\item ast:StructureTree - A tree depicting the underlying AST structure for the subtree of the node to which the child node has been added
-\end{itemize}
-
-\subsubsection{add-cross-ref}
-\emph{Parameters}: 
-\begin{itemize}
-\item project-name:String - URI of the project the node resides in
-\item file-name:String - URI of the file the node resides in
-\item node-id:String - The identifier of the node to add the reference to
-\item reference-name:String - The name of the reference feature to add a new node to
-\item reference-file:String - The URI of the file containing the node we are referencing
-\item reference-node:String - The node identifier for the node being referenced
-\end{itemize}
-\emph{Response}: N/A
-
-\subsubsection{remove-ref}
-\emph{Parameters}: 
-\begin{itemize}
-\item project-name:String - URI of the project the node resides in
-\item file-name:String - URI of the file the node resides in
-\item node-id:String - The identifier of the node to remove the reference from
-\item reference-name:String - The name of the reference feature from which a reference will be removed
-\item reference-file:String - The URI of the file containing the node we are referencing
-\item reference-node:String - The node identifier for the node being referenced
-\end{itemize}
-\emph{Response}: N/A
-
-\subsubsection{validate-node}
-
-\emph{Parameters}: 
-\begin{itemize}
-\item project-name:String - URI of the project the node resides in
-\item file-name:String - URI of the file the node resides in
-\item node-id:String - The identifier of the node to validate
-\end{itemize}
-\emph{Response}: N/A
-
-\subsection{Default View Specification}
-==TODO Extend this if add cross references across files==
-
-The default view follows, as discussed it is the default return type for the get-node call. It simply has a list of the various attributes of a node, alongside their values and types. It also returns a list of the references of the node, giving the nodeId and optional names of the nodes stored for each reference. The intention here is that the client application can display this information in a simple way, perhaps a list of textboxes for attributes and lists for references. By allowing the client to have a generic, default projection we remove the onus on the language designer to create custom projections for every single node type, making language development potentially much quicker, in line with our requirement \RSetup.
-\lstinputlisting[language=TypeScript, tabsize=2 ]{Listings/default-view-descriptor.ts}
-
-
-\section{Projection Specification Language}\label{EditorLanguage}
 \subsection{Overview}
-In this section I present a DSL developed to specify custom projections for ASTs of an arbitrary language. Ultimately we will use this in our language workbench extension to allow language designers to create such specifications for their own languages.
-%Ultimately the goal being to provide a standard way for language designers to define projections for their language within a language workbench which can then be used in the automatic generation of a web projectional editor.
-\\
-\\
-With this in mind, the relevant requirements from section \ref{requirements} are \RSetup (ease of setup), \RCustom (customisability), and \RFamiliarity (familiarity). Specifically in this context that translates to ensuring that the designed language is simple and easy to use, requiring as little time as possible to learn. The language should also be as powerful and flexible as possible in terms of the projections it can define.
 
-\subsection{Design}
-
-It seemed clear that using a combination of html and javascript to specify projections would be the most natural thing to do. The html can then be sent to the user and displayed within the client application. Depending on implementation this approx	ach could allow much flexibility, as html and javascript themselves do, while also keeping the proprietary part of the editor specification language smaller. Both of which align with our requirements. For further inspiration we looked at MPS's editor specification language.
-
-\subsubsection{MPS Editor Language}
-The MPS language workbench has it's own editor language which is used to specify projections for a language's "concepts" (their term for our nodes). The language works simply as follows: For each concept a user uses cells to build up the look of the projection. These cells may contain the following:\footnote{https://confluence.jetbrains.com/display/MPSD20173/Editor}
-\begin{enumerate}
-\item Constant Cell - Displays a constant string value
-\item Collection cells - containers for more cells to build up further structure
-\item Property cell - Space to display and edit attributes textually
-\item Child cells - to display the projection of a child
-\item Referent cells - to display a custom view of a child
-\item Child List cell - as per child cell but displays all children of the same type, allowing the user to customise how they are separated etc.
-\item Indentation cells - empty space, different from constant cell only in that indent size is managed by global editor settings
-\item UI Component Cell - holds a custom UI JComponent written by the language desinger, doesn't store state
-\item Model access - allows custom access to an attribute of a node, the language designer specifies a get, set and validate method indicating how the cell should reflect the node's attribute and how changes to the cell should set the relevant attribute. Validate gives a boolean function indicating whether or not the node is in a valid configuration.
-\item Custom Cell - the language designer can create a custom cell by implementing the EditorCell interface in MPS
-\end{enumerate}
-%
-We first notice that most of the cells are used to control the layout of the editor, we can use html for this purpose and so can ignore these cells. The remaining functionality which we require then is:
-\begin{enumerate}
-\item Properties/Attribute access - Some way to access the attributes of a node, displaying them to the user and allowing them to edit them.  (Covering here the Property cells and Model Access cells)
-\item Reference access - Some way to specify where a node's children (references) are displayed, and specifying how they should be displayed (as per the Child, Child List and Referent cells of MPS)
-\end{enumerate}
-Using MPS's idea of placeholder cells, we decide to augment html with additional tags which will, like the cells in MPS, be replaced at runtime with the relevant html to display attributes or projections of child node. With regards to the placeholder cells in MPS, one nice feature is the ability to customise how these actually appear, with attributes we can use "Model Access" cells to completely customise how a user interacts with the attribute and similarly with "referent" cells the language designer can define different projections to display child nodes from within another projection. This functionality aligns with our goal to ensure our language is as flexible as possible, and so we will attempt to give similar functionality to our own language.
-
-\subsection{Language Specification}
-I will now give a brief overview of the editor language specification, before presenting it in full and then covering important aspects in greater detail. 
-\\
-\\
-The editor language allows the language designer to specify one or more named projections for each node type, using html to describe the layout and javascript to describe how the projection should be populated with the node's properties and how to detect edits to these. If a node contains references to other nodes, these can be viewed in the projection by means of additional annotations within the html, which will be replaced with projections for the referenced nodes. The language also allows the declaration of components which represent reusable pieces of a projection which may be used across different projections to allow code reusability. 
-\\
-\\
-The complete specification for the language follows, using BNF with the addition of the standard regular expression symbols *,?,+ for succinctness. I will then discuss the different parts of the language in more detail.
-
-\setlength{\grammarparsep}{12pt plus 1pt minus 1pt} % increase separation between rules
-\setlength{\grammarindent}{5em} % increase separation between LHS/RHS 
-
-\begin{grammar}
-
-<EditorDefinitionFile> ::= <ImportSection>? <MainSection>
-
-<ImportSection> ::= (`import' <QualifiedName> `;')+ 
-
-<MainSection> ::= (<NodeDeclaration> | <ComponentDeclaration>)*
-
-<NodeDeclaration> ::= `Node' <ID> `{' (<ProjectionDeclaration> | <ComponentDeclaration>)* `}'
-
-<ProjectionDeclaration> ::= `Projection' <ID> \\ `{ view:' <HtmlSnippet> (<AttributeDeclaration> | <ComponentDeclaration>)* `}'
-
-<AttributeDeclaration> ::= `@'<ID> <AttributeController>
-
-<AttributeController> ::= `{' `get:'<JSSnippet> `set:'<JSSnippet> `validate:'<JSSnippet> `}'
-
-<ComponentDeclaration> ::= `Component' <ID> \\`{' `view:' <HtmlSnippet> <ComponentController>? `}'
-
-<ComponentController> ::= `get:'<JSSnippet> `set:'<JSSnippet> `validate:'<JSSnippet> 
- 
-<ChildId> ::= `!' <ID> `:' <ID> `!'
- 
-<ComponentId> ::= `\%'<ID> (`:'<ID>)? `\%'
-
-<TagId> ::= `\$' <ID> `\$' 
-
-<HtmlAnnotation> ::= `<<' (<TagId> |<ChildId>|<ComponentId>) `>>'
-
-<Js	Annotation> ::= `<<' <TagId> `>>'
-
-<HtmlSnippet> ::= `['<CodeLiteral>`]'
-\alt `['<CodeLiteral> <HtmlAnnotation> (<CodeLiteral> <HtmlAnnotation>)*  <CodeLiteral> `]'
-
-<JSSnippet> ::= `['<CodeLiteral>`]'
-\alt `[' <CodeLiteral> <JSAnnotation> (<CodeLiteral> <JSAnnotation>)*  <CodeLiteral> `]'
-%\alt `for' <ident> `=' <expr> `to' <expr> `do' <statement> 
-%\alt `{' <stat-list> `}' 
-%\alt <empty> 
-
-%<stat-list> ::= <statement> `;' <stat-list> | <statement> 
-
-\end{grammar}
-
-\emph{Note}: Terminal rules for CodeLiteral and ID have been omitted for the sake of brevity.
-
-\subsubsection{Example}
-Here is an example specification of a simple layout.
-
-
-===TODO, maybe for questionaire language?===
-
-\subsubsection{Node}
-
-Most files will consist primarily of node declarations. A node declaration should be included in the file for every node of the language for which custom projections are desired. To reduce the amount of work required on the language designers part, if a node is not found then this instead indicates a default projection should be used. 
-\\
-\\
-A declaration can contain definitions of different projections for the node and also components which can be used only in the scope of this node.
-
-
-\subsubsection{Projection}
-Projection declarations exist within a Node declaration. Each projection declaration is named and specifies a way in which this node type can be viewed and controlled.
-\\
-\\
-Multiple projections can be defined for a single node. When referencing children etc we can then specify which projection we retrieve using it's name. This is similar to the referant cell behaviour of MPS, but our approach, having named the projection and defining it as a part of the node type being referenced, allows us to reuse this view from within other nodes, making this method preferable.
-\\
-\\
-The body of a projection declaration contains a view, and optionally, attribute controllers and component declarations.
-\\
-\\
-The view attribute defines how the projection should look on screen. This is achieved using a html snippet delimited by square brackets (square brackets having been chosen as they rarely appear in html). 
-==TODO change from square braces== These html snippets can also include the following additional annotations:
+The final tool takes the form of an extension to the language workbench Xtext, which is itself an Eclipse\cite{eclipse} plugin. A designer can use this extended plugin to create a projectional editor by first specifying a language grammar using XText's existing grammar language, and then generating projectional editor artefacts. These consist of:
 \begin{itemize}
-\item <<!CHILDNAME:PROJECTION\_NAME!>> : Indicates the reference with the name CHILDNAME should have its PROJECTION\_NAME projection inserted here. Used as the child node cells are in MPS. If the reference feature references multiple nodes then some default list view will show the set of children, each using the specified projection. Unlike in MPS I am not allowing customisation of the list layout itself at present, but this is a clear target for the future given more time.
-\item <<\%COMPONENTNAME \%>> : Inserts the component COMPONENTNAME, enabling reuse of code.
-\item <<\%COMPONENTNAME:ATTRIBUTE\_NAME \%>> : As above but if the component has an attribute controller (see below) attached to it then it uses this to populate the nodes attribute ATTRIBUTE\_NAME
-\item <<\$ID\$>>: This tag is used to indicate an Id property of a html element. Html elements must have unique id's and so we must assign them dynamically.
-\end{itemize}
-
-\subsubsection{Component}
-
-
-A component looks similar to a  Projection with an optional attribute controller, and may be declared globally or within a node so as to allow code reuse.
-\\
-\\
-The purpose of components is to allow for code reuse for common functionality such as text boxes for custom datatypes etc.
-\\
-\\
-The import section at the start of the file allows the user to be able to import files containing default or third party components such as textboxes for ints, strings etc. so as to reduce the amount of code the user must write. 
-%COMPONENT_NAME%{
-%	view:[ ANNOTATED_HTML ]
-%	(get:[ ANNOTATED_JS ]
-%	 set:[ ANNOTATED_JS ]
-%	 validate:[ ANNOTATED_JS ] )?
-%}
-
-\subsubsection{Attribute Controller}
-
-An attribute controller dictates how an attribute's value should be get and set within the projection. A controller also allows a local validation function which can also modify the view if an input is invalid/valid. This is all achieved using javascript snippets with additional <<\$ID\$>> annotations to reference elements specified in the view.
-\\
-\\
-An attribute controller has three methods, get, set, and validate. Get expects a js snippet which evaluates to a string e.g. it retrieves the value of the attribute from the projection/component. Set expects a js snippet which will be executed in an environment where the value of the attribute is assigned to the variable X, this can then be used to initialise attribute values in the view. Validate expects a js snippet which will be executed in an environment where the value of the attribute is assigned to X also and should evaluate to either true or false to indicate whether or not this is a valid value. 
-\\
-\\
-For example a simple text box: ==TODO Listing==
-This component can then be placed in a projection and assigned to control the value of an attribute for the projected node.
-
-\subsection{Custom View Specification}
-%Describe Custom view want to generate
-%Want to unpack before sending so client doesn't have to do this(Why?)
-In our final tool we want a front end application to be able to display the projections we describe using this language. As discussed in the API section, these client applications will fetch information on the state and display of individual nodes using the \emph{get-node} method. We will thus ultimately want to translate an \emph{.editor} file into an object which could be sent as a response to this method, to be used by the front end to display the custom projection for a particular instance of a node.
-==TODO Include Custom view spec ==
-==TODO Discuss Custom view spec == 
-
-
-\subsection{Implementation}
-The \emph{.editor} language was implemented using the language workbench Xtext. This involved specifying the \emph{.editor} language's grammar in Xtext's grammar specification language, (given in the appendix ==TODO include the grammar definition file in appendix ==), and also specifying the compilation process for the language. The result is both an Eclipse and Intellij plugin which includes an editor for the language complete with syntax highlighting, context completion, reference highlighting etc. making writing a \emph{.editor} file much easier.
-\\
-\\
-To actually create a custom view from an \emph{.editor} specification file requires an instance of an AST. We do not wish to make our implementation of the editor language dependent on any one concrete implementation ==TODO or is this representation?== of an AST. We therefore instead generate a java encoding of the \emph{.editor} file which can be used by a server to build customHTML projection objects with a concrete instance of an AST. This also means that the projection specification language is not necessarily tied into the API as specified in section \ref{api}. Indeed we could also modify the generation file so we generate encodings of the file in other languages, alongside java.
-
-\section{Client Application}
-Here I present an implementation of a client application, written using the Angular framework, for use with a language server implementing the API from section \ref{api}. This application will ultimately serve as the default front end for a projectional web based editing application which has automatically been generated using our extension to a language workbench. I also make much use of it to evaluate both the specified API and Projection Specification Language. 
-
-\subsection{Design}
-The client application was designed to offer a simple interface with all default functionality, that is primarily  supporting both Default and Custom view types as discussed earlier. The application was written using the Angular framework and typescript, as this offered all the features needed and is very popular. This means plenty of documentation is available and it should be easy for language designers to extend.
-\\
-\\
-Extensibility was in fact one of the biggest considerations when writing this application. As this will be the UI with which a language's end users directly interact with, we expect a language designer will want to make changes to match their companies/institutions styling and also to build in other  deployment dependent features, like user authentication or training materials etc. To this end, the application is built in a very modular fashion, so that it is easy to modify and extend. This was easy to achieve using Angular components and services. Notably, all interaction with the language server via the API is written as a separate service which maybe imported into a different application implementation. Likewise the actual display and editing of a node via a projection is a separate component, and so the language designer may easily import and place this anywhere within a different client application.
-\subsubsection{UI}
-The UI takes some inspiration from the online IDE Theia==TODO Link here== with navigation all happening on the left hand side leaving a large space for the projections on the right. The intention was for this default UI to be as simple and clean as possible, so that it if a language designer doesn't require additional features or require specific styling the default UI should be appropriate. It was also designed to be easy to use by end users. These two considerations reflect requirements \RSetup and \RIntuitive respectively.
-==TODO Screenshot==
-
-
-\subsection{View Implementation}
-
-==TODO 
-%\\>Asynchronous calls, separating services and response code to separate concerns so easy to make new UI as desired
-\\>Discuss 2 kinds of view and implementation
-\\>Evaluate Performance
-
-
-
-==
-
-
-
-
-\section{Language Workbench Web Projectional Editor Generation}
-In this section I discuss the final tool, which makes use of the API, editor language and client application in order to extend an existing language workbench with the ability to easily create a web projectional editor.
-\subsection{Overview}
-The final tool takes the form of an extension to the existing language workbench Xtext. A designer creates a projectional editor by specifying a language grammar and then generating projectional editor artifacts. These consist of:
-\begin{itemize}
-\item A back end web Java servlet which is capable of interacting with a client application using the HTTP API discussed in section \ref{api}.
+\item A back-end Java servlet which is capable of interacting with a client application using the HTTP API discussed later in section \ref{api}. \todo{Check ref working}
 \item A Java servlet container to host these servlets
-\item An empty \emph{.editor} file in which a language designer can use the language discussed in section \ref{EditorLanguage} to specify custom projections for their nodes if desired.  
+\item An empty \emph{.editor} file in which a language designer can use the language discussed in section \ref{EditorLanguage} \todo{Check ref working} to specify custom projections for their nodes if desired.  
 \end{itemize}
-I have also created a default web application using Angular which can be used to interact with the server and display custom projections for the designed language. I will now discuss the various parts in more detail.
+%
+I have also created a default client web application using the Angular application platform\cite{angular}, which can be hosted by the generated language server and then used by the language's end user to interact with the server to display and edit the designed language through the specified custom projections. 
 
-\subsection{Integration with Xtext}\label{integrationWithXtext}
-The tool has been completely integrated with the open-source Xtext language workbench. This decision was primarily made as by extending an existing language workbench I didn't have to concern myself with rewriting all the core functionality of a workbench from scratch (e.g. the abilities to specify a grammar, building a parser etc.) and instead could focus on the implementation of projectional editing. However, by extending an existing popular workbench we are also working towards our \RFamiliarity requirement of familiarity.
- Xtext was a prime candidate for extension for a number of reasons:
+\subsection{Benefits of integration with Xtext}\label{integrationWithXtext}
+Before continuing with the design, I discuss the rationale behind the integration with Xtext. The decision was primarily made as by extending an existing language workbench I didn't have to concern myself with rewriting all the core functionality of a workbench from scratch (e.g. the abilities to specify a grammar, building a parser etc.) and instead could focus on the implementation of projectional editing. By extending an existing popular workbench we are working towards our \RFamiliarity requirement of familiarity, and Xtext was a prime candidate for a number of reasons:
 \begin{itemize}
 \item{It is open-source and so easy to modify}
 \item{It is one of the most popular language workbenches available and so has much support available}
-\item{It internally uses EMF which allows for bidirectional transformations between, in effect, our abstract syntax tree and it's textual representation. This is useful for a number of reasons which I will later discuss}
+\item{It internally uses EMF\cite{emf}, which allows for bidirectional transformations between, in effect, our abstract syntax tree and it's textual representation. This is useful for a number of reasons which I will later discuss\todo{If I have reference section}}
 \end{itemize}
 
 \subsection{The Generation Process}
-To meet our \RSetup requirement the generation process was designed to be as simple as possible, so that a language designer can concentrate their efforts on the DSL specification. The langauge designer first creates an Xtext project as normal, using the new project wizard as shown in figures ==X==, being sure to select the "Projectional Editor Web Integration" facet along with the other facets they require (such as an Eclipse plugin) as usual.
-Doing this creates a language project with a \emph{.xtext} file to specify the DSL's grammar and a \emph{.MWE2} file to describe the workflow to generate the neccesary files and facets from the grammar definition file. A number of empty projects are also created which will contain the files generated by the grammar definition. Notice the \emph{org.xtext.example.mydsl.peWeb} project which has been created and populated with a maven \emph{.pom} file which will be responsible for dependency management.
+I will now discuss the process of generating a projectional language server from a specified language using my plugin. To meet our \RSetup requirement the generation process was designed to be as simple as possible, so that a language designer can concentrate their efforts on the DSL specification. The process was also designed to be as close as possible to the process of setting up a textual web editor in XText, to satisfy our familiarity \RFamiliarity requirement.
+\\
+\\
+The language designer first creates an Xtext project as normal, using the Eclipse new project wizard as shown in figures \ref{fig:newProjectWiz},
+\begin{figure}[t!]
+  \centering
+  \begin{subfigure}[b]{0.45\linewidth}
+    \includegraphics[width=\linewidth]{./Screenshots/newXtextProject.png}
+    \caption{page 1}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.45\linewidth}
+    \includegraphics[width=\linewidth]{./Screenshots/newXtextProjectPage2.png}
+    \caption{page 2}
+  \end{subfigure}
+  \caption{The modified "new xtext project" wizard}
+  \label{fig:newProjectWiz}
+\end{figure}
+selecting the "Projectional Editor Web Integration" facet which has been added to the wizard next to the existing option for creating a textual web editor.
+\\
+\\
+This creates an Xtext language project, shown in figure
+\begin{figure}[h!]
+  \includegraphics[width=\linewidth]{./Screenshots/newProjectScreen.png}
+  \caption{A new xtext project with an empty peWeb project}
+  \label{fig:newProjectScreen}
+\end{figure} \ref{fig:newProjectScreen}, with a \emph{.xtext} file to specify the DSL's grammar and a \emph{.MWE2} file to describe the generation of the selected facets as usual. A number of empty projects are also created which will contain the files generated by the grammar definition. Notice the \emph{org.xtext.example.mydsl.peWeb} project which has been created and populated with a maven \emph{.pom} file which will be responsible for dependency management and has automatically been configured with the dependencies required by the projectional web editor.
 The generated MWE2 file for the language looks as follows:
-==CODE LISTING==
-it contains information on the language configuration and how facets for the language should be generated. As we selected the PE facet in the new project notice peWeb is enabled in this file. Because of this when the user generates the language by running this workflow file the peweb folder will automatically be populated with all the necessary files to run a server for web based projectional editing.
+\lstinputlisting[ tabsize=2 ]{Listings/GenerateMyDsl.mwe2}
+It contains information on the language configuration and how facets for the language should be generated. As we selected the PE facet in the new project notice peWeb is enabled in this file. Because of this, when the user generates the language in the standard Xtext way, by running this MWE2 workflow file, the peWeb project will automatically be populated with all the necessary files to run a server for web based projectional editing. This results in the peWeb project looking like in figure 
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.4\linewidth]{./Screenshots/peWebProjectContentsAfterGeneration.png}
+  \caption{The peweb project following generation}
+  \label{fig:generatedPeWebProject}
+\end{figure} \ref{fig:generatedPeWebProject}. Notice that MyDsl will be replaced with the name of the created language as specified when creating the project.
+These files correspond to the following:
+\begin{center}
+\begin{tabular}{| m{7cm} | m{8cm} |}
+\hline
+File & Description \\
+\hline \hline
+Projections.editor & An empty file in which the language designer can specify the projections for the editor using the \emph{.editor} language discussed later.\\
+\hline
+MyDslPeServlet.xtend & A HTTP servlet which implements the projectional web API discussed later.\\
+\hline
+ServerLauncher.xtend & A servlet container to host MyDslPeWebServlet. When ran this starts the language server \\
+\hline
+MyDslPeFileResourceHandler.xtend & Allows the language designer to specify how files should be read or written, so that any persistence layer can be used. The generated file defaults to simply writing and reading files with the language's extension in the location given by  MyDslResourceBaseProvider \\
+\hline
+MyDslResourceBaseProvider.xtend & Used to specify how file URI's should be generated for a specified resource in the language. Defaults to a user-files folder at the location of the project.\\
+\hline
+MyDslPeWebModule.xtend & Allows binding of additional components in the language injector. This is where the resourceHandler and resourceBaseProviders are registered.\\
+\hline
+MyDslPeWebSetup.xtend & Creates the language injector itself, which will be used to inject information about the specified language into the otherwise generic language server implementation\\
+\hline
+\end{tabular}
+\end{center}
 
->Generated files table? Talk about files that are generated by MWE2, by generating like this at runtime we can use properties of the language. right now only name but could modify other things too.
->Fact they are displayed to user means easily extensible matching requirement \RCustom
->Talk about how the files generated are all commented (TODO) so clear what they are for and so easy to customise \RCustom
+All of the generated files, with the exception of the \emph{Projections.editor} and \emph{MyDslPeServlet}, are required by Xtext's default textual web integration, and so will be familiar to existing XText users. One thing of note is that the FileResourceHandler and ResourceBaseProvider files are not automatically generated in the textual case but are still required. Here by assuming a simple implementation of saving to the local file system, we can generate these files automatically and so enable language designers to get a language server running much more quickly in order to test their language. In fact, at this point, the language designer simply points the serverLauncher to the location of a client application to host, and the full web editor for their language is ready to run. There is no disadvantage to this generation as these files can be freely changed later or immediately.
+\\
+\\
+%Maybe y generating like this at runtime we can use properties of the language. right now only name but could modify other things too.
+%>Fact they are displayed to user means easily extensible matching requirement \RCustom
+%>Talk about how the files generated are all commented (TODO) so clear what they are for and so easy to customise \RCustom
 
-
-
-===TODO===
 \printbibliography
 
 \end{document}

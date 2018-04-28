@@ -1,21 +1,28 @@
-class DefaultViewDescriptor  implements ViewDescriptor{
+export class DefaultViewDescriptor  implements ViewDescriptor{
 	
 	static readonly DEFAULT_TYPE = "default"
 
-	//The type of the descriptor
-	type:string = DefaultViewDescriptor.DEFAULT_TYPE;
+	//The type of the view descriptor
+	type:string;
 
-	//List of the nodes attributes to display
+	//List of the nodes attributes
 	attributes: Attribute[];
 
-	//List of the node's reference sets to display
+	//List of the node's reference features
 	references: Reference[];
 
-	//The id of the node this describes
+	//The id of the node which this projection describes
 	nodeId: string;
+
+	constructor(atts:Attribute[],refs:Reference[],id:string){
+		this.type = "default";
+		this.attributes = atts;
+		this.references = refs;
+		this.nodeId = id;
+	}
 }
 
-class Attribute{
+export class Attribute{
 	//The name of the attribute this describes
 	name:string;
 
@@ -26,18 +33,21 @@ class Attribute{
 	value:string;
 }
 
-class Reference{
-	//The name of the referenceSet
+export class Reference{
+	//The name of the reference feature
 	name:string;
 
-	//The list of nodes references
+	//Whether or not this reference represents a crossReference
+	crossReference :boolean;
+
+	//Present iff this reference feature is a cross reference
+	//The possible nodes this reference could cross reference
+	possibleCrossReferences : NodeReference[];
+
+	//Present iff this reference feature is a containment reference
+	//The possible types of node this reference may contain
+	possibleTypes:string[];
+
+	//The list of nodes referenced in this feature
 	nodes:NodeReference[];
-}
-
-class NodeReference{
-	//The name of the referenced node, if given one ny the language server
-	name:string;
-
-	//The nodeId of the referenced node
-	nodeId: string;
 }
