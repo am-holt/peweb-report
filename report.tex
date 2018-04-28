@@ -14,6 +14,7 @@
 
 \bibliography{bibliography}
 
+\usepackage{todonotes}
 
 %all used by listings
 \usepackage{listings}
@@ -61,7 +62,7 @@
 \newcommand{\RIntuitive}[0]{R4\xspace}
 \newcommand{\RFamiliarity}{R5\xspace}
 
-\newcommand{\todo}[1]{==TODO: #1 ==}
+%\newcommand{\todo}[1]{==TODO: #1 ==}
 
 
 %\include{requirements}
@@ -73,24 +74,22 @@
 Here I will discuss, at a high level, the topics which this project pertains too.
 \subsubsection{Domain Specific Languages}
 
-\todo{}
+\todo{Complete}
 \subsubsection{Language Workbenches}
-\todo{}
+\todo{Complete}
 \subsubsection{Projectional Editing}
-\todo{}
+\todo{Complete}
 \subsection{Project Aims and Motivation}
 
 \subsubsection{Problem To Address}\label{problem}
 
-This project seeks to address the following problem. An often cited use case for DSLs is to enable domain experts to write code to solve issues within their domain in an efficient manner \todo{Reference here}. However, these experts are not necessarily experienced at writing code.  \todo{reference here the finance case from blog or book} \\
-\\
-To those without prior experience, traditional textually based programming can seem alienating and complex \todo{ see if source exists} making it difficult for language designers to target such users.
+This project seeks to address the following problem. An often cited use case for DSLs is to enable domain experts to write code to solve issues within their domain in an efficient manner \todo{Reference here}. However, these experts are not necessarily experienced at writing code.  \todo{reference here the finance case from blog or book} To those without prior experience, traditional, textually based programming can seem alienating and complex, \todo{ see if source exists} making it difficult for language designers to target such users.
 \\
 \\
 Projectionally editing code is one potential solution to this problem, allowing the user to interact with the code in a way which is intuitive and familiar. Although a projectionally based language workbench, MPS\cite{mps}, exists, it is geared towards projections which look primarily like traditional textual code, which we are trying to prevent in the case of interacting with users as described above. There is also a significant feature disparity between it and it's parser-based rivals (unfortunately this is common between language workbenches). One feature it is notably lacking is the ability to generate a web-based editor application.
 
 \subsubsection{Project Goal}
-This project's goal was to extend an existing language workbench, or to create a new one, with the capability of generating a web-based, projectional editor for a DSL designed in that workbench. 
+This project's goal was to extend an existing language workbench, or to create a new one, with the capability of generating a web-based, projectional editor for a DSL specified in that workbench. 
 
 \subsubsection{Motivation}
 Currently, the ability to automatically generate a projectional editor as a web application for an arbitrary language specification, does not exist in any major language workbench. However, I believe this functionality would be useful for the following reasons:
@@ -98,10 +97,8 @@ Currently, the ability to automatically generate a projectional editor as a web 
 \item Web editing is particularly useful for DSLs, speeding up the deployment of newly created languages by reducing the need to share/install IDEs or plugins after every iteration of the language (which likely change frequently in their infancy). 
 \item Projectional editors can reduce, and in some cases completely eliminate, the time required by a user to learn the syntax of a language. This is useful for DSLs where the language is likely only used for a small part of a project and will not be commonly known.
 \item Crucially, the combination of these features is ideal for addressing the problem laid out in section \ref{problem}. A web editor ensures that there is no need to install or use an IDE for the language, which are often notoriously complex. A projectional editor may then allow them to interact with the language in an environment they are used to, perhaps by filling in forms and tables or drawing a diagram.  
-
 \end{itemize} 
-
-===\textbf{TODO} Could mention sprotty here as proof useful, already people trying to take xtext output to view, surely good to edit too===
+As further affirmation to the potential usefulness of this feature, we look at the existing sprotty framework being developed by Typefox\cite{sprotty}, a prominent group of contributers to the open-source language workbench Xtext. Sprotty aims to provide graphical views of textual code by integrating with language servers produced by the language workbench Xtext. A web based projectional editor could not only offer this view, but also allow the user to interact with this view directly to modify their code, which is clearly far more powerful. 
 
 \subsubsection{Requirements}\label{requirements}
 To be able to evaluate the final implementation I here set out the necessary requirements we should meet in order to fulfil our goal: 
@@ -126,15 +123,15 @@ In order to achieve the project's goal my contributions can be split into 3 key 
 
 
 \subsection{Organisation} 
-\todo{}
+\todo{TODO}
 \section{Technical Background}
-\todo{}
+\todo{TODO}
 \subsection{MPS}
-\todo{}
+\todo{TODO}
 \subsection{Xtext}
-\todo{}
+\todo{TODO}
 \subsection{Abstract Syntax tree}
-\todo{}
+\todo{TODO}
 
 
 \section{Projectional Editor Web API}
@@ -575,11 +572,11 @@ I have also created a default web application using Angular which can be used to
 
 \subsection{Integration with Xtext}\label{integrationWithXtext}
 The tool has been completely integrated with the open-source Xtext language workbench. This decision was primarily made as by extending an existing language workbench I didn't have to concern myself with rewriting all the core functionality of a workbench from scratch (e.g. the abilities to specify a grammar, building a parser etc.) and instead could focus on the implementation of projectional editing. However, by extending an existing popular workbench we are also working towards our \RFamiliarity requirement of familiarity.
- Xtext was a prime candidate for extension due to a number of reasons:
+ Xtext was a prime candidate for extension for a number of reasons:
 \begin{itemize}
 \item{It is open-source and so easy to modify}
 \item{It is one of the most popular language workbenches available and so has much support available}
-\item{It internally uses EMF which allows for bidirectional transformations between in effect our abstract syntax tree and it's textual representation. This is useful for a number of reasons which I will later discuss}
+\item{It internally uses EMF which allows for bidirectional transformations between, in effect, our abstract syntax tree and it's textual representation. This is useful for a number of reasons which I will later discuss}
 \end{itemize}
 
 \subsection{The Generation Process}
