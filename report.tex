@@ -90,15 +90,15 @@ Most general purpose programming languages are input using textual representatio
 
 \subsubsection{Problem To Address}\label{problem}
 
-This project seeks to address the following problem. An often cited use case for DSLs is to enable domain experts to write code to solve issues within their domain in an efficient manner \todo{Reference here}. However, these experts are not necessarily experienced at writing code.  \todo{reference here the finance case from blog or book} To those without prior experience, traditional, textually based programming can seem alienating and complex, \todo{ see if source exists} making it difficult for language designers to target such users.
+This project seeks to address the following problem. An often cited use case for DSLs is to enable domain experts to write code to solve issues within their domain in an efficient manner. However, these experts are not necessarily experienced at writing code. To those without prior experience, traditional, textually based programming can seem alienating and complex. Resulting in a situation where "Statements like [...] 'Domain experts aren't programmers' [...] are often-overheard prejudices" which Markus Voelter suggests "hinder the adoption of DSLs" for such use cases\cite{dslEngineering}.
 \\
 \\
-Projectionally editing code is one potential solution to this problem, allowing the user to interact with the code in a way which is intuitive and familiar. Although a projectionally based language workbench, MPS\cite{mps}, exists, it is geared towards projections which look primarily like traditional textual code, which we are trying to prevent in the case of interacting with users as described above. There is also a significant feature disparity between it and it's parser-based rivals. One feature it is notably lacking is the ability to generate a web-based editor application.
+Projectionally editing code alleviates this problem, allowing the user to interact with the code in a way which is intuitive and familiar, and crucially can be made to not look like traditional code. However, although a projectionally based language workbench, MPS\cite{mps}, exists, it is geared towards projections which look primarily like traditional textual code, which we are trying to prevent in the case of interacting with users as described above. There is also a significant feature disparity between it and it's parser-based rivals. One feature it is notably lacking is the ability to generate a web-based editor application which is particularly appealing for our use case as we discuss in \ref{motivation}.
 
 \subsubsection{Project Goal}\label{goal}
-This project's goal was to extend an existing language workbench, or to create a new one, with the capability of generating a web-based, projectional editor for a DSL specified in that workbench. 
+This project's goal was to extend an existing language workbench, or to create a new one, with the capability of generating a web-based, projectional editor for any DSL specified in that workbench. 
 
-\subsubsection{Motivation}
+\subsubsection{Motivation}\label{motivation}
 Currently, the ability to automatically generate a projectional editor as a web application for an arbitrary language specification, does not exist in any major language workbench. However, I believe this functionality would be useful for the following reasons:
 \begin{itemize}
 \item Web editing is particularly useful for DSLs, speeding up the deployment of newly created languages by reducing the need to share/install IDEs or plugins after every iteration of the language (which likely change frequently in their infancy). 
@@ -130,7 +130,8 @@ In order to achieve the project's goal my contributions can be split into 3 key 
 
 
 \subsection{Organisation} 
-\todo{TODO}
+I begin this report by discussing the necessary technical background required by a reader. I then discuss the design and implementation of my language extension, splitting this across sections \ref{generation} to \ref{clientApp}, each section focussing on a different aspect of the tool. I then evaluate the completed tool in section \ref{evaluation}, to see whether or not the result of this project achieves the goal set out in section \ref{goal} and addresses the problem from \ref{problem}. I conclude by critically reviewing whether the requirements from \ref{requirements} were satisfied and outlining possible ventures for future work. 
+
 \section{Technical Background}
 \todo{TODO}
 \subsection{MPS}
@@ -153,7 +154,7 @@ In order to achieve the project's goal my contributions can be split into 3 key 
 %
 %
 %
-\section{Automatic Generation Of Projectional Web Editors In XText}
+\section{Automatic Generation Of Projectional Web Editors In XText}\label{generation}
 In this section I will discuss my extension to the language workbench XText. I begin by giving a quick overview of the extension before moving onto to it's use from a user's perspective, and then covering the more interesting sections of it's design in detail. This includes the API implemented by the generated language server, and the projection specification DSL. I focus throughout on design decisions that have been made as a result of the requirements outlined in section \ref{requirements}. 
 
 
@@ -566,7 +567,7 @@ This allows the language designer to save time as they can run the editor applic
 %Explain listing
 
 
-\section{Client Application}
+\section{Client Application}\label{clientApp}
 Here I present an implementation of a client application, written using the Angular framework, for use with a language server implementing the API from section \ref{api}. This application serves as the default front end for a projectional web based editing application which has automatically been generated using our extension to Xtext language workbench. I also make much use of it to evaluate both the specified API and Projection Specification Language. 
 
 \subsection{Design}
@@ -589,7 +590,7 @@ The UI takes some inspiration from the online IDE Theia\cite{theia} with navigat
 %>Asynchronous calls, separating services and response code to separate concerns so easy to make new UI as desired
 %>Discuss 2 kinds of view and implementation
 %>Evaluate Performance
-\section{Evaluation}
+\section{Evaluation}\label{evaluation}
 In order to evaluate the work of this project I focus on two areas. The first is on the process of language creation and the flexibility of the tool presented as a method for creating projectional editors for arbitrary languages. The second area looks at the ability of the tool to address the problem laid out in section \ref{problem}, that is, the ability of an editor produced using my tool to improve accessibility of a DSL to a non-technical audience.
 %\\
 %\\
