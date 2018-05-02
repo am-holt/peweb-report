@@ -91,7 +91,7 @@ This project seeks to address the following problem. An often cited use case for
 \\
 Projectionally editing code is one potential solution to this problem, allowing the user to interact with the code in a way which is intuitive and familiar. Although a projectionally based language workbench, MPS\cite{mps}, exists, it is geared towards projections which look primarily like traditional textual code, which we are trying to prevent in the case of interacting with users as described above. There is also a significant feature disparity between it and it's parser-based rivals (unfortunately this is common between language workbenches). One feature it is notably lacking is the ability to generate a web-based editor application.
 
-\subsubsection{Project Goal}
+\subsubsection{Project Goal}\label{goal}
 This project's goal was to extend an existing language workbench, or to create a new one, with the capability of generating a web-based, projectional editor for a DSL specified in that workbench. 
 
 \subsubsection{Motivation}
@@ -589,7 +589,7 @@ The UI takes some inspiration from the online IDE Theia\cite{theia} with navigat
 In order to evaluate the work of this project I focus on two areas. The first is on the process of language creation and the flexibility of the tool presented as a method for creating projectional editors for arbitrary languages. The second area looks at the ability of the tool to address the problem laid out in section \ref{problem}, that is, the ability of an editor produced using my tool to improve accessibility of a DSL to a non-technical audience.
 %\\
 %\\
-\subsection{Projectional Editor Creation}
+\subsection{Projectional Editor Creation}\label{creationEvaluation}
 In order to evaluate the projectional editor creation process I built three 3 languages and comment here on the process. The three languages are as follows:
 \begin{itemize}
 \item An expression language to define mathematical functions using the usual 4 binomial operators and a summation function.
@@ -627,7 +627,7 @@ The creation process for this language was much easier than for the expression l
 %Findings: This is clearly where the projectional editor shines, very easy to define for a specification language as projections were not as fiddly as in the previous case. Also resultant editor seems more useful as not having large tree depth as in expression language.
 
 
-\subsubsection{PasGraph Language}
+\subsubsection{PasGraph Language}\label{pasgraph}
 This language is a subset of the programming language Pascal\cite{pascal} (as presented in the Oxford undergraduate Compilers course\todo{should this be removed?If not then reference}), that has been extended with: 
 \begin{itemize}
 \item Node graph primitives
@@ -666,7 +666,7 @@ If no projection is specified in the \emph{.editor} file a default projection li
 \\
 I also noted that design of a language's grammar has a fairly large impact on the editor generated. For example, the Expression language and PasGraph language used different approaches to binary operations. The Expression language had different node types for each type of operation, PasGraph on the other hand had a single node with an operationType attribute. Result was that whereas Expression was forced to choose operation type initially and operation couldn't be changed except after deletion. PasGraph could use a textbox or other html component to change this within the expression node. 
 
-\subsection{Accessibility}
+\subsection{Accessibility}\label{Accessibility}
 In order to evaluate whether the generated projectional editors can be of use in addressing the problem outlined in \ref{problem}, I asked a small group of 5 people with no, or minimal, prior coding experience to compare a textual editor with a projectional one, created using my Xtext extension.
 
 \subsubsection{Method}
@@ -735,6 +735,37 @@ One potential issue with this evaluation is that the tasks were repeated for bot
 Another potential issue was that the tasks were not necessarily representative of real use as a clear specification was laid out for users to input. Without this edit patterns maybe different, likely with more deletes and edits. It was considered to make users complete a 3rd task in which they would be asked to modify an existing questionnaire file which may have helped in this case. Unfortunately this was cut in order to keep the time required of testers within an hour. Time also meant it was not possible to try more than one language, which would be another obvious extension given more respondents.
 %Not long enough to get users comfortable with text, however, still useful as domain experts may not be doing this often anyway.
 \section{Conclusions}
+I set out to build a tool which could automatically generate a web based projectional editor given a language specification in order to improve accessibility of DSLs \ref{goal}. This was achieved by an extension to the language workbench Xtext making use of:
+\begin{itemize}
+\item{A new server-side web API specification, similar to LSP, to allow arbitrary languages to be edited projectionally from a dummy client application}
+\item{A new DSL to specify projections of AST nodes using html and js in an intuitive fashion}
+\item{A default client application to interact with a language server generated by the extension}
+\end{itemize}
+The extension was then evaluated to ensure it's flexibility as a tool to a language designer, and the potential benefit of resultant editors to language end users with little coding experience.
+
+\subsection{Review of requirements}
+%Review of requirements
+I review the requirements from section \ref{requirements}:
+\begin{itemize}
+\item{\textbf{R1: Quick to setup} - The first set of evaluations given in section \ref{creationEvaluation} showed that this has largely been achieved, in most cases only one extra additional file being required to actually define the projections themselves. However, these evaluations did find that the default projections could be improved so they were more useful, which would further speed up the setup process}
+\item{\textbf{R2: Customisable} - We set out to ensure that the resultant editors were highly customisable, in terms of projections available this has certainly been achieved as is discussed with the PasGraph language implemented in \ref{pasgraph}. The only issue in this regard is the system's inability to mix projections defined using the editor language and others. This clearly should be addressed and is discussed in \ref{futureWork}  }
+\item{\textbf{R3: Lightweight Editor} - Although this requirement was considered throughout the project we have not formally evaluated whether or not this is achieved. This is because performance is very dependent upon the projections specified by the language, and so difficult to evaluate in general. Though not a formal measure, all evaluations were conducted on a basic machine (dual core 1.9GHz processor) and no hiccups were noticed. }
+\item{\textbf{R4: Intuitive Editor} - The second evaluation (\ref{Accessibility}) showed that with suitable projections, very intuitive interfaces can be created by a language designer. It did however highlight some issues which could be the focus of future work. The first is that within the default client application, navigation using the tree was not immediately clear. The other is that the editing experience could be improved with the addition of techniques common in textual editing such as the ability to copy \& paste, move subtrees, and reference non-existent nodes}
+\item{\textbf{R5: Familiarity} - The first evaluation showed that in most cases the process for creating a projectional editor in Xtext involves only one non-standard Xtext step, which was writing the \emph{.editor} file. Otherwise, specifying the grammar, creating a projectional editor project, and generating the language artefacts are identical to the standard Xtext process. As Xtext is the most popular language workbench I believe it is fair then to say achieving \RFamiliarity is dependent only on the editor language being considered easy to learn. Using predominantly the ubiquitous html and js I think this has been achieved, however, in order to fairly judge this, a further evaluation would be required to judge how easy this language is to learn for language designers}
+\end{itemize}
+
+\subsection{Future work}\label{futureWork}
+I am happy with what I have achieved in the given time frame however it is clear that the project leaves lot's of room for future work. As mentioned in the previous sections obvious candidates are:
+\begin{itemize}
+\item Allowing editing features such as moving and duplicating trees. This would greatly improve the usability of the resultant editors. 
+\item Modifying the projection retrieval process so that projections specified in a \emph{.editor} file can display child nodes using other projection types that have been implemented in other ways.
+\item Conduct evaluation on the \emph{.editor} language to measure how easy it is to learn and use and iterate the language based on the findings
+\item Extend the \emph{.editor} language so the default form of projections without explicit projections listed can be modified. This would be especially useful if one option was to use the textual grammar of the language to build these default projections.
+\item Conduct evaluation on the performance of the projectional editor's produced in comparison to their textual counterparts. This could be done by designing a range of languages and measuring performance on files of various sizes.
+\item Modify the UI on the default client application so that navigation is clearer, perhaps by styling the buttons differently. Evaluation would then have to be done to ensure the changes were effective
+\end{itemize}
+\subsection{Acknowledgement}
+I'd like to thank my supervisor Madasar Shah for all of his help and guidance over the course of this project.
 
 \printbibliography
 
