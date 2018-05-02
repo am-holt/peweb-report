@@ -66,22 +66,26 @@
 \newcommand{\RFamiliarity}{R5\xspace}
 
 %\newcommand{\todo}[1]{==TODO: #1 ==}
-
+\title{Generating online projectional editors to improve productivity of
+Domain Specific Language users (an extension to language engineering
+workbenches)}
+\author{Alexander Holt}
+\maketitle
 
 %\include{requirements}
 \section*{Abstract}
-\todo{}
+\todo{To write}
 
 \section{Introduction}
-\subsection{Relevant Background}
-Before discussing my project's specific goals and outlining my contributions, I will discuss, at a high level, the topics which this project pertains too.
-\subsubsection{Domain Specific Languages}
 
-\todo{Complete}
-\subsubsection{Language Workbenches}
-\todo{Complete}
-\subsubsection{Projectional Editing}
-\todo{Complete}
+Domain Specific Languages (DSLs), that is, usually small, programming languages which have been created to solve problems within a specific application domain, are very useful tools. They can improve both productivity and clarity for their intended tasks in a way that libraries for general purpose libraries can't, having being built from the ground up to do so. 
+\\
+\\
+As these languages usually target very specific domains, it is natural then that much effort has been put into the quick and easy creation of these, so the outlay of time this requires is justifiable even if the language is only to be used for small parts of a project or within smaller teams. Tools to do exactly this are called language workbenches. Language workbenches usually offer an IDE for language designers to specify the concrete syntax or structure of a language, build an editor for instances of it and then a generator or compiler to convert it into a general purpose language. Language workbenches offer varying degrees of automation in completing these tasks.
+\\
+\\
+Most general purpose programming languages are input using textual representations however other approaches exist. One such approach is projectional editing, in which users interact with a programming languages internal representation, it's abstract syntax tree, directly. This is done through projections, which specify how this structure should be interacted with on screen, potentially with text, but possibly with tables, images, diagrams or anything else imaginable. Projectional editing is a particularly useful concept for DSLs, which are often used to model domains that have clear non-textual representations/. Projections also can be used to reduce the syntax a user is required to learn, which is useful when a DSL may only be used by an individual once or twice.
+
 \subsection{Project Aims and Motivation}
 
 \subsubsection{Problem To Address}\label{problem}
@@ -89,7 +93,7 @@ Before discussing my project's specific goals and outlining my contributions, I 
 This project seeks to address the following problem. An often cited use case for DSLs is to enable domain experts to write code to solve issues within their domain in an efficient manner \todo{Reference here}. However, these experts are not necessarily experienced at writing code.  \todo{reference here the finance case from blog or book} To those without prior experience, traditional, textually based programming can seem alienating and complex, \todo{ see if source exists} making it difficult for language designers to target such users.
 \\
 \\
-Projectionally editing code is one potential solution to this problem, allowing the user to interact with the code in a way which is intuitive and familiar. Although a projectionally based language workbench, MPS\cite{mps}, exists, it is geared towards projections which look primarily like traditional textual code, which we are trying to prevent in the case of interacting with users as described above. There is also a significant feature disparity between it and it's parser-based rivals (unfortunately this is common between language workbenches). One feature it is notably lacking is the ability to generate a web-based editor application.
+Projectionally editing code is one potential solution to this problem, allowing the user to interact with the code in a way which is intuitive and familiar. Although a projectionally based language workbench, MPS\cite{mps}, exists, it is geared towards projections which look primarily like traditional textual code, which we are trying to prevent in the case of interacting with users as described above. There is also a significant feature disparity between it and it's parser-based rivals. One feature it is notably lacking is the ability to generate a web-based editor application.
 
 \subsubsection{Project Goal}\label{goal}
 This project's goal was to extend an existing language workbench, or to create a new one, with the capability of generating a web-based, projectional editor for a DSL specified in that workbench. 
@@ -157,9 +161,9 @@ In this section I will discuss my extension to the language workbench XText. I b
 
 The final tool takes the form of an extension to the language workbench Xtext, which is itself an Eclipse\cite{eclipse} plugin. A designer can use this extended plugin to create a projectional editor by first specifying a language grammar using XText's existing grammar language, and then generating projectional editor artefacts. These consist of:
 \begin{itemize}
-\item A back-end Java servlet which is capable of interacting with a client application using the HTTP API discussed later in section \ref{api}. \todo{Check ref working}
+\item A back-end Java servlet which is capable of interacting with a client application using the HTTP API discussed later in section \ref{api}.
 \item A Java servlet container to host these servlets
-\item An empty \emph{.editor} file in which a language designer can use the language discussed in section \ref{EditorLanguage} \todo{Check ref working} to specify custom projections for their nodes if desired.  
+\item An empty \emph{.editor} file in which a language designer can use the language discussed in section \ref{EditorLanguage} to specify custom projections for their nodes if desired.  
 \end{itemize}
 %
 I have also created a default client web application using the Angular application platform\cite{angular}, which can be hosted by the generated language server and then used by the language's end user to interact with the server to display and edit the designed language through the specified custom projections. 
