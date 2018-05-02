@@ -1,0 +1,121 @@
+//Define your editor's view in this file!
+Node Questionnaire{
+	Projection main{
+		view: [	<h1>Questionnaire Editor </h1> 
+						<h4>Sections in this questionnaire: </h4> 
+							<<!sections:summary!>>
+					]	
+	}
+}
+
+Node Section{
+	Projection main{
+		view: [	<h1> Section Editor </h1> 
+						<h4> Name of section: <<%textBox:name%>> </h4> 
+						<h4> Section Contents:</h4> 
+							<<!sectionContents:main!>> 
+						<h4> (Optional) After this section: <<!nextSection:main!>> </h4>
+					]	
+	}
+	Projection name{
+		view: [Section <<%string:name%>>]
+	}
+	Projection summary{
+		view: [Section <<%string:name%>> ] 
+	}
+}
+
+Node Title{
+	Projection main{
+		view: [Title: <<%textBox:title%>>]
+	}
+	Projection summary{
+		view: [Title: <<%string:title%>>]
+	}
+}
+
+Node Description{
+	Projection main{
+		view: [Description: <<%textBox:description%>>]
+	}
+	Projection summary{
+		view: [Description: <<%string:description%>>]
+	}
+}
+
+Node MultipleChoiceQuestion{
+	Projection main{
+		view: [MultiChoiceQuestion: <<%textBox:question%>> <<!answers:main!>> ]
+	}
+	Projection summary{
+		view: [Question: <<%string:question%>>]
+	}
+}
+
+Node MultipleChoiceAnswer{
+	Projection main{
+		view: [ Option: <<%textBox:answer%>>  (optional) If chosen: <<!goto:main!>>  ]
+	}
+}
+
+Node SectionReference{
+	Projection main{
+		view: [ Go to <<!section:name!>> next ]
+	}
+}
+
+Node EndOfQuestionnaire{
+	Projection main{
+		view: [ End the questionnaire ]
+	}
+}
+
+
+Node TextQuestion{
+	Projection main{
+		view: [TextualQuestion: <<%textBox:question%>> ]
+	}
+	Projection summary{
+		view: [Question: <<%string:question%>>]
+	}
+}
+
+Node Question{
+	Projection main{
+		view: [Please use Textual Question Or MultipleChoice Question nodes!]
+	}
+}
+
+Node NextSection{
+	Projection main{
+		view: [Please use Section Reference or End of Questionnaire nodes!]
+	}
+}
+
+Node SectionContents{
+	Projection main{
+		view: [Please use Title, Description, MultipleChoice or Textual Question nodes]
+	}
+}
+
+
+Component textBox{
+	view:[<input type=\"text\" id=<<$input$>>>]
+	get:[document.getElementById(<<$input$>>).value]
+	set:[document.getElementById(<<$input$>>).value = X]
+	validate:[]
+}
+
+Component longTextBox{
+	view:[<input type=\"text\" id=<<$input$>>>]
+	get:[document.getElementById(<<$input$>>).value]
+	set:[document.getElementById(<<$input$>>).value = X]
+	validate:[]
+}
+
+Component string{
+	view:[<span id=<<$input$>>> </span>]
+	get:[document.getElementById(<<$input$>>).innerHTML]
+	set:[]
+	validate:[]
+}

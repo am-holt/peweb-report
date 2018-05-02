@@ -1,0 +1,48 @@
+grammar ox.xtext.peweb.arithmetic.Arithmetic with org.eclipse.xtext.common.Terminals
+
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
+generate arithmetic "http://www.xtext.ox/peweb/arithmetic/Arithmetic"
+
+Module:
+	'module' name=ID
+	(imports+=Import)*
+	(statements+=Statement)*;
+
+Import:
+	'import' module=[Module];
+
+Statement:
+	Definition | Evaluation;
+
+Definition:
+	'def' name=ID ('(' args+=DeclaredParameter (',' args+=DeclaredParameter)* ')')?
+	':' expr=Expression ';';
+
+DeclaredParameter:
+	name=ID;
+
+AbstractDefinition:
+	Definition | DeclaredParameter;
+
+Evaluation:
+	expression=Expression ';';
+
+Expression:
+	Addition;
+
+Addition returns Expression:
+	Multiplication (({Plus.left=current} '+' | {Minus.left=current} '-') right=Multiplication)*;
+
+Multiplication returns Expression:
+	PrimaryExpression (({Multi.left=current} '*' | {Div.left=current} '/') right=PrimaryExpression)*;
+
+SumExpression :
+	'sum(' indexVariable=DeclaredParameter ',' lower=INT ',' upper=INT ',' expr=Expression')'
+;
+
+PrimaryExpression returns Expression:
+	SumExpression |
+	'(' Expression ')' |
+	{NumberLiteral} value=INT |
+	{FunctionCall} func=[AbstractDefinition] ('(' args+=Expression (',' args+=Expression)* ')')?;
+	

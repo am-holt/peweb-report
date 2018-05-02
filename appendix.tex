@@ -7,10 +7,68 @@
 
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
+
+%all used by listings
+\usepackage{listings}
+\usepackage{xcolor}   % for \textcolor
+%\usepackage{graphicx}
+\usepackage{amssymb}
+\lstset{
+  breaklines=true,
+  frame=tblr,
+  postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+  basicstyle=\ttfamily\scriptsize,
+  commentstyle=\color{gray}\ttfamily,
+  keywordstyle=\color{blue}\ttfamily
+}
+
+\usepackage{color}
+\definecolor{lightgray}{rgb}{.9,.9,.9}
+\definecolor{darkgray}{rgb}{.4,.4,.4}
+\definecolor{purple}{rgb}{0.65, 0.12, 0.82}
+\lstdefinelanguage{TypeScript}{
+  keywords={break, case, catch, class,constructor, continue, debugger, default, delete, do, else,export, false, finally, for, function, if,implements, in, instanceof, new, null, return, switch,static, this, throw, true, try, typeof, var, void, while, with},
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]',
+  morestring=[b]",
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  sensitive=true
+}
+
+%End of used by listings
+
+
 \begin{document}
 
 \chapter{Appendix}
-\section{Questionnaire Evaluation Materials}
+
+\section{Expression Language Definition}\label{expressionLanguageDef}
+Grammar definition:
+\lstinputlisting[ tabsize=2 ]{Listings/Arithmetic/Arithmetic.xtext}
+Projections descriptor file:
+\lstinputlisting[ tabsize=2 ]{Listings/Arithmetic/Projections.editor}
+
+\section{Questionnaire Language Definition}\label{questionnaireLanguageDef}
+Grammar definition:
+\lstinputlisting[ tabsize=2 ]{Listings/Question/Q.xtext}
+Projections descriptor file:
+\lstinputlisting[ tabsize=2 ]{Listings/Question/Projections.editor}
+
+
+\section{PasGraph Language Definition}\label{pascalLanguageDef}
+Grammar definition:
+\lstinputlisting[ tabsize=2 ]{Listings/Graph/Graph.xtext}
+Projections descriptor file:
+\lstinputlisting[ tabsize=2 ]{Listings/Graph/Projections.editor}
+
+
+\section{Questionnaire Evaluation Materials}\label{questionnaireEval}
 
 
 \includepdf[pages=1,scale=.8,pagecommand=\section{Training Material}]{./Appendix/QuestionnaireTraining.pdf}
@@ -21,7 +79,7 @@
 
 \includepdf[pages=-,scale=.8,pagecommand=\subsection{Interview Questions}]{./Appendix/InterviewQuestions.pdf}
 
-\section{Questionnaire Evaluation Results}
+\section{Questionnaire Evaluation Results}\label{questionnaireEvalResults}
 
 \subsection{Respondent 1}
 \subsubsection*{First editor used to complete tasks:} Eclipse
@@ -46,7 +104,7 @@
 \end{itemize}
 \emph{Web Editor:}
 \begin{itemize}
-\item Didn't find adding extra sections not intuitive, got lost in tree view attempting to find
+\item Didn't find adding extra sections intuitive, didn't understand how to find section editor and had to ask for help
 \item Tried to click on reference to section in main questionnaire view as if it were a link
 \item Tried adding goto's to sections that didn't yet exist
 \end{itemize}
@@ -57,10 +115,10 @@
 Definitely the second one
 \\
 \\
-\textit{The web editor?}\\
+\textit{The web editor?}
 \\
-Yep.
-Because having dropdowns made [input easier], you just had to recognise what section to put in as opposed to having to memorise exactly what to type so you just have to be familiar with it as opposed to knowing exactly what to enter. Also not having to put in the brackets in the right places was a massive help.
+\\
+Yep.Because having dropdowns made [input easier], you just had to recognise what section to put in as opposed to having to memorise exactly what to type so you just have to be familiar with it as opposed to knowing exactly what to enter. Also not having to put in the brackets in the right places was a massive help.
 \\
 \\
 \textit{If I were to ask you to come again in a weeks time and I were to ask you to create another questionnaire to a given brief but didn't give you the training materials, how confident would you be creating that firstly with the textual editor?}
@@ -163,7 +221,7 @@ I do wonder if selecting drop downs might be more boring, but it is more efficie
 \item Unsure about spacing and asked several times if mattered
 \item Struggled with curly braces
 \item Made use of copy and paste within second task on Android/iPhone sections
-\item Missed a curly brace, despite error underlining where it should be added and error message "Missing '\{'' " respondant assumed issue was elsewhere in the file and to do with spacing.
+\item Missed a curly brace. Despite error underlining where it should be added and error message "Missing '\{'' " respondent assumed issue was elsewhere in the file and to do with spacing. Took sometime to spot real cause
 \end{itemize}
 \emph{Web Editor:}
 \begin{itemize}
@@ -176,7 +234,7 @@ I do wonder if selecting drop downs might be more boring, but it is more efficie
 \textit{First question is which of the two methods did you find easier to use and why?}
 \\
 \\
-In terms of actual use in terms of which was more intuitive to work out, the web based. The web based editor. Although as I got more used to the eclipse editor that became easier and quicker to use because when the survey's got more repetitive it was easier to just copy and paste and also to change things retrospectively.
+In terms of actual use in terms of which was more intuitive to work out, the web based one. The web based editor. Although as I got more used to the eclipse editor that became easier and quicker to use because when the surveys got more repetitive it was easier to just copy and paste and also to change things retrospectively.
 \\
 \\
 \textit{If I were to ask you to come back in a week and write another questionnaire, how confident would you be that you'd be able to do that? Firstly in the web editor, without the training materials.}
@@ -206,22 +264,24 @@ I believe so yes,but I think if it's the kind of thing you'd keep coming back an
 \textit{And what about the web editor, do you think you could have used that without any of the documentation you received today?}
 \\
 \\
-Yes I think so, at least with the example questionnaire to map it. Particularly if it was somehthing you could map in advance as you add sections in order so as long as you'd planned it in advance and you had an idea of what your questionnaire would look like it's much easier to map and then once that's in place it's not that bad to intuitively put things together.
+Yes I think so, at least with the example questionnaire to map it. Particularly if it was something you could map in advance as you add sections in order so as long as you'd planned it in advance and you had an idea of what your questionnaire would look like it's much easier to map and then once that's in place it's not that bad to intuitively put things together.
+\\
+\\
 \textit{I'm now going to ask you some questions about the efficiency of the two methods. Firstly, which of the two methods do you think was quicker/more efficient, using the terms interchangeably here. For the task that you've just sat, and why?}                                                                                                                                                                                                                                                                \\
 \\
 I think initially the web based editor was more efficient, but once you'd got to grips with what Eclipse was asking for that became quicker as the tasks progressed. I certainly found answering task 1 easier on the web page than task 1 on Eclipse. But then once you'd kind of got used to it, especially with example code to copy and paste I found that was more efficient.
 \\
 \\
-\textit{How would you improve the web editor then to make it more efficient}
+\textit{How would you improve the web editor then to make it more efficient?}
 \\
 \\
-I think the ability to move sections around and actually be able to edit and duplicate sections. Like the last function on Android or Iphone they are asking for the same thing mapped in the same way and that was easy to copy and paste in the text editor and if you could do that in the web editor that would make things easier. Also if someone were proficient in not necessarily coding but questionnaires or whatever it is they're mapping, if theres not a set plan there should be more room for them to change things as they're doing it. I'm not sure how that manifests itself with this tree, maybe some kind of flowchart where they could move things around. But I think that would make it more intuitive for the purpose of making. Since I think the whole point of this is to make things easier.
+I think the ability to move sections around and actually be able to edit and duplicate sections. Like the last function on Android or iPhone they are asking for the same thing mapped in the same way and that was easy to copy and paste in the text editor and if you could do that in the web editor that would make things easier. Also if someone were proficient in not necessarily coding but questionnaires or whatever it is they're mapping, if there's not a set plan there should be more room for them to change things as they're doing it. I'm not sure how that manifests itself with this tree, maybe some kind of flowchart where they could move things around. But I think that would make it more intuitive for the purpose of making. Since I think the whole point of this is to make things easier.
 \\
 \\
-\textit{If I were to ask you to produce these questionnnaires frequently do you think in the long run one method would be more efficient?}
+\textit{If I were to ask you to produce these questionnaires frequently do you think in the long run one method would be more efficient?}
 \\
 \\
-With more experience I think I'd become more proficient at the code based [eclipse editor] but if you implemented the changes to make the [web based] more free flowing I think that would be easier in the long run. Even if someone is proficient at coding there is still the risk of human error when you're producing stuff with code as opposed to being funneled throught the web page program.
+With more experience I think I'd become more proficient at the code based [eclipse editor] but if you implemented the changes to make the [web based] more free flowing I think that would be easier in the long run. Even if someone is proficient at coding there is still the risk of human error when you're producing stuff with code as opposed to being funnelled through the web page program.
 \\
 \\
 \textit{If I were to give you a questionnaire written by someone else, that had an issue with it, with specification, such as a spelling mistake or being taken to the wrong section. Which of the two methods would yuou prefer to find that mistake?}
@@ -283,7 +343,7 @@ The web editor
 \textit{And why was that?}
 \\
 \\
-FOund it easier to organise and picture what I was doing with graphics rather than text
+Found it easier to organise and picture what I was doing with graphics rather than text
 \\
 \\
 \textit{If I were to ask you to come back in a week and write a 3rd questionnaire how confident would you be that you'd be able to code that up with Eclipse, without the training materials?}
@@ -345,7 +405,7 @@ No, there's not really any benefit from the text editor that I'd get having used
 I can't think of anything.
 \\
 \\
-\textit{THe company you work for come back to you with a questionnaire and they said that there is an issue with it. Something like the sections are out of order or a spelling mistake was present. Which editor do you think would make it easier to find the mistake?}
+\textit{The company you work for come back to you with a questionnaire and they said that there is an issue with it. Something like the sections are out of order or a spelling mistake was present. Which editor do you think would make it easier to find the mistake?}
 \\
 \\
 I suppose the web editor, there's less going on. It'd probably be quite close as the text editor [Eclipse] did give some warnings that pop up. But you have fewer things on your screen with the web editor.
@@ -492,7 +552,7 @@ Because with the text editor you'd have to go through the entire text whereas wi
 The text editor then. Actually I don't know, I think it would depend.
 \\
 \\
-\textit{If I were to create a third survey now which method would you use?}
+\textit{If I were to ask you to create a third survey now which method would you use?}
 \\
 \\
 The web editor
@@ -536,6 +596,8 @@ The second one, the web editor
 \\
 \\
 \textit{And why was that?}
+\\
+\\
 I think having the different options available so you can see how it works and you're less likely to make mistakes in that way as there's a limited amount that can go wrong
 \\
 \\

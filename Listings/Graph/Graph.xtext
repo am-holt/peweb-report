@@ -1,0 +1,101 @@
+grammar ox.xtext.peweb.graph.Graph with org.eclipse.xtext.common.Terminals
+
+generate graph "http://www.xtext.ox/peweb/graph/Graph"
+
+Program:
+	{Program} declarations+=Declaration* 'BEGIN' stmts+=Statement* 'END'
+;
+
+Declaration:
+	'VAR' name=ID ':' type=('String'|'Integer'|'Boolean'|'Graph'|'Particle')	
+;
+
+Statement:
+	(AssignStmt | PrintStmt | IfStmt | WhileStmt | MoveStmt)';'
+;
+
+AssignStmt:
+	var=[Declaration] ':=' expr=Expr
+;
+
+PrintStmt:
+	'PRINT' expr=Expr
+;
+
+IfStmt:
+	'IF' expr=Expr 'THEN' stmts+=Statement* ('ELSE' elseStmts+=Statement*)? 'END'
+;
+
+WhileStmt:
+	'WHILE' expr=Expr 'DO' stmts+=Statement* 'END'
+;
+
+MoveStmt:
+	'MOVE' var=[Declaration]
+;
+
+Expr: Or;
+
+Or returns Expr:
+	And ({Or.left=current} "OR" right=And)*
+;
+
+And returns Expr:
+	PathExistence ({And.left=current} "AND" right=PathExistence)*
+;
+
+PathExistence returns Expr:
+	Comparison ({PathExistence.left=current} '->-' right=Comparison	)*
+;
+
+Comparison returns Expr:
+	PlusOrMinus (
+		{Comparison.left=current} op=(">="|"<="|">"|"<"|"="|"!=")
+		right=PlusOrMinus
+	)*
+;
+
+PlusOrMinus returns Expr:
+	MulOrDiv (
+		{PlusOrMin.left=current} op=('+'|'-')  
+		right=MulOrDiv
+	)*
+;
+
+MulOrDiv returns Expr:
+	Primary (
+		{MulOrDiv.left=current} op=('*'|'/') 
+		right=Primary
+	)*
+;
+
+Primary returns Expr:
+	'(' Expr ')' |
+	{Not} "!" Expr=Primary |
+	Particle |
+	Atomic
+;
+
+Atomic returns Expr:
+	{IntConstant} value=INT |
+	{StringConstant} value=STRING |
+	{BoolConstant} value=('true'|'false') |
+	{VariableRef} variable=[Declaration] |
+	Graph
+;
+
+Graph returns Expr:
+	{GraphConstant} 'GRAPH' '{' '{'vertices+=Vertex* '}' ',' '{' edges+=Edge*'}' '}'
+;
+
+Particle returns Expr:
+	{ParticleConstant} 'PARTICLE' 'ON' graph=Expr 'AT' vertex=[Vertex] 
+;
+
+Vertex:
+	name=ID
+;
+
+Edge:
+	source=[Vertex] '->' dest=[Vertex]
+;

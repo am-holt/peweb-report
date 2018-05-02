@@ -1,4 +1,4 @@
-export class DefaultViewDescriptor  implements ViewDescriptor{
+class DefaultViewDescriptor  implements ViewDescriptor{
 	
 	static readonly DEFAULT_TYPE = "default"
 
@@ -13,16 +13,9 @@ export class DefaultViewDescriptor  implements ViewDescriptor{
 
 	//The id of the node which this projection describes
 	nodeId: string;
-
-	constructor(atts:Attribute[],refs:Reference[],id:string){
-		this.type = "default";
-		this.attributes = atts;
-		this.references = refs;
-		this.nodeId = id;
-	}
 }
 
-export class Attribute{
+class Attribute{
 	//The name of the attribute this describes
 	name:string;
 
@@ -33,7 +26,7 @@ export class Attribute{
 	value:string;
 }
 
-export class Reference{
+class Reference{
 	//The name of the reference feature
 	name:string;
 

@@ -1,0 +1,55 @@
+grammar ox.xtext.peweb.question.Q with org.eclipse.xtext.common.Terminals
+
+generate q "http://www.xtext.ox/peweb/question/Q"
+
+Questionnaire:
+	sections+=Section*;
+
+Section:
+	'Section' name=ID'{'
+		sectionContents+=SectionContents+
+	'}' (nextSection=NextSection)?
+;
+
+SectionContents:
+	Question | Title | Description
+;
+
+Title:
+	'Title' title=STRING
+;
+
+Description:
+	'Description' description=STRING
+;
+
+Question:
+	MultipleChoiceQuestion | TextQuestion
+;
+
+MultipleChoiceQuestion:
+	'MultipleChoiceQuestion' question=STRING '{' 
+		( answers +=MultipleChoiceAnswer)*
+	'}'
+;
+
+MultipleChoiceAnswer:
+	'Answer' answer=STRING (goto=SectionReference)?
+;
+	
+TextQuestion:
+	'TextQuestion' question=STRING (description=STRING)? ('{' 
+	'}')?
+;
+
+NextSection:
+	SectionReference | {EndOfQuestionnaire} EndOfQuestionnaire
+;
+
+SectionReference:
+	'goto' section=[Section]
+;
+
+EndOfQuestionnaire:
+	'End'
+;

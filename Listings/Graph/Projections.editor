@@ -1,0 +1,174 @@
+//Define your editor's view in this file!
+Node And{
+	Projection main{
+		view:[  <<!left:main!>> && <<!right:main!>> ]
+	}
+}
+
+Node AssignStmt{
+	Projection main{
+		view:[  <<!var:ref!>> := <<!expr:main!>> ]
+	}
+	Projection ref{
+		view:[ <<!var:ref!>> ]
+	}
+}
+
+Node BoolConstant{
+	Projection main{
+		view:[  <<%textBox:value%>> ]
+	}
+}
+
+Node Comparison{
+	Projection main{
+		view:[ <<!left:main!>> <<%textBox:op%>> <<!right:main!>> ]
+	}
+}
+
+Node Declaration{
+	Projection main{
+		view:[ VAR <<%textBox:name%>> : <<%textBox:type%>> ]
+	}
+	
+	Projection ref{
+		view: [ <<%string:name%>>]
+	}
+}
+
+Node Edge{
+	Projection main{
+		view:[ <<!source:ref!>> -> <<!dest:ref!>> ]
+	}
+}
+
+Node GraphConstant{
+	Projection main{
+		view:[ Graph{ Vertices: <<!vertices:main!>> Edges:  <<!edges:main!>> }]
+	}
+}
+
+Node IfStmt{
+	Projection main{
+		view:[ IF <<!expr:main!>> THEN <<!stmts:main!>> ELSE <<!elseStmts:main!>> END ]
+	}
+}
+
+Node IntConstant{
+	Projection main{
+		view:[ <<%textBox:value%>> ]
+	}
+}
+
+Node MoveStmt{
+	Projection main{
+		view:[ MOVE <<!var:ref!>> ]
+	}
+}
+
+Node MulOrDiv{
+	Projection main{
+		view:[ <<!left:main!>> <<%textBox:op%>> <<!right:main!>> ]
+	}
+}
+
+Node Not{
+	Projection main{
+		view:[ NOT <<!expr:main!>> ]
+	}
+}
+
+Node Or{
+	Projection main{
+		view:[ <<!left:main!>> OR <<!right:main!>> ]
+	}
+}
+
+Node ParticleConstant{
+	Projection main{
+		view:[ PARTICLE ON <<!graph:main!>> AT <<!vertex:ref!>> ]
+	}
+}
+
+Node PathExistence{
+	Projection main{
+		view:[ <<!left:main!>> ->-> <<!right:main!>> ]
+	}
+}
+
+Node PlusOrMin{
+	Projection main{
+		view:[ <<!left:main!>> <<%textBox:op%>> <<!right:main!>> ]
+	}
+}
+
+Node PrintStmt{
+	Projection main{
+		view:[ PRINT <<!expr:main!>> ]
+	}
+}
+
+Node Program{
+	Projection main{
+		view:[DECLARATIONS <<!declarations:main!>> BEGIN <<!stmts:main!>> END]
+	}
+}
+
+Node StringConstant{
+	Projection main{
+		view:[ <<%textBox:value%>> ]
+	}
+}
+
+Node VariableRef{
+	Projection main{
+		view:[ <<!variable:ref!>> ]
+	}
+}
+
+Node Vertex{
+	Projection main{
+		view:[ <<%textBox:name%>> ]
+	}
+	Projection ref{
+		view:[ <<%string:name%>> ]
+	}
+}
+
+
+Node WhileStmt{
+	Projection main{
+		view:[ WHILE <<!expr:main!>> DO <<!stmts:main!>> END ]
+	}
+}
+
+
+
+Component shortTextBox{
+	view:[<input type=\"text\" style=\"width: 40px;\" id=<<$input$>>>]
+	get:[document.getElementById(<<$input$>>).value]
+	set:[document.getElementById(<<$input$>>).value = X]
+	validate:[]
+}
+
+Component numberBox{
+	view:[<input type=\"number\" style=\"width: 40px;\" id=<<$input$>>>]
+	get:[document.getElementById(<<$input$>>).value]
+	set:[document.getElementById(<<$input$>>).value = X]
+	validate:[]
+}
+
+Component string{
+	view:[<span id=<<$input$>>> </span>]
+	get:[document.getElementById(<<$input$>>).innerHTML]
+	set:[]
+	validate:[]
+}
+
+
+Component textBox{
+	view:[<input type=\"text\" id=<<$input$>>>]
+	get:[document.getElementById(<<$input$>>).value]
+	set:[document.getElementById(<<$input$>>).value = X]
+	validate:[]
+}

@@ -1,0 +1,165 @@
+//Define your editor's view in this file!
+
+//Node Module{
+//	Projection main{
+//		view:[ Name <<%textBox:name%>> <<!imports:main!>> <<!statements:main!>>]
+//	}
+//	
+//	Projection name{
+//		view:[Name <<%string:name%>>]
+//	}	
+//}
+
+//Node Import{
+//	Projection main{
+//		view:[import <<!module:name!>>]	
+//	}
+//}
+
+Node Definition{
+	Projection main{
+		view:[<h1>Function </h1> <<%textBox:name%>> <h2>Arguments</h2>  <<!args:main!>> <h2>Expression:</h2> <<!expr:main!>> ]
+	}
+	Projection name{
+		view:[ <<%string:name%>> ]
+	}
+}
+
+Node DeclaredParameter{
+	Projection main{
+		view:[ <<%textBox:name%>> ]
+	}
+	
+	Projection short{
+		view:[ <<%shortTextBox:name%>> ]
+	}
+	
+	Projection name{
+		view:[ <<%string:name%>> ]
+	}
+}
+
+Node Evaluation{
+	Projection main{
+		view:[ <<!expression:main!>> ; ]
+	}
+}
+
+Node Plus{
+	Projection main{
+		view:[ <<%boldSpan%>> (<<!left:main!>> + <<!right:main!>>) </span>]
+	}
+}
+
+Node Minus{
+	Projection main{
+		view:[ <<%boldSpan%>> (<<!left:main!>> - <<!right:main!>>) </span>]
+	}
+}
+
+Node Multi{
+	Projection main{
+		view:[ <<%boldSpan%>> (<<!left:main!>> * <<!right:main!>>) </span>]
+	}
+}
+
+Node Div{
+	Projection main{
+		view:[ <<%boldSpan%>> <table style=\"display:inline;vertical-align: +0.66em;align-items: center;text-align: center;border-bottom:4px solid white;\"><tbody><tr><td> <<!left:main!>> </td></tr><tr><td> <<!right:main!>> </td></tr> </tbody></table> </span>]
+	}
+}
+
+Node SumExpression{
+	Projection main{
+		view:[ <<%boldSpan%>> ( <table style=\"display:inline;vertical-align: +1.15em;align-items: center;text-align: center;\"><tbody><tr><td> <<%numberBox:upper%>> </td></tr><tr><td>&sum;</td></tr><tr><td> <<!indexVariable:short!>> = <<%numberBox:lower%>> </td></tr> </tbody></table> <<!expr:main!>> )</span> ]
+	}
+}
+
+
+Node NumberLiteral{
+	Projection main{
+		view:[ <<%numberBox:value%>>]
+	}
+}
+
+Node FunctionCall{
+	Projection main{
+		view:[ <<!func:name!>> ]
+	}
+}
+
+Component textBox{
+	view:[<input type=\"text\" id=<<$input$>>>]
+	get:[document.getElementById(<<$input$>>).value]
+	set:[document.getElementById(<<$input$>>).value = X]
+	validate:[]
+}
+
+Component shortTextBox{
+	view:[<input type=\"text\" style=\"width: 40px;\" id=<<$input$>>>]
+	get:[document.getElementById(<<$input$>>).value]
+	set:[document.getElementById(<<$input$>>).value = X]
+	validate:[]
+}
+
+Component numberBox{
+	view:[<input type=\"number\" style=\"width: 40px;\" id=<<$input$>>>]
+	get:[document.getElementById(<<$input$>>).value]
+	set:[document.getElementById(<<$input$>>).value = X]
+	validate:[]
+}
+
+Component string{
+	view:[<span id=<<$input$>>> </span>]
+	get:[document.getElementById(<<$input$>>).innerHTML]
+	set:[document.getElementById(<<$input$>>).innerHTML = X]
+	validate:[]
+}
+
+Component boldSpan{
+	view:[<span style=\"font-size: xx-large;font-weight: bolder;\">]
+}
+
+/*Module:
+	'module' name=ID
+	(imports+=Import)*
+	(statements+=Statement)*;
+
+Import:
+	'import' module=[Module];
+
+Statement:
+	Definition | Evaluation;
+
+Definition:
+	'def' name=ID ('(' args+=DeclaredParameter (',' args+=DeclaredParameter)* ')')?
+	':' expr=Expression ';';
+
+DeclaredParameter:
+	name=ID;
+
+AbstractDefinition:
+	Definition | DeclaredParameter;
+
+Evaluation:
+	expression=Expression ';';
+
+Expression:
+	Addition;
+
+Addition returns Expression:
+	Multiplication (({Plus.left=current} '+' | {Minus.left=current} '-') right=Multiplication)*;
+
+Multiplication returns Expression:
+	PrimaryExpression (({Multi.left=current} '*' | {Div.left=current} '/') right=PrimaryExpression)*;
+
+SumExpression returns Expression:
+	'sum(' lower=INT ',' upper=INT ',' expr=Expression')'
+;
+
+PrimaryExpression returns Expression:
+	SumExpression |
+	'(' Expression ')' |
+	{NumberLiteral} value=INT |
+	{FunctionCall} func=[AbstractDefinition] ('(' args+=Expression (',' args+=Expression)* ')')?;
+	*/
