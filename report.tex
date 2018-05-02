@@ -130,7 +130,7 @@ In order to achieve the project's goal my contributions can be split into 3 key 
 
 
 \subsection{Organisation} 
-I begin this report by discussing the necessary technical background required by a reader. I then discuss the design and implementation of my language extension, splitting this across sections \ref{generation} to \ref{clientApp}, each section focussing on a different aspect of the tool. I then evaluate the completed tool in section \ref{evaluation}, to see whether or not the result of this project achieves the goal set out in section \ref{goal} and addresses the problem from \ref{problem}. I conclude by critically reviewing whether the requirements from \ref{requirements} were satisfied and outlining possible ventures for future work. 
+I begin this report by discussing the necessary technical background required by a reader. I then discuss the design and implementation of my language extension, splitting this across sections \ref{generation} to \ref{clientApp}, each section focussing on a different aspect of the tool. In section \ref{evaluation} I evaluate the final tools effectiveness before concluding by critically reviewing whether the requirements from \ref{requirements} were satisfied and outlining possible ventures for future work in section \ref{conclusion}. 
 
 \section{Technical Background}
 \todo{TODO}
@@ -739,7 +739,7 @@ One potential issue with this evaluation is that the tasks were repeated for bot
 \\
 Another potential issue was that the tasks were not necessarily representative of real use as a clear specification was laid out for users to input. Without this edit patterns maybe different, likely with more deletes and edits. It was considered to make users complete a 3rd task in which they would be asked to modify an existing questionnaire file which may have helped in this case. Unfortunately this was cut in order to keep the time required of testers within an hour. Time also meant it was not possible to try more than one language, which would be another obvious extension given more respondents.
 %Not long enough to get users comfortable with text, however, still useful as domain experts may not be doing this often anyway.
-\section{Conclusions}
+\section{Conclusions}\label{conclustion}
 I set out to build a tool which could automatically generate a web based projectional editor given a language specification in order to improve accessibility of DSLs \ref{goal}. This was achieved by an extension to the language workbench Xtext making use of:
 \begin{itemize}
 \item{A new server-side web API specification, similar to LSP, to allow arbitrary languages to be edited projectionally from a dummy client application}
