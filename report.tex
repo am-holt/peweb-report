@@ -8,6 +8,7 @@
 \usepackage{subcaption}
 \usepackage{array}
 
+\usepackage[title]{appendix}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 
@@ -75,6 +76,9 @@ workbenches)}
 %\include{requirements}
 \section*{Abstract}
 \todo{To write}
+\clearpage
+\tableofcontents
+\clearpage
 
 \section{Introduction}
 
@@ -760,7 +764,7 @@ One potential issue with this evaluation is that the tasks were repeated for bot
 \\
 Another potential issue was that the tasks were not necessarily representative of real use as a clear specification was laid out for users to input. Without this edit patterns maybe different, likely with more deletes and edits. It was considered to make users complete a 3rd task in which they would be asked to modify an existing questionnaire file which may have helped in this case. Unfortunately this was cut in order to keep the time required of testers within an hour. Time also meant it was not possible to try more than one language, which would be another obvious extension given more respondents.
 %Not long enough to get users comfortable with text, however, still useful as domain experts may not be doing this often anyway.
-\section{Conclusions}\label{conclustion}
+\section{Conclusions}\label{conclusion}
 I set out to build a tool which could automatically generate a web based projectional editor given a language specification in order to improve accessibility of DSLs \ref{goal}. This was achieved by an extension to the language workbench Xtext making use of:
 \begin{itemize}
 \item{A new server-side web API specification, similar to LSP, to allow arbitrary languages to be edited projectionally from a dummy client application}
@@ -793,6 +797,9 @@ I am happy with what I have achieved in the given time frame however it is clear
 \subsection{Acknowledgement}
 I'd like to thank my supervisor Madasar Shah for all of his help and guidance over the course of this project.
 
+\begin{appendices}
+\include{appendix}
+\end{appendices}
 \printbibliography
 
 \end{document}
