@@ -105,7 +105,7 @@ Currently, the ability to automatically generate a projectional editor as a web 
 \item Projectional editors can reduce, and in some cases completely eliminate, the time required by a user to learn the syntax of a language. This is useful for DSLs where the language is likely only used for a small part of a project and will not be commonly known.
 \item Crucially, the combination of these features is ideal for addressing the problem laid out in section \ref{problem}. A web editor ensures that there is no need to install or use an IDE for the language, which are often notoriously complex. A projectional editor may then allow them to interact with the language in an environment they are used to, perhaps by filling in forms and tables or drawing a diagram.  
 \end{itemize} 
-As further affirmation to the potential usefulness of this feature, we look at the existing sprotty framework being developed by Typefox\cite{sprotty}, a prominent group of contributers to the open-source language workbench Xtext. Sprotty aims to provide graphical views of textual code by integrating with language servers produced by the language workbench Xtext. A web based projectional editor could not only offer this view, but also allow the user to interact with this view directly to modify their code, which is clearly far more powerful. 
+As further affirmation to the potential usefulness of this feature, we look at the existing Sprotty framework being developed by Typefox\cite{sprotty}, a prominent group of contributors to the open-source language workbench Xtext. Sprotty aims to provide graphical views of textual code by integrating with language servers produced by the language workbench Xtext. A web based projectional editor could not only offer this view, but also allow the user to interact with this view directly to modify their code, which is clearly far more powerful. 
 
 \subsubsection{Requirements}\label{requirements}
 To be able to evaluate the final implementation I here set out the necessary requirements we should meet in order to fulfil our goal: 
@@ -113,7 +113,7 @@ To be able to evaluate the final implementation I here set out the necessary req
 \begin{itemize}
 \item{\textbf{R1: Quick to setup} - It should be as quick and easy as possible for a language designer to create a projectional editor. Just as language workbenches automatically create eclipse plugins or standalone IDEs with little or no input from the user, so should our editors be generated automatically, so the designer need only worry about language specific concerns.}
 \item{\textbf{R2: Customisable} - Despite the above point the editor should be highly customisable if desired. We should aim to deliver as much as possible to the language designer "for free" but shouldn't prevent them from customising or modifying as required for their application. }
-\item{\textbf{R3: Lightweight Editor} - By default the resultant web application should be as lightweight as possible, although always a neccesary concern with web applications this is especially important here as whereas often it is assumed that developer's machines will be powerful, here we are also specifically targeting less technically inclined users who are likely on less competent machines}
+\item{\textbf{R3: Lightweight Editor} - By default the resultant web application should be as lightweight as possible, although always a necessary concern with web applications this is especially important here as whereas often it is assumed that developer's machines will be powerful, here we are also specifically targeting less technically inclined users who are likely on less competent machines}
 \item{\textbf{R4: Intuitive Editor} - As before we are specifically targeting less technically inclined users, and so any default interface should be as intuitive as possible for non-developers.}
 \item{\textbf{R5: Familiarity} - The process for creating a new language and accompanying editor should be as familiar to the language designer as possible. They should have to learn as few new technologies/languages/processes as possible.}
 \end{itemize}
@@ -137,6 +137,8 @@ I begin this report by discussing the necessary technical background required by
 \subsection{MPS}
 \todo{TODO}
 \subsection{Xtext}
+\todo{TODO}
+\subsection{Xtend}
 \todo{TODO}
 \subsection{Abstract Syntax tree}
 \todo{TODO}
@@ -174,7 +176,7 @@ Before continuing with the design, I discuss the rationale behind the integratio
 \begin{itemize}
 \item{It is open-source and so easy to modify}
 \item{It is one of the most popular language workbenches available and so has much support available}
-\item{It internally uses EMF\cite{emf}, which allows for bidirectional transformations between, in effect, our abstract syntax tree and it's textual representation. This is useful for a number of reasons which I will later discuss\todo{If I have reference section}}
+\item{It internally uses EMF\cite{emf}, which allows for bidirectional transformations between, in effect, our abstract syntax tree and it's textual representation. This is useful as it allows us to projectionally edit a file and then save it in it's textual representation, so we can use existing version control tools on the file. It also allows both projectional and textual editors to be used on the same files, perhaps depending on the user's preference.}
 \end{itemize}
 
 \subsection{The Generation Process}
@@ -239,7 +241,7 @@ MyDslPeWebSetup.xtend & Creates the language injector itself, which will be used
 \end{tabular}
 \caption{Generated Files}
 \label{Tab:generatedFiles}
-\end{table}All of the generated files, with the exception of the \emph{Projections.editor} and \emph{MyDslPeServlet}, are required by Xtext's default textual web integration, and so will be familiar to existing XText users. One thing of note is that the FileResourceHandler and ResourceBaseProvider files are not automatically generated in the textual case but are still required. Here by assuming a simple implementation of saving to the local file system, we can generate these files automatically and so enable language designers to get a language server running much more quickly in order to test their language. In fact, at this point, the language designer simply points the serverLauncher to the location of a client application to host (we later present a default such implementation\todo{Reference here}), and the full web editor for their language is ready to run. There is no disadvantage to this generation as these files can be freely changed later or immediately.
+\end{table}All of the generated files, with the exception of the \emph{Projections.editor} and \emph{MyDslPeServlet}, are required by Xtext's default textual web integration, and so will be familiar to existing XText users. One thing of note is that the FileResourceHandler and ResourceBaseProvider files are not automatically generated in the textual case but are still required. Here by assuming a simple implementation of saving to the local file system, we can generate these files automatically and so enable language designers to get a language server running much more quickly in order to test their language. In fact, at this point, the language designer simply points the serverLauncher to the location of a client application to host (we present a default such implementation in \ref{clientApp}), and the full web editor for their language is ready to run. There is no disadvantage to this generation as these files can be freely changed later or immediately.
 %Maybe y generating like this at runtime we can use properties of the language. right now only name but could modify other things too.
 %>Fact they are displayed to user means easily extensible matching requirement \RCustom
 %>Talk about how the files generated are all commented (TODO) so clear what they are for and so easy to customise \RCustom
@@ -312,7 +314,7 @@ Given a language definition $\{\mathbb{T},\mathbb{D}\}$ we define:\\
 \end{itemize}
 %
 \subsection{Design}\label{apiDesign}
-I now discuss the design of the API itself, giving it's full specification in the appendix \todo{Is it in appendix?}. When designing this API it was necessary to keep in mind the relevant requirements for the project's ultimate goal as given in \ref{requirements}. The goal to produce a lightweight (\RLightweight) and customisable (\RCustom) editor are clearly relevant here and so the API was designed with these in mind.
+I now discuss the design of the API itself, giving it's full specification in the appendix. When designing this API it was necessary to keep in mind the relevant requirements for the project's ultimate goal as given in \ref{requirements}. The goal to produce a lightweight (\RLightweight) and customisable (\RCustom) editor are clearly relevant here and so the API was designed with these in mind.
 \\
 \\
 The first consideration was how best to transport the state of the abstract syntax tree between client and server. Existing solutions in textual web editing, such as within LSP or Xtext's own default web editor implementation rely on first synchronising the client with the server by sending the full contents of a document opened as a string. Further requests or edits are then handled by referencing positions within the document as line/position numbers or ranges. This pattern of synchronisation followed by incremental updates between client and server has the advantage of minimising the amount of data required to be transmitted. In order to do this on ASTs directly however we need some way of referencing nodes within a tree. We achieve this by annotating each node within an AST on the server side with a unique identifier. If the client is then aware of this labelling we can use it to communicate incremental changes between client and server, such as changes to attribute values.
@@ -396,7 +398,7 @@ Modifying nodes is then done by looking up the relevant node using the nodeID to
 
 \section{Projection Specification Language}\label{EditorLanguage}
 \subsection{Overview}
-The real power of a projectional editor lies in it's ability to allow a user to interact with a programming language in an intuitive way using projections that are designed alongside the language. To this end, in this section I present a DSL developed to rapidly specify custom projections for ASTs of an arbitrary language. Ultimately we use this in our Xtext extension to allow language designers to create such specifications for their own languages, however, like the API discussed in section \ref{api}, this language was designed independently of the Xtext extension, and so could be used within other language workbenches or to create bespoke projectional editors for existing languages.
+The real power of a projectional editor lies in it's ability to allow a user to interact with a programming language in an intuitive way using projections that are designed alongside the language. In this section I present a DSL developed to rapidly specify custom projections for ASTs of an arbitrary language. We use this in our Xtext extension to allow language designers to create such specifications for their own languages, however, like the API discussed in section \ref{api}, this language was designed independently of the Xtext extension, and so could be used within other language workbenches.
 %Ultimately the goal being to provide a standard way for language designers to define projections for their language within a language workbench which can then be used in the automatic generation of a web projectional editor.
 \\
 \\
@@ -488,7 +490,7 @@ The complete specification for the language follows, using extended BNF with the
 \subsubsection{Example}
 Here is an example specification of a simple layout.
 
-\todo{Add example file here, maybe for questionnaire?}
+\todo{Add example file here, maybe for questionnaire? Needed?}
 
 \subsubsection{Node}
 
@@ -544,11 +546,11 @@ For example a simple text box: ==TODO Listing==
 This component can then be placed in a projection and assigned to control the value of an attribute for the projected node.
 
 \subsection{Implementation}
-The \emph{.editor} language was implemented using the standard version of the language workbench Xtext. This involved specifying the \emph{.editor} language's grammar in Xtext's grammar specification language, (given in the appendix\todo{Include this in appendix}), and also specifying the compilation process for the language. The result is both an Eclipse and Intellij plugin which includes an editor for the language complete with syntax highlighting, context completion, reference highlighting etc. making writing a \emph{.editor} file much easier. The \emph{.editor} language compiles into a java representation of itself which can then be used by the language server to create view objects to send to the client application.
+The \emph{.editor} language was implemented using the standard version of the language workbench Xtext. This involved specifying the language's grammar in Xtext's grammar specification language, (given in the appendix \ref{editorLanguageGrammar}), and also specifying the compilation process for the language. The result is a plugin for both Eclipse and Intellij which includes an editor for the language complete with syntax highlighting, context completion etc. making writing a \emph{.editor} file much easier. The \emph{.editor} language compiles into a java representation of itself which can then be used by the language server to create view objects to send to the client application.
 \\
 \\
-With regards to our final tool, we have taken the generated \emph{.editor} Eclipse plugin and merged this with the main Xtext plugin. This means that our extended Xtext plugin provides syntax highlighting, context hints etc. for \emph{.editor} files directly and also automatically compiles these into their java representation to be used by the language server.
-\todo{screenshot here of syntax highlighting}
+With regards to our final tool, we have taken the generated \emph{.editor} Eclipse plugin and merged this with the main Xtext plugin. This means that our extended Xtext plugin provides syntax highlighting, context hints etc. for \emph{.editor} files directly, and also automatically compiles these into their java representation to be used by the language server.
+\todo{screenshot here of syntax highlighting?}
 \todo{More explanation about how generated?}
 
 \section{Fetching Node State}\label{viewObject}
@@ -563,7 +565,7 @@ When a node is retrieved the server looks to see if a main projection is specifi
 \todo{Needs more description here?}
 If a node doesn't contain a main projection we instead create and send a default projection with the following specification: 
 \lstinputlisting[language=TypeScript, tabsize=2 ]{Listings/default-view-descriptor.ts}
-This allows the language designer to save time as they can run the editor application without having to specify any projections at all or just customise projections for some select nodes. 
+This allows the language designer to save time as they can run the editor application without having to specify any projections at all, or just customise projections for some select nodes. 
 %Explain listing
 
 
@@ -580,7 +582,7 @@ The UI takes some inspiration from the online IDE Theia\cite{theia} with navigat
 \begin{figure}[h!]
   \centering
   \includegraphics[width=\linewidth]{./Screenshots/WebUIScreenshot.png}
-  \caption{Editing a questionnaire language in the default client application}
+  \caption{Editing the questionnaire language from \ref{questionnaireLang} in the default client application}
   \label{fig:webUI}
 \end{figure}
 %
@@ -610,6 +612,13 @@ The creation process for this language was fairly straightforward, the only requ
 \\
 \\
 Another finding here is that the buttons to remove nodes can be visually distracting, and so it may be worthwhile looking into alternate ways this functionality can be achieved. A contextual menu is an obvious choice but really we would want this to be customisable. In order to do this it might be worth extending the language so that the language designer can write reference controllers in a similar vein to the attribute controllers, writing arbitrary javascript to specify when nodes should be removed or added.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=\linewidth]{./Screenshots/arithmeticUI.png}
+  \caption{The expression language editor}
+  \label{fig:arithmeticUI}
+\end{figure}
+
 
 %To Add Grammar Definition (In appendix)
 %To Add Projection file (in appendix?)
@@ -633,7 +642,7 @@ The creation process for this language was much easier than for the expression l
 
 
 \subsubsection{PasGraph Language}\label{pasgraph}
-This language is a subset of the programming language Pascal\cite{pascal} (as presented in the Oxford undergraduate Compilers course\todo{should this be removed?If not then reference}), that has been extended with: 
+This language is a subset of the programming language Pascal\cite{pascal}, that has been extended with: 
 \begin{itemize}
 \item Node graph primitives
 \item Particle primitives which are defined on vertices upon said graphs
@@ -649,13 +658,25 @@ The language was designed and chosen to evaluate the performance of web editor g
 The process for creating the editor was slightly more involved than the other two as we wanted to use the d3 javascript library\cite{d3} to display and edit the node graph primitives. In order to achieve this we had to override the standard ViewRetriever object which is responsible for creating the view objects sent as response to get-node requests (as discussed in \ref{viewObject}). We add a check to see if the tree node requested is a node graph, and if so return a special view object with the type "NodeGraph", listing the vertices and edges of the graph in a form that d3 can plot. A single line was then changed in the generated GraphPeServlet file to make use of this.
 \\
 \\
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=\linewidth]{./Screenshots/graphUI1.png}
+  \caption{The PasGraph language editor displaying several statements}
+  \label{fig:pasgraphUI1}
+\end{figure}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=\linewidth]{./Screenshots/graphUI2.png}
+  \caption{The PasGraph language editor projecting a graph constant}
+  \label{fig:pasgraphUI2}
+\end{figure}
 The front end was then modified with the addition of a self contained component which, when given a NodeGraph view object, would plot the graph using a d3 force simulation and allow a user to interact with it. Using the edit service it was easy to allow interaction with this graph to update the abstract syntax tree, for example when the user clicks in an empty space, a add-reference request is sent to the server to create a vertex child, and upon receiving a success response a vertex is then added to that location in the diagram. The only other required change in the front end was to add the NodeGraph case in the main editor component which chooses which component to use based on the type of a get-node response.
 \\
 \\
 All in all the creation of the language was still very straightforward, almost all of the additional code required for the complex projection required being written in entirely separate components which were then easy to integrate with the existing code. The remaining projections were created using the editor language as normal and so as a whole the editor creation process was still fairly quick. This demonstrates that the extension has very successfully achieved \RSetup and \RCustom, the tool allowing very quick specification of nodes with non-interesting projections but allowing arbitrary web technologies to create more complex projections when required. Crucially it also allows this in a way that such complex projections require little work to integrate with the generated editor. 
 \\
 \\
-The method used here also indicates an advantage that these web projectional editors have over their non-web-based projectional counterparts. In the graph node example we send to the front end a list of vertices and edges which are then displayed, but we could have sent anything we'd wanted. If the projection we desired were more complex, say including a 3d view of some simulation, we could have exploited this behaviour to have the server conduct any expensive calculations/preprocessing required by the projection and sent this within the view object. This could substantially reduce the hardware requirements for the final developer's machine if complex projections are required.
+The method used here also indicates an advantage that these web projectional editors have over their non-web-based projectional counterparts. In the graph node example we send to the front end a list of vertices and edges which are then displayed, but we could have sent anything we'd wanted. If the projection we desired were more complex, say including a 3D view of some simulation, we could have exploited this behaviour to have the server conduct any expensive calculations/preprocessing required by the projection and sent this within the view object. This could substantially reduce the hardware requirements for the final developer's machine if complex projections are required.
 \\
 \\
 One issue noticed in the implementation of this language is that new projection types cannot be mixed with those specified in the \emph{.editor} file. This means that the visual projection of the graph could only be used when editing the graph in isolation of the rest of the tree, and at other times a textual representation was required. However this could easily be solved by modifying the protocol for getting a node, so that instead of asking for and expecting a single view object containing all projection information of the children, the client must recursively ask for these, enabling it to display children using different front end components.

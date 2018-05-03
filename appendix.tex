@@ -48,6 +48,134 @@
 
 \chapter{Appendix}
 
+\section{API Specification}\label{fullApiSpec}
+
+\subsubsection{ls-projects}
+
+\emph{Parameters}: N/A
+\\
+\emph{Response}: 
+\begin{itemize}
+\item projectnames:String[] - Returns a list of URIs for available projects on the webserver
+\end{itemize} 
+
+\subsubsection{add-project}
+
+\emph{Parameters}: 
+\begin{itemize}
+\item name:String - Desired URI for the project to create
+\end{itemize}
+\emph{Response}: N/A
+
+\subsubsection{get-project}
+\emph{Parameters}: 
+\begin{itemize}
+\item project-name:String - Desired URI for the project to retrieve
+\end{itemize}
+\emph{Response}: 
+\begin{itemize}
+\item files:String[] - List of URIs for files contained within the project 
+\end{itemize}
+
+\subsubsection{add-file}
+\emph{Parameters}: 
+\begin{itemize}
+\item project-name:String - URI for the project the file should reside in
+\item file-name:String - Desired URI (relative to project) for the file to add
+\end{itemize}
+\emph{Response}: N/A
+
+\subsubsection{get-file}
+\emph{Parameters}: 
+\begin{itemize}
+\item project-name:String - URI of the project the file is in
+\item file-name:String - URI (relative to project) of the file to retrieve
+\end{itemize}
+\emph{Response}: 
+\begin{itemize}
+\item ast:StructureTree - The file's "skeleton" tree consisting of nodeId's and names for these nodes to be used for navigation.
+\end{itemize}
+
+\subsubsection{save-file}
+\emph{Parameters}: 
+\begin{itemize}
+\item project-name:String - URI of the project the file resides in
+\item file-name:String - URI (relative to project) of the file to save
+\end{itemize}
+\emph{Response}: N/A
+
+\subsubsection{get-node}
+\emph{Parameters}: 
+\begin{itemize}
+\item project-name:String - URI of the project the node resides in
+\item file-name:String - URI (relative to project) of the file the node resides in
+\item node-id:String - The identifier of the node to retrieve
+\end{itemize}
+\emph{Response}: 
+\begin{itemize}
+\item type:String - A string describing to the client the kind of projection to be used
+\item Arbitrary other attributes maybe included as required to describe the projection for this node.
+\end{itemize}
+\subsubsection{update-attribute}
+\emph{Parameters}: 
+\begin{itemize}
+\item project-name:String - URI of the project the node resides in
+\item file-name:String - URI (relative to project) of the file the node resides in
+\item node-id:String - The identifier of the node being modified
+\item attribute-name:String - The name of the attribute being modified
+\item value:String - The new value of the attribute
+\end{itemize}
+\emph{Response}: N/A
+\subsubsection{add-containment-ref}
+\emph{Parameters}: 
+\begin{itemize}
+\item project-name:String - URI of the project the node resides in
+\item file-name:String - URI (relative to project) of the file the node resides in
+\item node-id:String - The identifier of the node to add the reference to
+\item reference-name:String - The name of the reference feature to add a new node to
+\end{itemize}
+\emph{Response}: 
+\begin{itemize}
+\item ast:StructureTree - A tree depicting the underlying AST structure for the subtree of the node to which the child node has been added
+\end{itemize}
+
+\subsubsection{add-cross-ref}
+\emph{Parameters}: 
+\begin{itemize}
+\item project-name:String - URI of the project the node resides in
+\item file-name:String - URI of the file the node resides in
+\item node-id:String - The identifier of the node to add the reference to
+\item reference-name:String - The name of the reference feature to add a new node to
+\item reference-file:String - The URI of the file containing the node we are referencing
+\item reference-node:String - The node identifier for the node being referenced
+\end{itemize}
+\emph{Response}: N/A
+
+\subsubsection{remove-ref}
+\emph{Parameters}: 
+\begin{itemize}
+\item project-name:String - URI of the project the node resides in
+\item file-name:String - URI of the file the node resides in
+\item node-id:String - The identifier of the node to remove the reference from
+\item reference-name:String - The name of the reference feature from which a reference will be removed
+\item reference-file:String - The URI of the file containing the node we are referencing
+\item reference-node:String - The node identifier for the node being referenced
+\end{itemize}
+\emph{Response}: N/A
+
+\subsubsection{validate-node}
+
+\emph{Parameters}: 
+\begin{itemize}
+\item project-name:String - URI of the project the node resides in
+\item file-name:String - URI of the file the node resides in
+\item node-id:String - The identifier of the node to validate
+\end{itemize}
+\emph{Response}: N/A
+
+\section{Projection Specification Language Grammar}\label{editorLanguageGrammar}
+\lstinputlisting[ tabsize=2 ]{Listings/EditorLanguage.xtext}
+
 \section{Expression Language Definition}\label{expressionLanguageDef}
 Grammar definition:
 \lstinputlisting[ tabsize=2 ]{Listings/Arithmetic/Arithmetic.xtext}
@@ -68,13 +196,13 @@ Projections descriptor file:
 \lstinputlisting[ tabsize=2 ]{Listings/Graph/Projections.editor}
 
 
-\section{Questionnaire Evaluation Materials}\label{questionnaireEval}
 
 
-\includepdf[pages=1,scale=.8,pagecommand=\section{Training Material}]{./Appendix/QuestionnaireTraining.pdf}
+
+\includepdf[pages=1,scale=.75,pagecommand=\section{Questionnaire Evaluation Materials}\label{questionnaireEval} \subsection{Training Material}]{./Appendix/QuestionnaireTraining.pdf}
 \includepdf[pages=2-,scale=.8]{./Appendix/QuestionnaireTraining.pdf}
 
-\includepdf[pages=1,scale=.8,pagecommand=\section{Task Sheet}]{./Appendix/QuestionnaireTasks.pdf}
+\includepdf[pages=1,scale=.8,pagecommand=\subsection{Task Sheet}]{./Appendix/QuestionnaireTasks.pdf}
 \includepdf[pages=2-,scale=.8]{./Appendix/QuestionnaireTasks.pdf}
 
 \includepdf[pages=-,scale=.8,pagecommand=\subsection{Interview Questions}]{./Appendix/InterviewQuestions.pdf}
@@ -202,7 +330,6 @@ The web editor.
 \\
 \\
 I do wonder if selecting drop downs might be more boring, but it is more efficient. But then if this were my job I'd probably be bored either way, so web editor.
-\newpage
 \subsection{Respondent 2}
 \subsubsection*{First editor used to complete tasks:} Eclipse
 \subsubsection*{Times:}
@@ -307,7 +434,7 @@ If it was utilising all the same methods as previously done in the first two tas
 \\
 Probably wouldn't change, but if you implemented the changes I suggested that would probably be more efficient.
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-\newpage
+
 \subsection{Respondent 3}
 \subsubsection*{First editor used to complete tasks:} Web
 \subsubsection*{Times:}
