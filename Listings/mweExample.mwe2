@@ -1,0 +1,11 @@
+module Renamer
+
+Workflow {
+    component = ResourceReader {
+        uri = "model.ecore"
+    }
+    component = RenamingTransformer {}
+    component = ResourceWriter {
+        uri = "uppercaseModel.ecore"
+    }
+}

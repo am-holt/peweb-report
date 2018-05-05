@@ -115,7 +115,7 @@ As further affirmation to the potential usefulness of this feature, we look at t
 To be able to evaluate the final implementation I here set out the necessary requirements we should meet in order to fulfil our goal: 
 
 \begin{itemize}
-\item{\textbf{R1: Quick to setup} - It should be as quick and easy as possible for a language designer to create a projectional editor. Just as language workbenches automatically create eclipse plugins or standalone IDEs with little or no input from the user, so should our editors be generated automatically, so the designer need only worry about language specific concerns.}
+\item{\textbf{R1: Quick to setup} - It should be as quick and easy as possible for a language designer to create a projectional editor. Just as language workbenches automatically create Eclipse plugins or standalone IDEs with little or no input from the user, so should our editors be generated automatically, so the designer need only worry about language specific concerns.}
 \item{\textbf{R2: Customisable} - Despite the above point the editor should be highly customisable if desired. We should aim to deliver as much as possible to the language designer "for free" but shouldn't prevent them from customising or modifying as required for their application. }
 \item{\textbf{R3: Lightweight Editor} - By default the resultant web application should be as lightweight as possible, although always a necessary concern with web applications this is especially important here as whereas often it is assumed that developer's machines will be powerful, here we are also specifically targeting less technically inclined users who are likely on less competent machines}
 \item{\textbf{R4: Intuitive Editor} - As before we are specifically targeting less technically inclined users, and so any default interface should be as intuitive as possible for non-developers.}
@@ -138,40 +138,74 @@ I begin this report by discussing the necessary technical background required. I
 
 \section{Technical Background}
 Here I present some technical background required for the project.
-
-
-\subsection{Eclipse}
-\todo{TODO}
-%IDE 
+%More information on language workbenches?
+%Seperate IDE from Eclipse?
+%Projectional Editing?
+%LSP?
+%DSL advantages?
+%Exisiting approaches, e.g. what can projectional editor workbenches do?
+\subsection{Eclipse IDE}
+The Eclipse IDE~\cite{eclipse} is an open-source integrated development environment for Java. An IDE is an application designed to improve software development, usually by providing a robust code editor with advanced features such as syntax highlighting (colouring certain aspects of the language, such as keywords, differently for clarity), marking syntax mistakes, automatic insertion of braces etc. An IDE will also usually contain a built in method to compile and debug code, and some form of version control software. 
+%Do we mention plugins here?
+\subsection{IntelliJ IDEA}
+IntelliJ IDEA~\cite{intellij} is another popular IDE for Java.
 \subsection{Xtext}
-\todo{TODO}
-%Textual language workbench
-%Eclipse Plugin
-%Grammar Language
-%Standard generation process using MWE2
-%Web editor generation
+Xtext is an example of a language workbench, a software application designed to make the development of new programming languages easier. Xtext itself is a plugin for the Eclipse IDE. It allows a user to create a new language project, selecting which facets they would like to generate for the language, choosing from: an Eclipse plugin, a textual web editor, an Intellij plugin language testing support. The language designer then specifies their language's concrete syntax using Xtext's grammar language, a DSL which is similar to extended Bakus-Naur form. The designer can also specify other aspects of the language such as how it should be translated into an existing general purpose language and validators.
+\\
+\\
+Once this is done the language designer can "generate language artefacts" which will create the facets selected when creating the project for the language that has been defined. The generation process itself is orchestrated by a MWE2 workflow file which is automatically generated when the project itself is.
+\\
+\\
+As a part of the generation process, an Ecore model for the language is created. The conversion process from grammar to model is rather nuanced but essentially an EClass is created for each parser rule, with the same attributes and references listed inside that rule. Xtext can then use ANTLR to parse an input file written in the new language into an instance of the Ecore model as a series of EObjects.
+%\\
+%\\
+%Web editor generation?
 %Generation process uses EMF
+%Antlr used to parse input files, antlr grammar generated from xtext grammar
 \subsection{Xtend}
-\todo{TODO}
-%A modified version of java used by XText
+%Move this into Xtext section?
+Xtend~\cite{xtend} is an extended version of Java. When Xtext generates files it does so in the Xtend language.
 \subsection{MPS}
-\todo{TODO}
-%Language workbench which creates projectional editors
-%Generation process -> grammar definition & Editor definition
+MPS~\cite{mps} (Meta Programming System) is another open-source language workbench. Unlike Xtext it creates projectional editors for languages specified within it. The language creation process is thus slightly different, the designer specifies the language's AST structure directly, specifying the attributes and references of each node type. For each such node the language designer then also specifies the editor layout for that node type using MPS's editor language. Compilation and validation for the language and other advanced features can then be specified and finally a standalone IDE is built for the new language.  
 %Editor Language discussion from 5 here?
 %Generated editors?
 \subsection{Abstract Syntax Tree}
-\todo{TODO}
-%Overview, structure of programming language
-%What is? 3 formalisations: EMF, etc. from DSL engineering book
+A language has both a concrete syntax and an abstract syntax. The concrete syntax specifies how the user interacts with the language, be it textual, graphical or some other form. The abstract syntax contains all the information about the program, while losing irrelevant details from the concrete syntax such as whitespace, comments etc.
+\\
+\\
+An instance of a program ultimately creates a tree like structure in the abstract syntax, with each node in the tree representing a concept in the language such as a function call or a binary operation, this is called an Abstract Syntax Tree.\todo{diagram}
+\subsubsection{AST Formalisms}\label{astFormalisms}
+There have been many attempts to formalise ASTs. The three most popular language workbenches use 3 different formalisms: \begin{itemize}
+\item \emph{Xtext} - EMF Ecore, this is particularly relevant to this project and so described in detail in section \ref{emf}
+\item \emph{Spoofax} - ATerm~\cite{aterm} \todo{Do I need more info here?}
+\item \emph{MPS} - Structure Language~\cite{mpsStructureLanguage} \todo{Do I need more info here?}
+\end{itemize}
+%What is? 3 formalisations: EMF,Aterms, MPS etc. from DSL engineering book
 %Summary of all 3
-\subsection{EMF}
-\todo{TODO}
-%INternally Xtext uses EMF so go into little more detail about that here
+%Then goto API definition and use these 3 to justify the API!
+\subsection{EMF Ecore}\label{emf}
+The Eclipse Modelling Framework~\cite{emf} uses Ecore to describe models or abstract syntaxes, it then provides tools for interacting with these. An Ecore model representing an AST uses the following concepts:
+\begin{itemize}
+\item \emph{EClass} - Describes a type of element that can appear in an AST
+\item \emph{EAttribute} - A primitive property of an Eclass
+\item \emph{EReference} - A link from one EClass to another
+\item \emph{EObject} - An instance of an EClass, each node in an AST will be an EObject
+\item \emph{EFactory} - Creates EObjects given an EClass
+\end{itemize}
+\todo{give example?}
+%Move this into AST discussion?
+%Internally Xtext uses EMF so go into little more detail about that here?
 \subsection{MWE2}
-\todo{TODO}
-%What actually is MWE2? I have no clue.
+%Move this into Xtext section?
+The Modelling Workflow Engine 2~\cite{mwe2} is a declarative language with a simple syntax, used primarily to define workflows by declaring object instances, assigning attribute values and references, and then invoking these objects in order allowing them to interact with one another. An example file from~\cite{mwe2} which reads an Ecore model, renames all the classes inside, and then saves the model with the uri "uppercaseModel.ecore" is given below: \lstinputlisting[tabsize=2]{Listings/mweExample.mwe2}
+The components in an mwe2 file are all Java classes implementing a IWorkflowComponent interface containing an invoke method which is called after the component is created, this takes a single context parameter which is passed from object to object and it is through this that the components can interact. 
+\subsection{ANTLR}
+ANTLR, ANother Tool for Language Recognition,~\cite{antlr} is a parser generator. Given a grammar it can generate a parser for the language. It used internally by Xtext to build it's parsers.
 %
+%
+%\\
+%\\
+%Projectional Editing?
 %
 %Overview
 %
@@ -184,7 +218,7 @@ In this section I will discuss my extension to the language workbench XText. I b
 
 \subsection{Overview}
 
-The final tool takes the form of an extension to the language workbench Xtext, which is itself an Eclipse\cite{eclipse} plugin. A designer can use this extended plugin to create a projectional editor by first specifying a language grammar using XText's existing grammar language, and then generating projectional editor artefacts. These consist of:
+The final tool takes the form of an extension to the language workbench Xtext, which is itself an Eclipse plugin. A designer can use this extended plugin to create a projectional editor by first specifying a language grammar using XText's existing grammar language, and then generating projectional editor artefacts. These consist of:
 \begin{itemize}
 \item A back-end Java servlet which is capable of interacting with a client application using the HTTP API discussed later in section \ref{api}.
 \item A Java servlet container to host these servlets
@@ -289,7 +323,7 @@ In this section I present the design of a server-side web API to allow a client 
 
 \subsection{Modelling Assumptions}\label{apiAssumptions}
 \todo{Better to display this section in terms of a model diagram?}
-As this API will be targeting arbitrary languages it is first important to discuss the assumed form of an abstract syntax tree within a programming language. We also must make certain assumptions about the structure of a "project", or collection of files, within that language. As such the following modelling assumptions have been made:
+As this API will be targeting arbitrary languages it is first important to make assumptions about the form of an AST within a programming language. To do this we studied the AST formalisms used by the three most popular language workbenches, given in section~\ref{astFormalisms}, and ensured the model our API uses is consistent with these. We also make certain assumptions about the structure of a "project", or collection of files, within a language. The following modelling assumptions have been made:
 \\
 \\
 \textbf{Programming Language Definition} = $\{\mathbb{T},\mathbb{D}\}$ 
