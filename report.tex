@@ -203,7 +203,7 @@ I will now briefly discuss some of the technologies used within Xtext.
 %Generation process uses EMF
 %Antlr used to parse input files, antlr grammar generated from xtext grammar
 \subsubsection{EMF Ecore}\label{emf}
-The Eclipse Modelling Framework~\cite{emf} uses it's Ecore component to describe models or abstract syntaxes, it then provides tools for interacting with these. An Ecore model representing an AST uses the following concepts:
+The Eclipse Modelling Framework~\cite{emf} uses it's Ecore component to describe models or abstract syntaxes as Java objects, it then provides methods for interacting with these. An Ecore model representing an AST uses the following concepts:
 \begin{itemize}
 \item \emph{EClass} - Describes a type of element that can appear in an AST
 \item \emph{EAttribute} - A primitive property of an Eclass
@@ -214,7 +214,7 @@ The Eclipse Modelling Framework~\cite{emf} uses it's Ecore component to describe
 \todo{give example?}
 \\
 \\
-When Xtext generates a language, an Ecore model is created. The conversion process from grammar to model is nuanced but essentially an EClass is created for each parser rule, with the same attributes and references listed inside that rule. When Xtext parses an input file written in the new language it creates an an instance of the Ecore model as a series of EObjects.
+When Xtext generates a language, an Ecore model is created. The conversion process from grammar to model is nuanced but essentially an EClass is created for each parser rule, with the same attributes and references listed inside that rule. When Xtext then parses an input file written in the new language, it creates an instance of the Ecore model as a series of EObjects.
 %Move this into AST discussion?
 %Internally Xtext uses EMF so go into little more detail about that here?
 \subsubsection{MWE2}
@@ -225,7 +225,7 @@ The components in an MWE2 file are all Java classes implementing a IWorkflowComp
 \\
 The Xtext generation process is orchestrated by a workflow written in MWE2, which is automatically generated when the project itself is.
 \subsubsection{ANTLR}
-ANTLR, ANother Tool for Language Recognition,~\cite{antlr} is a parser generator. Given a grammar it can generate a parser for the language. It used internally by Xtext to build it's parsers.
+ANTLR, ANother Tool for Language Recognition,~\cite{antlr} is a parser generator. Given a grammar it can generate a parser for the language. Xtext uses it to create parsers for new languages during their generation.
 \subsubsection{Xtend}
 %Move this into Xtext section?
 Xtend~\cite{xtend} is a Java variant. When Xtext generates files it does so in the Xtend language.
@@ -247,7 +247,7 @@ The LSP~\cite{lsp} is a protocol specification designed to standardise interacti
 %
 %
 \section{Automatic Generation Of Projectional Web Editors In XText}\label{generation}
-In this section I will discuss my extension to the language workbench XText. I begin by giving a quick overview of the extension before moving onto it's use from a user's perspective. In the immediately following sections I cover the more interesting aspects of it's design in detail. This includes the API implemented by the generated language server, and the projection specification DSL. I focus throughout on design decisions that have been made as a result of the requirements outlined in Section \ref{requirements}. 
+In this section I will discuss my extension to the language workbench XText. I begin by giving a quick overview of the extension before discussing the user's perspective. In the immediately following sections I cover the more interesting aspects of it's design in detail. This includes the API implemented by the generated language server, and the projection specification DSL. I focus throughout on design decisions that have been made as a result of the requirements outlined in Section \ref{requirements}. 
 
 
 \subsection{Overview}
@@ -256,7 +256,7 @@ The final tool takes the form of an extension to the language workbench Xtext, w
 \begin{itemize}
 \item A back-end Java servlet which is capable of interacting with a client application using the HTTP API discussed later in Section \ref{api}.
 \item A Java servlet container to host these servlets
-\item An empty \emph{.editor} file in which a language designer can use the language discussed in Section \ref{EditorLanguage} to specify custom projections for their nodes if desired.  
+\item An empty \emph{.editor} file in which a language designer can specify custom projections for their nodes using the language discussed in Section \ref{EditorLanguage}. 
 \end{itemize}
 %
 I have also created a default client web application using the Angular application platform~\cite{angular}, which can be hosted by the generated language server and then used by the language's end user to interact with the server to display and edit the designed language through the specified custom projections. 
@@ -266,7 +266,7 @@ Before continuing with the design, I discuss the rationale behind the integratio
 \begin{itemize}
 \item{It is open-source and so easy to modify}
 \item{It is one of the most popular language workbenches available and so has much support available}
-\item{It internally uses EMF~\cite{emf}, which allows for bidirectional transformations between, in effect, our abstract syntax tree and it's textual representation. This is useful as it allows us to projectionally edit a file and then save it in it's textual representation, so we can use existing version control tools on the file. It also allows both projectional and textual editors to be used on the same files, perhaps depending on the user's preference.}
+\item{Xtext can use it's ANTLR generated parser to parse code into an EMF model instance (see Section~\ref{xtext}), this can also serialize itself back into the concrete textual syntax. This allows bidirectional transformations between the AST and it's textual representation, so a file can be projectionally edited, and then saved as text. Existing version control tools can thus be used, and both projectional and textual editors can be used on the same files.}
 \end{itemize}
 
 \subsection{The Generation Process}
