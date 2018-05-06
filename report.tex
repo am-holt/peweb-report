@@ -103,11 +103,11 @@ Projectionally editing code alleviates this problem, allowing the user to intera
 This project's goal was to extend an existing language workbench, or to create a new one, with the capability of generating a web-based, projectional editor for any DSL specified in that workbench. 
 
 \subsubsection{Motivation}\label{motivation}
-Currently, the ability to automatically generate a projectional editor as a web application for an arbitrary language specification, does not exist in any major language workbench. However, I believe this functionality would be useful for the following reasons:
+Currently, the ability to automatically generate a projectional editor as a web application for an arbitrary language specification, does not exist in any major\todo{change this to any I know of?} language workbench. However, I believe this functionality would be useful for the following reasons:
 \begin{itemize}
-\item Web editing is particularly useful for DSLs, speeding up the deployment of newly created languages by reducing the need to share/install IDEs or plugins after every iteration of the language (which likely change frequently in their infancy). 
+\item Web editing is particularly useful for DSLs, speeding up the deployment of newly created languages by reducing the need to share/install IDEs or plugins after every iteration of the language (which are likely to change frequently in their infancy). 
 \item Projectional editors can reduce, and in some cases completely eliminate, the time required by a user to learn the syntax of a language. This is useful for DSLs where the language is likely only used for a small part of a project and will not be commonly known.
-\item Crucially, the combination of these features is ideal for addressing the problem laid out in section \ref{problem}. A web editor ensures that there is no need to install or use an IDE for the language, which are often notoriously complex. A projectional editor may then allow them to interact with the language in an environment they are used to, perhaps by filling in forms and tables or drawing a diagram.  
+\item Crucially, the combination of these features is ideal for addressing the problem laid out in Section \ref{problem}. A web editor ensures that there is no need to install or use an IDE for the language, which are often notoriously complex. A projectional editor may then allow them to interact with the language in an environment they are used to, perhaps by filling in forms and tables or drawing a diagram.  
 \end{itemize} 
 As further affirmation to the potential usefulness of this feature, we look at the existing Sprotty framework being developed by Typefox~\cite{sprotty}, a prominent group of contributors to the open-source language workbench Xtext~\cite{xtext}. Sprotty aims to provide graphical views of textual code by integrating with language servers produced by the language workbench Xtext. A web based projectional editor could not only offer this view, but also allow the user to interact with this view directly to modify their code, which is clearly far more powerful. 
 
@@ -134,7 +134,7 @@ In order to achieve the project's goal my contributions can be split into 3 key 
 
 
 \subsection{Organisation} 
-I begin this report by discussing the necessary technical background required. I then discuss the design and implementation of my language extension, splitting this across sections \ref{generation} to \ref{clientApp}, each section focussing on a different aspect of the tool. In section \ref{evaluation} I evaluate the final tool's effectiveness before concluding by critically reviewing whether the requirements from \ref{requirements} were satisfied and outlining possible ventures for future work in section \ref{conclusion}. 
+I begin this report by discussing the necessary technical background required. I then discuss the design and implementation of my language extension, splitting this across Section \ref{generation} to \ref{clientApp}, each section focussing on a different aspect of the tool. In Section \ref{evaluation} I evaluate the final tool's effectiveness before concluding by critically reviewing whether the requirements from \ref{requirements} were satisfied and outlining possible ventures for future work in Section \ref{conclusion}. 
 
 \section{Technical Background}
 Here I present some technical background required for the project.
@@ -157,8 +157,8 @@ Two popular Java IDEs are:
 \subsection{Language Workbenches}
 Language workbenches are software applications designed to make the development of new programming languages easier. They offer an IDE in which a language designer can specify a language's structure, the compilation process, any validation required, and then create an editor for their new language. Language workbenches offer the advantage of autonomy and speed over building a language from scratch. For example, from a concrete syntax grammar definition, a language workbench might automatically generate a parser, abstract syntax model and Eclipse editor plugin offering syntax highlighting. Using the naive approach, all 3 of these would normally need to be created separately by hand. This autonomy can come at the expense of flexibility, forcing designers to use certain approaches or not allowing certain language features, however these tools do strive to minimise this. Three popular open-source workbenches are:
 \begin{itemize}
-\item \emph{Xtext}~\cite{xtext} - A language workbench for creating textual languages, discussed in section~\ref{xtext}
-\item \emph{MPS}~\cite{mps} - A language workbench which can exclusively create projectional editors, discussed in section~\ref{mps}
+\item \emph{Xtext}~\cite{xtext} - A language workbench for creating textual languages, discussed in Section~\ref{xtext}
+\item \emph{MPS}~\cite{mps} - A language workbench which can exclusively create projectional editors, discussed in Section~\ref{mps}
 \item \emph{Spoofax}~\cite{spoofax} - Another textual workbench, developed by MetaBorg. 
 \end{itemize}
 %
@@ -170,7 +170,7 @@ A language has both a concrete syntax and an abstract syntax. The concrete synta
 An instance of a program creates a tree like structure, with nodes being instances of types from the abstract syntax, and edges being the references between them. This is called an Abstract Syntax Tree. It is a tree as every type in the AS apart from the topmost "program" object should have a parent item, representing the containment in the concrete syntax. Some languages allow cross-referencing, these are references across the tree such as to reference a function declaration from it's call. Although the addition of these would mean the graph is no longer a tree, and some authors prefer to use the term abstract syntax graph, we do not distinguish the cases here and use AST throughout.
 \subsubsection{AST Formalisms}\label{astFormalisms}
 There have been many attempts to formalise ASTs. The 3 most popular language workbenches use 3 different formalisms: \begin{itemize}
-\item \emph{Xtext} - EMF Ecore~\cite{emf}, this is particularly relevant to this project and so described in detail in section \ref{emf}
+\item \emph{Xtext} - EMF Ecore~\cite{emf}, this is particularly relevant to this project and so described in detail in Section \ref{emf}
 \item \emph{Spoofax} - ATerm~\cite{aterm} \todo{Do I need more info here?}
 \item \emph{MPS} - Structure Language~\cite{mpsStructureLanguage} \todo{Do I need more info here?}
 \end{itemize}
@@ -247,16 +247,16 @@ The LSP~\cite{lsp} is a protocol specification designed to standardise interacti
 %
 %
 \section{Automatic Generation Of Projectional Web Editors In XText}\label{generation}
-In this section I will discuss my extension to the language workbench XText. I begin by giving a quick overview of the extension before moving onto it's use from a user's perspective. In the immediately following sections I cover the more interesting aspects of it's design in detail. This includes the API implemented by the generated language server, and the projection specification DSL. I focus throughout on design decisions that have been made as a result of the requirements outlined in section \ref{requirements}. 
+In this section I will discuss my extension to the language workbench XText. I begin by giving a quick overview of the extension before moving onto it's use from a user's perspective. In the immediately following sections I cover the more interesting aspects of it's design in detail. This includes the API implemented by the generated language server, and the projection specification DSL. I focus throughout on design decisions that have been made as a result of the requirements outlined in Section \ref{requirements}. 
 
 
 \subsection{Overview}
 
 The final tool takes the form of an extension to the language workbench Xtext, which is itself an Eclipse plugin. A designer can use this extended plugin to create a projectional editor by first specifying a language grammar using XText's existing grammar language, and then generating projectional editor artefacts. These consist of:
 \begin{itemize}
-\item A back-end Java servlet which is capable of interacting with a client application using the HTTP API discussed later in section \ref{api}.
+\item A back-end Java servlet which is capable of interacting with a client application using the HTTP API discussed later in Section \ref{api}.
 \item A Java servlet container to host these servlets
-\item An empty \emph{.editor} file in which a language designer can use the language discussed in section \ref{EditorLanguage} to specify custom projections for their nodes if desired.  
+\item An empty \emph{.editor} file in which a language designer can use the language discussed in Section \ref{EditorLanguage} to specify custom projections for their nodes if desired.  
 \end{itemize}
 %
 I have also created a default client web application using the Angular application platform~\cite{angular}, which can be hosted by the generated language server and then used by the language's end user to interact with the server to display and edit the designed language through the specified custom projections. 
@@ -273,7 +273,7 @@ Before continuing with the design, I discuss the rationale behind the integratio
 I will now discuss the process of generating a projectional language server for a new language using my plugin. To meet our \RSetup requirement the generation process was designed to be as simple as possible, so that a language designer can concentrate their efforts on the DSL specification. The process was also designed to be as close as possible to the process of setting up a textual web editor in XText, to satisfy our familiarity \RFamiliarity requirement.
 \\
 \\
-The language designer first creates an Xtext project as normal, using the Eclipse new project wizard as shown in figures \ref{fig:newProjectWiz},
+The language designer first creates an Xtext project as normal, using the Eclipse new project wizard as shown in Figure \ref{fig:newProjectWiz},
 \begin{figure}[t!]
   \centering
   \begin{subfigure}[b]{0.45\linewidth}
@@ -290,7 +290,7 @@ The language designer first creates an Xtext project as normal, using the Eclips
 selecting the "Projectional Editor Web Integration" facet which has been added to the wizard next to the existing option for creating a textual web editor.
 \\
 \\
-This creates an Xtext language project, shown in figure
+This creates an Xtext language project, shown in Figure
 \begin{figure}[h!]
   \includegraphics[width=\linewidth]{./Screenshots/newProjectScreen.png}
   \caption{A new xtext project with an empty peWeb project}
@@ -300,14 +300,14 @@ This creates an Xtext language project, shown in figure
 \\
 The generated MWE2 file for the language looks as follows:
 \lstinputlisting[ tabsize=2 ]{Listings/GenerateMyDsl.mwe2}
-It contains information on the language configuration and how facets for the language should be generated. As we selected the PE facet in the new project notice peWeb is enabled in this file. Because of this, when the user generates the language in the standard Xtext way, by running this MWE2 workflow file, the peWeb project will automatically be populated with all the necessary files to run a server for web based projectional editing. This results in the peWeb project looking like in figure 
+It contains information on the language configuration and how facets for the language should be generated. As we selected the PE facet in the new project notice peWeb is enabled in this file. Because of this, when the user generates the language in the standard Xtext way, by running this MWE2 workflow file, the peWeb project will automatically be populated with all the necessary files to run a server for web based projectional editing. This results in the peWeb project looking like in Figure 
 \begin{figure}[h!]
   \centering
   \includegraphics[width=0.4\linewidth]{./Screenshots/peWebProjectContentsAfterGeneration.png}
   \caption{The peweb project following generation}
   \label{fig:generatedPeWebProject}
 \end{figure} \ref{fig:generatedPeWebProject}. Notice that MyDsl will be replaced with the name of the language.
-The files generated are listed in table \ref{Tab:generatedFiles}.
+The files generated are listed in Table \ref{Tab:generatedFiles}.
 \begin{table}[h!]
 \centering
 \begin{tabular}{| m{7cm} | m{8cm} |}
@@ -357,7 +357,7 @@ In this section I present the design of a server-side web API to allow a client 
 
 \subsection{Modelling Assumptions}\label{apiAssumptions}
 \todo{Better to display this section in terms of a model diagram?}
-As this API will be targeting arbitrary languages it is first important to make assumptions about the form of an AST within a programming language. To do this we studied the AST formalisms used by the three most popular language workbenches, given in section~\ref{astFormalisms}, and ensured the model our API uses is consistent with these. We also make certain assumptions about the structure of a "project", or collection of files, within a language. The following modelling assumptions have been made:
+As this API will be targeting arbitrary languages it is first important to make assumptions about the form of an AST within a programming language. To do this we studied the AST formalisms used by the three most popular language workbenches, given in Section~\ref{astFormalisms}, and ensured the model our API uses is consistent with these. We also make certain assumptions about the structure of a "project", or collection of files, within a language. The following modelling assumptions have been made:
 \\
 \\
 \textbf{Programming Language Definition} = $\{\mathbb{T},\mathbb{D}\}$ 
@@ -433,9 +433,9 @@ To achieve this the API specifies that a node fetch response should simply be as
 The two standard types are:
 \begin{itemize}
 \item \emph{Default Projection}: The client is given all the attributes and references for the node which it then presents to the user in any meaningful way as decided by the client application.
-\item \emph{CustomHtml Projection}: This method involves sending not only relevant attributes for the node to the client, but also sending html to specify how it should be projected. The intention is that these will be automatically generated by the projection specification language given in section \ref{EditorLanguage}.
+\item \emph{CustomHtml Projection}: This method involves sending not only relevant attributes for the node to the client, but also sending html to specify how it should be projected. The intention is that these will be automatically generated by the projection specification language given in Section \ref{EditorLanguage}.
 \end{itemize}
-We discuss these in more detail in section \ref{viewObject}.
+We discuss these in more detail in Section \ref{viewObject}.
 \subsubsection{Making Changes to a Node}
 
 We notice from our modelling assumptions that a node consists of a series of attributes, \textit{containment} reference features and \textit{cross-reference} reference features. In order to make changes to nodes we thus provide 3 methods in our API to modify these things. Each method takes as parameter the project name, file name and nodeId of the node being modified so that the server doesn't have to store state regarding which nodes clients have requested and are editing. The methods are as follows: 
@@ -488,11 +488,11 @@ Modifying nodes is then done by looking up the relevant node using the nodeID to
 
 \section{Projection Specification Language}\label{EditorLanguage}
 \subsection{Overview}
-The real power of a projectional editor lies in it's ability to allow a user to interact with a programming language in an intuitive way using projections that are designed alongside the language. In this section I present a DSL developed to rapidly specify custom projections for ASTs of an arbitrary language. We use this in our Xtext extension to allow language designers to create such specifications for their own languages, however, like the API discussed in section \ref{api}, this language was designed independently of the Xtext extension, and so could be used within other language workbenches.
+The real power of a projectional editor lies in it's ability to allow a user to interact with a programming language in an intuitive way using projections that are designed alongside the language. In this section I present a DSL developed to rapidly specify custom projections for ASTs of an arbitrary language. We use this in our Xtext extension to allow language designers to create such specifications for their own languages, however, like the API discussed in Section \ref{api}, this language was designed independently of the Xtext extension, and so could be used within other language workbenches.
 %Ultimately the goal being to provide a standard way for language designers to define projections for their language within a language workbench which can then be used in the automatic generation of a web projectional editor.
 \\
 \\
-The relevant requirements from section \ref{requirements} are \RSetup (ease of setup), \RCustom (customisability), and \RFamiliarity (familiarity). Specifically in this context that translates to ensuring that the designed language is simple and easy to use, requiring as little time as possible to learn. The language should also be as powerful and flexible as possible in terms of the projections it can define.
+The relevant requirements from Section \ref{requirements} are \RSetup (ease of setup), \RCustom (customisability), and \RFamiliarity (familiarity). Specifically in this context that translates to ensuring that the designed language is simple and easy to use, requiring as little time as possible to learn. The language should also be as powerful and flexible as possible in terms of the projections it can define.
 
 \subsection{Design}
 
@@ -661,7 +661,7 @@ This allows the language designer to save time as they can run the editor applic
 
 
 \section{Client Application}\label{clientApp}
-Here I present an implementation of a client application, written using the Angular framework, for use with a language server implementing the API from section \ref{api}. This application serves as the default front end for a projectional web based editing application which has automatically been generated using our extension to Xtext language workbench. I also make much use of it to evaluate both the specified API and Projection Specification Language. 
+Here I present an implementation of a client application, written using the Angular framework, for use with a language server implementing the API from Section \ref{api}. This application serves as the default front end for a projectional web based editing application which has automatically been generated using our extension to Xtext language workbench. I also make much use of it to evaluate both the specified API and Projection Specification Language. 
 
 \subsection{Design}
 The client application was designed to offer a simple interface with all default functionality, that is primarily  supporting both Default and Custom view types as discussed earlier. The application was written using the Angular framework and typescript, as this offered all the features needed and is very popular. This means plenty of documentation is available and it should be easy for language designers to extend.
@@ -684,7 +684,7 @@ The UI takes some inspiration from the online IDE Theia~\cite{theia} with naviga
 %>Discuss 2 kinds of view and implementation
 %>Evaluate Performance
 \section{Evaluation}\label{evaluation}
-In order to evaluate the work of this project I focus on two areas. The first is on the process of language creation and the flexibility of the tool presented as a method for creating projectional editors for arbitrary languages. The second area looks at the ability of the tool to address the problem laid out in section \ref{problem}, that is, the ability of an editor produced using my tool to improve accessibility of a DSL to a non-technical audience.
+In order to evaluate the work of this project I focus on two areas. The first is on the process of language creation and the flexibility of the tool presented as a method for creating projectional editors for arbitrary languages. The second area looks at the ability of the tool to address the problem laid out in Section \ref{problem}, that is, the ability of an editor produced using my tool to improve accessibility of a DSL to a non-technical audience.
 %\\
 %\\
 \subsection{Projectional Editor Creation}\label{creationEvaluation}
@@ -790,16 +790,16 @@ In order to evaluate whether the generated projectional editors can be of use in
 The language used for the comparison was the questionnaire language discussed in \ref{questionnaireLang}, the reason being that this language's domain is universally understandable and so it was easy to train users to become a "domain expert". The textual editor used was Eclipse with a plugin generated by Xtext for the same language using default settings, providing syntax highlighting, auto completion, context hints etc.
 \\
 \\
-Testers were given a series of documents formally specifying the domain, that is, what kind of  questionnaires the language can specify, and a brief scenario explaining that they were to be asked to write some questionnaires in a computer-friendly way using two different methods. Testers were then given documentation (including an example file in the case of the textual editor) on how to work one type of editor, and, after receiving sufficient time to read through this information and ask any questions, were asked to create 2 questionnaires to a specification given. The times taken to complete these tasks were recorded, and then the process was repeated with the other editor, being given it's documentation and then the same two questionnaire specifications to input. The training materials, scenario sheet, task briefs and example textual file can all be found in the appendix, section \ref{questionnaireEval}.
+Testers were given a series of documents formally specifying the domain, that is, what kind of  questionnaires the language can specify, and a brief scenario explaining that they were to be asked to write some questionnaires in a computer-friendly way using two different methods. Testers were then given documentation (including an example file in the case of the textual editor) on how to work one type of editor, and, after receiving sufficient time to read through this information and ask any questions, were asked to create 2 questionnaires to a specification given. The times taken to complete these tasks were recorded, and then the process was repeated with the other editor, being given it's documentation and then the same two questionnaire specifications to input. The training materials, scenario sheet, task briefs and example textual file can all be found in the appendix, Section \ref{questionnaireEval}.
 \\
 \\
-The tasks were designed so there would be no ambiguity in the questionnaire that should be input. It was also specified in a way such that it didn't closely resemble either of the two input methods so as to not give either method an advantage in this sense. As the tasks were being conducted observations were made. Short interviews were also conducted after the completion of both tasks to try and ascertain how they felt the two methods held up in terms of ease of use, efficiency and clarity. The observations, times and interview transcripts are all in the appendix, section \ref{questionnaireEvalResults}.
+The tasks were designed so there would be no ambiguity in the questionnaire that should be input. It was also specified in a way such that it didn't closely resemble either of the two input methods so as to not give either method an advantage in this sense. As the tasks were being conducted observations were made. Short interviews were also conducted after the completion of both tasks to try and ascertain how they felt the two methods held up in terms of ease of use, efficiency and clarity. The observations, times and interview transcripts are all in the appendix, Section \ref{questionnaireEvalResults}.
 %Tasks chosen so no ambiguiity, want it to be test of effectiveness of translation from domain to computer
 %Made observations as tasks were conducted
 %Short interview afterwards to record feelings for either methods
 
 \subsubsection{Results}
-The times taken to complete the tasks are given in table \ref{Tab:questionnaireResults}. From this table we see that both tasks were completed noticeably quicker with the web editor, being just under 40\% faster than the Eclipse editor for the second task which was a longer, more complicated questionnaire. We also notice that timings of the first task, which was designed to be simple so users could get to grips with the editors, were more consistent with the web editor than the Eclipse editor. Whereas testers 1 \& 5 took considerably longer than the other 3 on the eclipse editor they were actually the two quickest with the web, suggesting much less of a barrier to entry in the projectional editor.  
+The times taken to complete the tasks are given in Table \ref{Tab:questionnaireResults}. From this table we see that both tasks were completed noticeably quicker with the web editor, being just under 40\% faster than the Eclipse editor for the second task which was a longer, more complicated questionnaire. We also notice that timings of the first task, which was designed to be simple so users could get to grips with the editors, were more consistent with the web editor than the Eclipse editor. Whereas testers 1 \& 5 took considerably longer than the other 3 on the eclipse editor they were actually the two quickest with the web, suggesting much less of a barrier to entry in the projectional editor.  
 \\
 \\
 The interviews conducted afterwards were also overwhelmingly positive, with all but one recipient saying they preferred to use the web editor. Surprisingly, again all but one thought in the long run they would rather use the projectional editor, forseeing no benefit from interacting with the program textually. All users also agreed that the web editor was much more intuitive and easier to use.
@@ -862,9 +862,9 @@ The extension was then evaluated to ensure it's flexibility as a tool to a langu
 
 \subsection{Review of requirements}
 %Review of requirements
-I review the requirements from section \ref{requirements}:
+I review the requirements from Section \ref{requirements}:
 \begin{itemize}
-\item{\textbf{R1: Quick to setup} - The first set of evaluations given in section \ref{creationEvaluation} showed that this has largely been achieved, in most cases only one extra additional file being required to actually define the projections themselves. However, these evaluations did find that the default projections could be improved so they were more useful, which would further speed up the setup process}
+\item{\textbf{R1: Quick to setup} - The first set of evaluations given in Section \ref{creationEvaluation} showed that this has largely been achieved, in most cases only one extra additional file being required to actually define the projections themselves. However, these evaluations did find that the default projections could be improved so they were more useful, which would further speed up the setup process}
 \item{\textbf{R2: Customisable} - We set out to ensure that the resultant editors were highly customisable, in terms of projections available this has certainly been achieved as is discussed with the PasGraph language implemented in \ref{pasgraph}. The only issue in this regard is the system's inability to mix projections defined using the editor language and others. This clearly should be addressed and is discussed in \ref{futureWork}  }
 \item{\textbf{R3: Lightweight Editor} - Although this requirement was considered throughout the project we have not formally evaluated whether or not this is achieved. This is because performance is very dependent upon the projections specified by the language, and so difficult to evaluate in general. Though not a formal measure, all evaluations were conducted on a basic machine (dual core 1.9GHz processor) and no hiccups were noticed. }
 \item{\textbf{R4: Intuitive Editor} - The second evaluation (\ref{Accessibility}) showed that with suitable projections, very intuitive interfaces can be created by a language designer. It did however highlight some issues which could be the focus of future work. The first is that within the default client application, navigation using the tree was not immediately clear. The other is that the editing experience could be improved with the addition of techniques common in textual editing such as the ability to copy \& paste, move subtrees, and reference non-existent nodes}
