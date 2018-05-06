@@ -201,7 +201,7 @@ I will now briefly discuss some of the technologies used within Xtext.
 %\\
 %Web editor generation?
 %Generation process uses EMF
-%Antlr used to parse input files, antlr grammar generated from xtext grammar
+%Antlr used to parse input files, antlr grammar generated from Xtext grammar
 \subsubsection{EMF Ecore}\label{emf}
 The Eclipse Modelling Framework~\cite{emf} uses it's Ecore component to describe models or abstract syntaxes as Java objects, it then provides methods for interacting with these. An Ecore model representing an AST uses the following concepts:
 \begin{itemize}
@@ -246,13 +246,13 @@ The LSP~\cite{lsp} is a protocol specification designed to standardise interacti
 %
 %
 %
-\section{Automatic Generation Of Projectional Web Editors In XText}\label{generation}
-In this section I will discuss my extension to the language workbench XText. I begin by giving a quick overview of the extension before discussing the user's perspective. In the immediately following sections I cover the more interesting aspects of it's design in detail. This includes the API implemented by the generated language server, and the projection specification DSL. I focus throughout on design decisions that have been made as a result of the requirements outlined in Section \ref{requirements}. 
+\section{Automatic Generation Of Projectional Web Editors In Xtext}\label{generation}
+In this section I will discuss my extension to the language workbench Xtext. I begin by giving a quick overview of the extension before discussing the user's perspective. In the immediately following sections I cover the more interesting aspects of it's design in detail. This includes the API implemented by the generated language server, and the projection specification DSL. I focus throughout on design decisions that have been made as a result of the requirements outlined in Section \ref{requirements}. 
 
 
 \subsection{Overview}
 
-The final tool takes the form of an extension to the language workbench Xtext, which is itself an Eclipse plugin. A designer can use this extended plugin to create a projectional editor by first specifying a language grammar using XText's existing grammar language, and then generating projectional editor artefacts. These consist of:
+The final tool takes the form of an extension to the language workbench Xtext, which is itself an Eclipse plugin. A designer can use this extended plugin to create a projectional editor by first specifying a language grammar using Xtext's existing grammar language, and then generating projectional editor artefacts. These consist of:
 \begin{itemize}
 \item A back-end Java servlet which is capable of interacting with a client application using the HTTP API discussed later in Section \ref{api}.
 \item A Java servlet container to host these servlets
@@ -270,7 +270,7 @@ Before continuing with the design, I discuss the rationale behind the integratio
 \end{itemize}
 
 \subsection{The Generation Process}
-I will now discuss the process of generating a projectional language server for a new language using my plugin. To meet our \RSetup requirement the generation process was designed to be as simple as possible, so that a language designer can concentrate their efforts on the DSL specification. The process was also designed to be as close as possible to the process of setting up a textual web editor in XText, to satisfy our familiarity \RFamiliarity requirement.
+I will now discuss the process of generating a projectional language server for a new language using my plugin. To meet our \RSetup requirement the generation process was designed to be as simple as possible, so that a language designer can concentrate their efforts on the DSL specification. The process was also designed to be as close as possible to the process of setting up a textual web editor in Xtext, to satisfy our familiarity \RFamiliarity requirement.
 \\
 \\
 The language designer first creates an Xtext project as normal, using the Eclipse new project wizard as shown in Figure \ref{fig:newProjectWiz},
@@ -284,7 +284,7 @@ The language designer first creates an Xtext project as normal, using the Eclips
     \includegraphics[width=\linewidth]{./Screenshots/newXtextProjectPage2.png}
     \caption{page 2}
   \end{subfigure}
-  \caption{The modified "new xtext project" wizard}
+  \caption{The modified "new Xtext project" wizard}
   \label{fig:newProjectWiz}
 \end{figure}
 selecting the "Projectional Editor Web Integration" facet which has been added to the wizard next to the existing option for creating a textual web editor.
@@ -293,7 +293,7 @@ selecting the "Projectional Editor Web Integration" facet which has been added t
 This creates an Xtext language project, shown in Figure
 \begin{figure}[h!]
   \includegraphics[width=\linewidth]{./Screenshots/newProjectScreen.png}
-  \caption{A new xtext project with an empty peWeb project}
+  \caption{A new Xtext project with an empty peWeb project}
   \label{fig:newProjectScreen}
 \end{figure} \ref{fig:newProjectScreen}, with a \emph{.xtext} file to specify the DSL's grammar and a \emph{.MWE2} file to describe the generation of the selected facets as usual. A number of empty projects are also created which will contain the files generated by the grammar definition. Notice the \emph{org.xtext.example.mydsl.peWeb} project which has been created and populated with a maven \emph{.pom} file which will be responsible for dependency management and has automatically been configured with the dependencies required by the projectional web editor. 
 \\
@@ -331,7 +331,7 @@ MyDslPeWebSetup.xtend & Creates the language injector itself, which will be used
 \end{tabular}
 \caption{Generated Files}
 \label{Tab:generatedFiles}
-\end{table}All of the generated files, with the exception of the \emph{Projections.editor} and \emph{MyDslPeServlet}, are required by Xtext's default textual web integration, and so will be familiar to existing XText users. One thing of note is that the FileResourceHandler and ResourceBaseProvider files are not automatically generated in the textual case but are still required. Here by assuming a simple implementation of saving to the local file system, we can generate these files automatically and so enable language designers to get a language server running much more quickly in order to test their language. In fact, at this point, the language designer simply points the serverLauncher to the location of a client application to host (we present a default such implementation in \ref{clientApp}), and the full web editor for their language is ready to run. There is no disadvantage to this generation as these files can be freely changed later or immediately.
+\end{table}All of the generated files, with the exception of the \emph{Projections.editor} and \emph{MyDslPeServlet}, are required by Xtext's default textual web integration, and so will be familiar to existing Xtext users. One thing of note is that the FileResourceHandler and ResourceBaseProvider files are not automatically generated in the textual case but are still required. Here by assuming a simple implementation of saving to the local file system, we can generate these files automatically and so enable language designers to get a language server running much more quickly in order to test their language. In fact, at this point, the language designer simply points the serverLauncher to the location of a client application to host (we present a default such implementation in \ref{clientApp}), and the full web editor for their language is ready to run. There is no disadvantage to this generation as these files can be freely changed later or immediately.
 %Maybe y generating like this at runtime we can use properties of the language. right now only name but could modify other things too.
 %>Fact they are displayed to user means easily extensible matching requirement \RCustom
 %>Talk about how the files generated are all commented (TODO) so clear what they are for and so easy to customise \RCustom
@@ -578,10 +578,9 @@ The complete specification for the language follows, using extended BNF with the
 
 \emph{Note}: Terminal rules for CodeLiteral and ID have been omitted for the sake of brevity.
 
-\subsubsection{Example}
-Here is an example specification of a simple layout.
+\subsubsection{Examples}
+Example \emph{.editor} files can be found in Appendix \ref{expressionLanguageDefEditor}, \ref{questionnaireLanguageDefEditor} and \ref{pascalLanguageDefEditor}.
 
-\todo{Add example file here, maybe for questionnaire? Needed?}
 
 \subsubsection{Node}
 
@@ -633,15 +632,15 @@ An attribute controller dictates how an attribute's value should be get and set 
 An attribute controller has three methods, get, set, and validate. Get expects a js snippet which evaluates to a string e.g. it retrieves the value of the attribute from the projection/component. Set expects a js snippet which will be executed in an environment where the value of the attribute is assigned to the variable X, this can then be used to initialise attribute values in the view. Validate expects a js snippet which will be executed in an environment where the value of the attribute is assigned to X also and should evaluate to either true or false to indicate whether or not this is a valid value. 
 \\
 \\
-For example a simple text box: 
+For example a text box: 
 \lstinputlisting[tabsize=2]{Listings/TextBox.editor}
 This component can then be placed in a projection and assigned to control the value of an attribute for the projected node.
 
 \subsection{Implementation}
-The \emph{.editor} language was implemented using the standard version of the language workbench Xtext. This involved specifying the language's grammar in Xtext's grammar specification language, (given in the appendix \ref{editorLanguageGrammar}), and also specifying the compilation process for the language. The result is a plugin for both Eclipse and Intellij which includes an editor for the language complete with syntax highlighting, context completion etc. making writing a \emph{.editor} file much easier. The \emph{.editor} language compiles into a java representation of itself which can then be used by the language server to create view objects to send to the client application.
+The \emph{.editor} language was implemented using the standard version of the language workbench Xtext. This involved specifying the language's grammar in Xtext's grammar specification language, (given in the appendix \ref{editorLanguageGrammar}), and also specifying the compilation process for the language. The result is a plugin for both Eclipse and Intellij which includes an editor for the language complete with syntax highlighting, context completion etc. making writing a \emph{.editor} file much easier. The \emph{.editor} language compiles into a Java representation of itself which can then be used by the language server to create view objects to send to the client application.
 \\
 \\
-With regards to our final tool, we have taken the generated \emph{.editor} Eclipse plugin and merged this with the main Xtext plugin. This means that our extended Xtext plugin provides syntax highlighting, context hints etc. for \emph{.editor} files directly, and also automatically compiles these into their java representation to be used by the language server at runtime.
+With regards to our final tool, we have taken the generated \emph{.editor} Eclipse plugin and merged this with the main Xtext plugin. This means that our extended Xtext plugin provides syntax highlighting, context hints etc. for \emph{.editor} files directly, and also automatically compiles these into their Java representation to be used by the language server at runtime.
 \todo{screenshot here of syntax highlighting?}
 \todo{More explanation about how generated?}
 
@@ -650,7 +649,7 @@ With regards to our final tool, we have taken the generated \emph{.editor} Eclip
 Having discussed the \emph{.editor} language it is now worth discussing how this is used by the extension to send information about a node's state to a client using the get-node API call as was touched upon in \ref{apiNodeStateTransfer}. 
 \\
 \\
-When a node is retrieved the server looks to see if a main projection is specified for the node in the java representation of the \emph{.editor} file which is generated automatically by the plugin. If so, we use the current state of the node requested and it's children to recursively build a custom view object with the following signature which we then send to the client application:
+When a node is retrieved the server looks to see if a main projection is specified for the node in the Java representation of the \emph{.editor} file which is generated automatically by the plugin. If so, we use the current state of the node requested and it's children to recursively build a custom view object with the following signature which we then send to the client application:
 \lstinputlisting[language=TypeScript, tabsize=2 ]{Listings/custom-view-descriptor.ts}
 %Listing
 %Explain Listing ?
@@ -662,7 +661,7 @@ This allows the language designer to save time as they can run the editor applic
 
 
 \section{Client Application}\label{clientApp}
-Here I present an implementation of a client application, written using the Angular framework, for use with a language server implementing the API from Section \ref{api}. This application serves as the default front end for a projectional web based editing application which has automatically been generated using our extension to Xtext language workbench. I also make much use of it to evaluate both the specified API and Projection Specification Language. 
+Here I present an implementation of a client application, written using the Angular framework~\cite{angular}, for use with a language server implementing the API from Section \ref{api}. This application serves as the default front end for a projectional web based editing application which has automatically been generated using our extension to Xtext language workbench. I also make much use of it to evaluate both the specified API and Projection Specification Language. 
 
 \subsection{Design}
 The client application was designed to offer a simple interface with all default functionality, that is primarily  supporting both Default and Custom view types as discussed earlier. The application was written using the Angular framework and typescript, as this offered all the features needed and is very popular. This means plenty of documentation is available and it should be easy for language designers to extend.
