@@ -129,7 +129,7 @@ In order to achieve the project's goal my contributions can be split into 3 key 
 \begin{enumerate}
 \item The specification of a server-side web API to allow a client application to edit an arbitrary programming language projectionally.
 \item The development of a DSL for specifying projections of an arbitrary programming language's abstract syntax tree, which may easily be displayed and interacted with within a web browser.
-\item The extension of the language workbench Xtext such that, given a language specification of a DSL, it can automatically generate a web application capable of using (1) to projectionally edit the language using projections specified with (2).
+\item The extension of the language workbench Xtext~\cite{xtext} such that, given a language specification of a DSL, it can automatically generate a web application capable of using (1) to projectionally edit the language using projections specified with (2).
 \end{enumerate}
 
 
@@ -144,47 +144,66 @@ Here I present some technical background required for the project.
 %LSP?
 %DSL advantages?
 %Exisiting approaches, e.g. what can projectional editor workbenches do?
-\subsection{Eclipse IDE}
-The Eclipse IDE~\cite{eclipse} is an open-source integrated development environment for Java. An IDE is an application designed to improve software development, usually by providing a robust code editor with advanced features such as syntax highlighting (colouring certain aspects of the language, such as keywords, differently for clarity), marking syntax mistakes, automatic insertion of braces etc. An IDE will also usually contain a built in method to compile and debug code, and some form of version control software. 
-%Do we mention plugins here?
-\subsection{IntelliJ IDEA}
-IntelliJ IDEA~\cite{intellij} is another popular IDE for Java.
-\subsection{Xtext}
-Xtext is an example of a language workbench, a software application designed to make the development of new programming languages easier. Xtext itself is a plugin for the Eclipse IDE. It allows a user to create a new language project, selecting which facets they would like to generate for the language, choosing from: an Eclipse plugin, a textual web editor, an Intellij plugin language testing support. The language designer then specifies their language's concrete syntax using Xtext's grammar language, a DSL which is similar to extended Bakus-Naur form. The designer can also specify other aspects of the language such as how it should be translated into an existing general purpose language and validators.
+\subsection{Integrated Development Environment}
+An IDE is an application designed to improve software development, usually by providing a robust code editor with advanced features such as syntax highlighting (colouring certain aspects of the language, such as keywords, differently for clarity), marking syntax mistakes, automatic insertion of braces etc. An IDE will also usually contain a built in method to compile and debug code, and some form of version control software. 
 \\
 \\
-Once this is done the language designer can "generate language artefacts" which will create the facets selected when creating the project for the language that has been defined. The generation process itself is orchestrated by a MWE2 workflow file which is automatically generated when the project itself is.
-\\
-\\
-As a part of the generation process, an Ecore model for the language is created. The conversion process from grammar to model is rather nuanced but essentially an EClass is created for each parser rule, with the same attributes and references listed inside that rule. Xtext can then use ANTLR to parse an input file written in the new language into an instance of the Ecore model as a series of EObjects.
-%\\
-%\\
-%Web editor generation?
-%Generation process uses EMF
-%Antlr used to parse input files, antlr grammar generated from xtext grammar
-\subsection{Xtend}
-%Move this into Xtext section?
-Xtend~\cite{xtend} is an extended version of Java. When Xtext generates files it does so in the Xtend language.
-\subsection{MPS}
-MPS~\cite{mps} (Meta Programming System) is another open-source language workbench. Unlike Xtext it creates projectional editors for languages specified within it. The language creation process is thus slightly different, the designer specifies the language's AST structure directly, specifying the attributes and references of each node type. For each such node the language designer then also specifies the editor layout for that node type using MPS's editor language. Compilation and validation for the language and other advanced features can then be specified and finally a standalone IDE is built for the new language.  
-%Editor Language discussion from 5 here?
-%Generated editors?
+Two popular Java IDEs are:
+\begin{itemize}
+\item Eclipse IDE~\cite{eclipse}, an open-source IDE developed by the Eclipse Foundation~\cite{eclipseFoundation}.
+\item Intellij IDEA~\cite{intellij}, an IDE developed by JetBrains~\cite{jetbrains} with an open-source "community" variant
+\end{itemize}
+%
+\subsection{Language Workbenches}
+Language workbenches are software applications designed to make the development of new programming languages easier. They offer an IDE in which a language designer can specify a language's structure, the compilation process, any validation required, and then create an editor for their new language. Language workbenches offer the advantage of autonomy and speed over building a language from scratch. For example, from a concrete syntax grammar definition, a language workbench might automatically generate a parser, abstract syntax model and Eclipse editor plugin offering syntax highlighting. Using the naive approach, all 3 of these would normally need to be created separately by hand. This autonomy can come at the expense of flexibility, forcing designers to use certain approaches or not allowing certain language features, however these tools do strive to minimise this. Three popular open-source workbenches are:
+\begin{itemize}
+\item \emph{Xtext}~\cite{xtext} - A language workbench for creating textual languages, discussed in section~\ref{xtext}
+\item \emph{MPS}~\cite{mps} - A language workbench which can exclusively create projectional editors, discussed in section~\ref{mps}
+\item \emph{Spoofax}~\cite{spoofax} - Another textual workbench, developed by MetaBorg. 
+\end{itemize}
+%
 \subsection{Abstract Syntax Tree}
-A language has both a concrete syntax and an abstract syntax. The concrete syntax specifies how the user interacts with the language, be it textual, graphical or some other form. The abstract syntax contains all the information about the program, while losing irrelevant details from the concrete syntax such as whitespace, comments etc.
+\todo{check this}
+A language has both a concrete syntax and an abstract syntax. The concrete syntax specifies how the user interacts with the language, be it textual, graphical or some other form. The abstract syntax specifies how a program is represented internally, usually losing irrelevant details from the concrete syntax such as whitespace, comments etc.
 \\
 \\
-An instance of a program ultimately creates a tree like structure in the abstract syntax, with each node in the tree representing a concept in the language such as a function call or a binary operation, this is called an Abstract Syntax Tree.\todo{diagram}
+An instance of a program creates a tree like structure, with nodes being instances of types from the abstract syntax, and edges being the references between them. This is called an Abstract Syntax Tree. It is a tree as every type in the AS apart from the topmost "program" object should have a parent item, representing the containment in the concrete syntax. Some languages allow cross-referencing, these are references across the tree such as to reference a function declaration from it's call. Although the addition of these would mean the graph is no longer a tree, and some authors prefer to use the term abstract syntax graph, we do not distinguish the cases here and use AST throughout.
 \subsubsection{AST Formalisms}\label{astFormalisms}
-There have been many attempts to formalise ASTs. The three most popular language workbenches use 3 different formalisms: \begin{itemize}
-\item \emph{Xtext} - EMF Ecore, this is particularly relevant to this project and so described in detail in section \ref{emf}
+There have been many attempts to formalise ASTs. The 3 most popular language workbenches use 3 different formalisms: \begin{itemize}
+\item \emph{Xtext} - EMF Ecore~\cite{emf}, this is particularly relevant to this project and so described in detail in section \ref{emf}
 \item \emph{Spoofax} - ATerm~\cite{aterm} \todo{Do I need more info here?}
 \item \emph{MPS} - Structure Language~\cite{mpsStructureLanguage} \todo{Do I need more info here?}
 \end{itemize}
 %What is? 3 formalisations: EMF,Aterms, MPS etc. from DSL engineering book
 %Summary of all 3
 %Then goto API definition and use these 3 to justify the API!
-\subsection{EMF Ecore}\label{emf}
-The Eclipse Modelling Framework~\cite{emf} uses Ecore to describe models or abstract syntaxes, it then provides tools for interacting with these. An Ecore model representing an AST uses the following concepts:
+%
+\subsection{Editors}
+This project discusses two methods of editing programs.
+\subsubsection{Textual Editors}
+The usual method for editing a program, a user writes free text in the language's concrete syntax. A parser is then used in generate an AST from this text provided it is valid.
+\subsubsection{Projectional Editors}
+Projectional editors do not use a parser. Instead the user interacts with the AST directly. It does this via a representation, called a projection, of the AST which is generated by the editor. There is no real limitation to what a projection may contain, it may be largely textual or contain graphics, symbols or tables. 
+
+%Projectional and textual editors
+%Text editing: Parser used to translate concrete syntax of language into AST
+%%Projcetional editing: Interact directly with AST, the editor then creates some representation of the AST, a projection, to display to the user and for them to interact with. No grammar or parser.
+%Web Textual editors, LSP
+\subsection{Xtext}\label{xtext}
+Xtext~\cite{xtext} is an example of a language workbench, and is a plugin for the Eclipse IDE. It allows a user to create a new language project, selecting which facets they would like to generate for the language, choosing from: an Eclipse plugin, a textual web editor, an Intellij plugin and language testing support. The language designer then specifies their language's concrete syntax using Xtext's grammar language, a DSL which is similar to extended Bakus-Naur form. They can also specify other aspects of the language such as how it should be translated into an existing general purpose language and validators.
+\\
+\\
+Once this is done the language designer can "generate language artefacts" which will create the facets selected when creating the project. 
+\\
+\\
+I will now briefly discuss some of the technologies used within Xtext.
+%\\
+%\\
+%Web editor generation?
+%Generation process uses EMF
+%Antlr used to parse input files, antlr grammar generated from xtext grammar
+\subsubsection{EMF Ecore}\label{emf}
+The Eclipse Modelling Framework~\cite{emf} uses it's Ecore component to describe models or abstract syntaxes, it then provides tools for interacting with these. An Ecore model representing an AST uses the following concepts:
 \begin{itemize}
 \item \emph{EClass} - Describes a type of element that can appear in an AST
 \item \emph{EAttribute} - A primitive property of an Eclass
@@ -193,14 +212,29 @@ The Eclipse Modelling Framework~\cite{emf} uses Ecore to describe models or abst
 \item \emph{EFactory} - Creates EObjects given an EClass
 \end{itemize}
 \todo{give example?}
+\\
+\\
+When Xtext generates a language, an Ecore model is created. The conversion process from grammar to model is nuanced but essentially an EClass is created for each parser rule, with the same attributes and references listed inside that rule. When Xtext parses an input file written in the new language it creates an an instance of the Ecore model as a series of EObjects.
 %Move this into AST discussion?
 %Internally Xtext uses EMF so go into little more detail about that here?
-\subsection{MWE2}
+\subsubsection{MWE2}
 %Move this into Xtext section?
 The Modelling Workflow Engine 2~\cite{mwe2} is a declarative language with a simple syntax, used primarily to define workflows by declaring object instances, assigning attribute values and references, and then invoking these objects in order allowing them to interact with one another. An example file from~\cite{mwe2} which reads an Ecore model, renames all the classes inside, and then saves the model with the uri "uppercaseModel.ecore" is given below: \lstinputlisting[tabsize=2]{Listings/mweExample.mwe2}
-The components in an mwe2 file are all Java classes implementing a IWorkflowComponent interface containing an invoke method which is called after the component is created, this takes a single context parameter which is passed from object to object and it is through this that the components can interact. 
-\subsection{ANTLR}
+The components in an MWE2 file are all Java classes implementing a IWorkflowComponent interface containing an invoke method which is called after the component is created, this takes a single context parameter which is passed from object to object and it is through this that the components can interact. 
+\\
+\\
+The Xtext generation process is orchestrated by a workflow written in MWE2, which is automatically generated when the project itself is.
+\subsubsection{ANTLR}
 ANTLR, ANother Tool for Language Recognition,~\cite{antlr} is a parser generator. Given a grammar it can generate a parser for the language. It used internally by Xtext to build it's parsers.
+\subsubsection{Xtend}
+%Move this into Xtext section?
+Xtend~\cite{xtend} is a Java variant. When Xtext generates files it does so in the Xtend language.
+\subsection{MPS}\label{mps}
+MPS~\cite{mps} (Meta Programming System) is another open-source language workbench. Unlike Xtext it creates projectional editors for languages specified within it. The language creation process is thus slightly different, the designer specifies the language's AST structure directly, specifying the attributes and references of each node type. For each such node the language designer then also specifies the editor layout for that node type using MPS's editor language. Compilation and validation for the language and other advanced features can then be specified and finally a standalone IDE is built for the new language. 
+%Editor Language discussion from 5 here?
+%Generated editors?
+\subsection{Language Server Protocol}\label{lsp}
+The LSP~\cite{lsp} is a protocol specification designed to standardise interaction between a language server and textual editor. The protocol assumes a language server which implements all language specific features such as autocomplete or fetching documentation on hovering over a language element. The editor can then use the protocol to query the server for these features using JSON-RPC~\cite{jsonrpc}. The advantage of this is that both language servers can be used for multiple different development tools, and development tools can support any language which has a language server available.  
 %
 %
 %\\
