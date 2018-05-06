@@ -673,7 +673,7 @@ The UI takes some inspiration from the online IDE Theia~\cite{theia} with naviga
 \begin{figure}[h!]
   \centering
   \includegraphics[width=\linewidth]{./Screenshots/WebUIScreenshot.png}
-  \caption{Editing the questionnaire language from \ref{questionnaireLang} in the default client application}
+  \caption{Editing a questionnaire using the language defined in Section~\ref{questionnaireLang}. This shows the default client application.}
   \label{fig:webUI}
 \end{figure}
 %
@@ -691,8 +691,8 @@ In order to evaluate the work of this project I focus on two areas. The first is
 In order to evaluate the projectional editor creation process I built three 3 languages and comment here on the process. The three languages are as follows:
 \begin{itemize}
 \item An expression language to define mathematical functions using the usual 4 binomial operators and a summation function.
-\item A DSL for specifying the content and flow of questionnaires
-\item A subset of the language Pascal as presented in the Compilers course which has been extended with the addition of node graph primitives. 
+\item A DSL for specifying the content and flow of questionnaires, a benchmark problem from Erdweg et al.'s "Evaluating and Comparing Language Workbenches"~\cite{languageWorkbenchChallenge}
+\item A subset of the language Pascal as presented in the Compilers course\footnote{https://www.cs.ox.ac.uk/teaching/courses/2016-2017/compilers/index.html, Oxford Computer Science, as taught by Quentin Miller, 2017} which has been extended with the addition of node graph primitives. 
 \end{itemize}
 %
 \subsubsection{Expression Language}
@@ -764,10 +764,10 @@ The process for creating the editor was slightly more involved than the other tw
 The front end was then modified with the addition of a self contained component which, when given a NodeGraph view object, would plot the graph using a d3 force simulation and allow a user to interact with it. Using the edit service it was easy to allow interaction with this graph to update the abstract syntax tree, for example when the user clicks in an empty space, a add-reference request is sent to the server to create a vertex child, and upon receiving a success response a vertex is then added to that location in the diagram. The only other required change in the front end was to add the NodeGraph case in the main editor component which chooses which component to use based on the type of a get-node response.
 \\
 \\
-All in all the creation of the language was still very straightforward, almost all of the additional code required for the complex projection required being written in entirely separate components which were then easy to integrate with the existing code. The remaining projections were created using the editor language as normal and so as a whole the editor creation process was still fairly quick. This demonstrates that the extension has very successfully achieved \RSetup and \RCustom, the tool allowing very quick specification of nodes with non-interesting projections but allowing arbitrary web technologies to create more complex projections when required. Crucially it also allows this in a way that such complex projections require little work to integrate with the generated editor. 
+All in all the creation of the language was still straightforward using my Xtext extension. Almost all of the additional code required for the complex projection being written in entirely separate components which were easy to integrate with the existing code. The remaining projections were created using the editor language as normal and so as a whole the editor creation process was still fairly quick. This demonstrates that the extension has successfully achieved \RSetup and \RCustom, the tool allowing quick specification of nodes with non-interesting projections but allowing arbitrary web technologies to create more complex projections when required. Crucially it also allows this in a way that such complex projections require little work to integrate with the generated editor. 
 \\
 \\
-The method used here also indicates an advantage that these web projectional editors have over their non-web-based projectional counterparts. In the graph node example we send to the front end a list of vertices and edges which are then displayed, but we could have sent anything we'd wanted. If the projection we desired were more complex, say including a 3D view of some simulation, we could have exploited this behaviour to have the server conduct any expensive calculations/preprocessing required by the projection and sent this within the view object. This could substantially reduce the hardware requirements for the final developer's machine if complex projections are required.
+The method used here also indicates an advantage that these web projectional editors have over their non-web-based projectional counterparts. In the graph node example we send to the front end a list of vertices and edges which are then displayed, but we could have sent any JSON object we'd wanted. If the projection we desired were more complex, say including a 3D view of some simulation, we could have exploited this behaviour to have the server conduct any expensive calculations/preprocessing required by the projection and sent this within the view object. This could substantially reduce the hardware requirements for the final developer's machine if complex projections are required.
 \\
 \\
 One issue noticed in the implementation of this language is that new projection types cannot be mixed with those specified in the \emph{.editor} file. This means that the visual projection of the graph could only be used when editing the graph in isolation of the rest of the tree, and at other times a textual representation was required. However this could easily be solved by modifying the protocol for getting a node, so that instead of asking for and expecting a single view object containing all projection information of the children, the client must recursively ask for these, enabling it to display children using different front end components.
