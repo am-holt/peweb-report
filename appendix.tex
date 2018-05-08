@@ -126,30 +126,21 @@
 \item value:String - The new value of the attribute
 \end{itemize}
 \emph{Response}: N/A
-\subsubsection{add-containment-ref}
+\subsubsection{add-reference}
 \emph{Parameters}: 
 \begin{itemize}
 \item project-name:String - URI of the project the node resides in
 \item file-name:String - URI (relative to project) of the file the node resides in
 \item node-id:String - The identifier of the node to add the reference to
 \item reference-name:String - The name of the reference feature to add a new node to
+\item cross-reference:Boolean - Whether or not the feature we are adding is a cross reference
+\item child-id:String - If this is a cross reference we include the node ID of the node we are adding the reference too
+\item child-type:String - If this is not a cross reference we create a new node and reference that. Here we select the type of the new node
 \end{itemize}
 \emph{Response}: 
 \begin{itemize}
-\item ast:StructureTree - A tree depicting the underlying AST structure for the subtree of the node to which the child node has been added
+\item ast:StructureTree - If containment (e.g. not cross reference) returns a tree of the ID's and names of nodes in the AST rooted at the newly created child node. Required as then the creation of the child node may as a side effect create it's own children
 \end{itemize}
-
-\subsubsection{add-cross-ref}
-\emph{Parameters}: 
-\begin{itemize}
-\item project-name:String - URI of the project the node resides in
-\item file-name:String - URI of the file the node resides in
-\item node-id:String - The identifier of the node to add the reference to
-\item reference-name:String - The name of the reference feature to add a new node to
-\item reference-file:String - The URI of the file containing the node we are referencing
-\item reference-node:String - The node identifier for the node being referenced
-\end{itemize}
-\emph{Response}: N/A
 
 \subsubsection{remove-ref}
 \emph{Parameters}: 
@@ -171,7 +162,11 @@
 \item file-name:String - URI of the file the node resides in
 \item node-id:String - The identifier of the node to validate
 \end{itemize}
-\emph{Response}: N/A
+\emph{Response}: 
+\begin{itemize}
+\item valid:Boolean - Is the current node's state valid
+\item message:String - If not valid returns a message indicating why
+\end{itemize}
 
 \section{Projection Specification Language Grammar}\label{editorLanguageGrammar}
 \lstinputlisting[ tabsize=2 ]{Listings/EditorLanguage.xtext}

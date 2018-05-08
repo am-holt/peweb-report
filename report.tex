@@ -167,7 +167,7 @@ Language workbenches are software applications designed to make the development 
 A language has both a concrete syntax and an abstract syntax. The concrete syntax specifies how the user interacts with the language, be it textual, graphical or some other form. The abstract syntax specifies how a program is represented internally, usually losing irrelevant details from the concrete syntax such as whitespace, comments etc.
 \\
 \\
-An instance of a program creates a tree like structure, with nodes being instances of types from the abstract syntax, and edges being the references between them. This is called an Abstract Syntax Tree. It is a tree as every type in the AS apart from the topmost "program" object should have a parent item, representing the containment in the concrete syntax. Some languages allow cross-referencing, these are references across the tree such as to reference a function declaration from it's call. Although the addition of these would mean the graph is no longer a tree, and some authors prefer to use the term abstract syntax graph, we do not distinguish the cases here and use AST throughout.
+An instance of a program creates a tree like structure, with nodes being instances of types from the abstract syntax, and edges being the references between them. This is called an abstract syntax tree. It is a tree as every type in the AS apart from the topmost "program" object should have a parent item, representing the containment in the concrete syntax. Some languages allow cross-referencing, these are references across the tree such as to reference a function declaration from it's call. Although the addition of these would mean the graph is no longer a tree, and some authors prefer to use the term abstract syntax graph, we do not distinguish the cases here and use AST throughout.
 \subsubsection{AST Formalisms}\label{astFormalisms}
 There have been many attempts to formalise ASTs. The 3 most popular language workbenches use 3 different formalisms: \begin{itemize}
 \item \emph{Xtext} - EMF Ecore~\cite{emf}, this is particularly relevant to this project and so described in detail in Section \ref{emf}
@@ -888,9 +888,9 @@ I'd like to thank my supervisor Seyyed Madasar Shah for all of his help and guid
 \clearpage
 
 \printbibliography
-%
-%\begin{appendices}
-%\include{appendix}
-%\end{appendices}
+
+\begin{appendices}
+\include{appendix}
+\end{appendices}
 
 \end{document}
