@@ -254,7 +254,7 @@ The LSP~\cite{lsp} is a protocol specification designed to standardise interacti
 %
 %
 \section{Automatic Generation Of Projectional Web Editors In Xtext}\label{generation}
-In this section I will discuss my extension to the language workbench Xtext. I begin by giving a quick overview of the extension before discussing the user's perspective. In the immediately following sections I cover the more interesting aspects of it's design in detail. This includes the API implemented by the generated language server, and the projection specification DSL. I focus throughout on design decisions that have been made as a result of the requirements outlined in Section \ref{requirements}. 
+In this section I give a quick overview of my extension to Xtext and how it is used to generate a projectional editor. In the immediately following sections I cover the more interesting aspects of it's design in detail, including the API implemented by the generated language server, and the projection specification DSL. I focus throughout on design decisions that have been made as a result of the requirements outlined in Section \ref{requirements}. 
 
 
 \subsection{Overview}
@@ -266,18 +266,18 @@ The final tool takes the form of an extension to the language workbench Xtext, w
 \item An empty \emph{.editor} file in which a language designer can specify custom projections for their nodes using the language discussed in Section \ref{EditorLanguage}. 
 \end{itemize}
 %
-I have also created a default client web application using the Angular application platform~\cite{angular}, which can be hosted by the generated language server and then used by the language's end user to interact with the server to display and edit the designed language through the specified custom projections. 
+I have also created a default client application using the Angular application platform~\cite{angular}, which can be hosted by the generated language server and used to to display and edit the designed language through the specified custom projections. 
 
 \subsection{Benefits of integration with Xtext}\label{integrationWithXtext}
-Before continuing with the design, I discuss the rationale behind the integration with Xtext. The decision was primarily made as by extending an existing language workbench I didn't have to concern myself with rewriting all the core functionality of a workbench from scratch (e.g. the abilities to specify a grammar, building a parser etc.) and instead could focus on the implementation of projectional editing. By extending an existing popular workbench we are working towards our \RFamiliarity requirement of familiarity, and Xtext was a prime candidate for a number of reasons:
+Before continuing with the design, I discuss the rationale behind the integration with Xtext. The decision was primarily made as by extending an existing language workbench I didn't have to concern myself with rewriting all the core functionality of a workbench from scratch (e.g. the abilities to specify an abstract syntax, building a parser etc.) and instead could focus on the implementation of projectional editing. By extending an existing popular workbench we are working towards our \RFamiliarity requirement of familiarity, and Xtext was a prime candidate for a number of reasons:
 \begin{itemize}
 \item{It is open-source and so easy to modify}
-\item{It is one of the most popular language workbenches available and so has much support available}
-\item{Xtext can use it's ANTLR generated parser to parse code into an EMF model instance (see Section~\ref{xtext}), this can also serialize itself back into the concrete textual syntax. This allows bidirectional transformations between the AST and it's textual representation, so a file can be projectionally edited, and then saved as text. Existing version control tools can thus be used, and both projectional and textual editors can be used on the same files.}
+\item{Being one of the most popular language workbenches available it has much support available}
+\item{Xtext can use it's ANTLR generated parser to parse code into an EMF model instance (see Section~\ref{xtext}), it also has a built in method to serialize an EMF model back into the concrete textual syntax. This allows bidirectional transformations between the AST and it's textual representation, so a file can be projectionally edited, and then saved as text. Existing version control tools can thus be used, and both projectional and textual editors can be used on the same files.}
 \end{itemize}
 
 \subsection{The Generation Process}
-I will now discuss the process of generating a projectional language server for a new language using my plugin. To meet our \RSetup requirement the generation process was designed to be as simple as possible, so that a language designer can concentrate their efforts on the DSL specification. The process was also designed to be as close as possible to the process of setting up a textual web editor in Xtext, to satisfy our familiarity \RFamiliarity requirement.
+I now discuss the process of generating a projectional editor for a new language using my plugin. To meet our \RSetup requirement the generation process was designed to be as simple as possible, so that a language designer can concentrate their efforts on the DSL specification. It was also designed to be as similar as possible to the process of setting up a textual web editor in Xtext, to satisfy our familiarity \RFamiliarity requirement.
 \\
 \\
 The language designer first creates an Xtext project as normal, using the Eclipse new project wizard as shown in Figure \ref{fig:newProjectWiz},
@@ -294,7 +294,7 @@ The language designer first creates an Xtext project as normal, using the Eclips
   \caption{The modified "new Xtext project" wizard}
   \label{fig:newProjectWiz}
 \end{figure}
-selecting the "Projectional Editor Web Integration" facet which has been added to the wizard next to the existing option for creating a textual web editor.
+selecting the "Projectional Editor Web Integration" facet which has been added next to the existing option for creating a textual web editor.
 \\
 \\
 This creates an Xtext language project, shown in Figure
@@ -307,38 +307,40 @@ This creates an Xtext language project, shown in Figure
 \\
 The generated MWE2 file for the language looks as follows:
 \lstinputlisting[ tabsize=2 ]{Listings/GenerateMyDsl.mwe2}
-It contains information on the language configuration and how facets for the language should be generated. As we selected the PE facet in the new project notice peWeb is enabled in this file. Because of this, when the user generates the language in the standard Xtext way, by running this MWE2 workflow file, the peWeb project will automatically be populated with all the necessary files to run a server for web based projectional editing. This results in the peWeb project looking like in Figure 
+It contains information on the language configuration and how facets for the language should be generated. As we selected the PE facet in the new project, notice peWeb is enabled in this file. Because of this, when the user generates the language in the standard way, by running this MWE2 workflow , the peWeb project will automatically be populated with all the necessary files to run a server for web based projectional editing. This results in the peWeb project looking like in Figure 
 \begin{figure}[h!]
   \centering
   \includegraphics[width=0.4\linewidth]{./Screenshots/peWebProjectContentsAfterGeneration.png}
   \caption{The peweb project following generation}
   \label{fig:generatedPeWebProject}
 \end{figure} \ref{fig:generatedPeWebProject}. Notice that MyDsl will be replaced with the name of the language.
-The files generated are listed in Table \ref{Tab:generatedFiles}.
+\\
+\\
+The generated files are listed in Table \ref{Tab:generatedFiles}.
 \begin{table}[h!]
 \centering
 \begin{tabular}{| m{7cm} | m{8cm} |}
 \hline
 File & Description \\
 \hline \hline
-Projections.editor & An empty file in which the language designer can specify the projections for the editor using the \emph{.editor} language discussed later.\\
+Projections.editor & An empty file to specify projections for the language using the \emph{.editor} language discussed later.\\
 \hline
 MyDslPeServlet.xtend & A HTTP servlet which implements the projectional web API discussed later.\\
 \hline
-ServerLauncher.xtend & A servlet container to host MyDslPeWebServlet. When ran this starts the language server \\
+ServerLauncher.xtend & A servlet container to host \emph{MyDslPeWebServlet}. When ran this starts the language server \\
 \hline
-MyDslPeFileResourceHandler.xtend & Allows the language designer to specify how files should be read or written, so that any persistence layer can be used. The generated file defaults to simply writing and reading files with the language's extension in the location given by  MyDslResourceBaseProvider \\
+MyDslPeFileResourceHandler.xtend & Allows the language designer to specify how files should be read or written, so arbitrary persistence layers can be used. This defaults to writing and reading files with the language's extension in the location given by  \emph{MyDslResourceBaseProvider} \\
 \hline
-MyDslResourceBaseProvider.xtend & Used to specify how file URI's should be generated for a specified resource in the language. Defaults to a user-files folder at the location of the project.\\
+MyDslResourceBaseProvider.xtend & Used to specify how file URI's should be generated for a specified resource in the language. Defaults to assuming the resource is in a user-files folder at the location of the server.\\
 \hline
-MyDslPeWebModule.xtend & Allows binding of additional components in the language injector. This is where the resourceHandler and resourceBaseProviders are registered.\\
+MyDslPeWebModule.xtend & Allows binding of additional components in the language injector. This is where \emph{MyDslResourceHandler} and \emph{MyDslResourceBaseProvider} are registered.\\
 \hline
 MyDslPeWebSetup.xtend & Creates the language injector itself, which will be used to inject information about the specified language into the otherwise generic language server implementation\\
 \hline
 \end{tabular}
 \caption{Generated Files}
 \label{Tab:generatedFiles}
-\end{table}All of the generated files, with the exception of the \emph{Projections.editor} and \emph{MyDslPeServlet}, are required by Xtext's default textual web integration, and so will be familiar to existing Xtext users. One thing of note is that the FileResourceHandler and ResourceBaseProvider files are not automatically generated in the textual case but are still required. Here by assuming a simple implementation of saving to the local file system, we can generate these files automatically and so enable language designers to get a language server running much more quickly in order to test their language. In fact, at this point, the language designer simply points the serverLauncher to the location of a client application to host (we present a default such implementation in \ref{clientApp}), and the full web editor for their language is ready to run. There is no disadvantage to this generation as these files can be freely changed later or immediately.
+\end{table}All of these files, with the exception of the \emph{Projections.editor} and \emph{MyDslPeServlet}, are required by Xtext's default textual web integration, and so will be familiar to existing Xtext users. The \emph{FileResourceHandler} and \emph{ResourceBaseProvider} files are not automatically generated in the textual case but are still required. Here by assuming a simple implementation of saving to the local file system, we can generate these files automatically and so enable language designers to get a language server running much more quickly (they can be changed manually if required). At this point the language designer simply points the \emph{serverLauncher} to the location of a client application to host (we present a default implementation in \ref{clientApp}), and the full web editor for their language is ready to run. 
 %Maybe y generating like this at runtime we can use properties of the language. right now only name but could modify other things too.
 %>Fact they are displayed to user means easily extensible matching requirement \RCustom
 %>Talk about how the files generated are all commented (TODO) so clear what they are for and so easy to customise \RCustom
