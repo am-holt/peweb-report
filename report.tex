@@ -82,13 +82,13 @@ workbenches)}
 
 \section{Introduction}
 
-Domain Specific Languages (DSLs) are programming languages which have been created to solve problems within a specific application domain. They are useful tools, able to improve both productivity and clarity in a way that libraries for general purpose languages can't, having being built from the ground up with the specific domain problem in mind. 
+Domain Specific Languages (DSLs) are programming languages which have been created to solve problems within a specific application domain. They are useful tools, able to improve both productivity and clarity in a way that libraries for general purpose languages (GPLs) can't, having being built from the ground up with the specific domain problem in mind. 
 \\
 \\
-As these languages usually target very specific domains, much effort has been put into simplifying their creation, reducing the outlay of time this requires and so justifying their use in smaller teams or projects. Tools which do this are called language workbenches. Language workbenches usually offer an IDE for language designers to specify the concrete syntax or structure of a language, build an editor for instances of it, and then a generator or compiler to convert it into a general purpose language. Language workbenches offer varying degrees of automation in completing these tasks.
+As these languages usually target very specific domains, much effort has been put into simplifying their creation, reducing the outlay of time this requires and so justifying their use in smaller teams or projects. Tools which do this are called language workbenches. Language workbenches usually offer an IDE for language designers to specify the concrete syntax or structure of a language, build an editor for instances of it, and then a generator or compiler to convert it into a GPL. Language workbenches offer varying degrees of automation in completing these tasks.
 \\
 \\
-Most general purpose programming languages are input using textual representations, however other editing approaches exist. One such approach is projectional editing, in which users interact with a programming language's internal representation, it's abstract syntax tree, directly. This is achieved using projections, which specify how this structure should be interacted with on screen, potentially with text, but possibly with tables, diagrams or anything else befitting the domain. 
+Most GPls are input using textual representations, however other editing approaches exist. One such approach is projectional editing, in which users interact with a programming language's internal representation, it's abstract syntax tree, directly. This is achieved using projections, which specify how this structure should be interacted with on screen, potentially with text, but possibly with tables, diagrams or anything else befitting the domain. 
 \\
 \\
 Projectional editing is a particularly useful concept for DSLs, which are often used to model domains that have clear non-textual representations. Projections can also reduce the syntax a user is required to learn, which is useful when a DSL may only be used by an individual sporadically and without extensive training.
@@ -148,7 +148,7 @@ Here I present some technical background required for the project.
 %DSL advantages?
 %Exisiting approaches, e.g. what can projectional editor workbenches do?
 \subsection{Integrated Development Environment}
-An IDE is an application designed to improve software development, usually by providing a robust code editor with advanced features such as syntax highlighting (colouring certain aspects of the language, such as keywords, differently for clarity), marking syntax mistakes, automatic insertion of braces etc. An IDE will also usually contain a built in method to compile and debug code, and some form of version control software. 
+An IDE is an application designed to improve software development, usually by providing a robust code editor with advanced features such as syntax highlighting (colouring certain aspects of the language, such as keywords, differently for clarity), marking syntax mistakes, automatic insertion of braces etc. An IDE will also usually contain a built in compiler, debugger, and version control system. 
 \\
 \\
 Two popular Java IDEs are:
@@ -166,11 +166,15 @@ Language workbenches are software applications designed to make the development 
 \end{itemize}
 %
 \subsection{Abstract Syntax Tree}
-\todo{check this}
-A language has both a concrete syntax and an abstract syntax. The concrete syntax specifies how the user interacts with the language, be it textual, graphical or some other form. The abstract syntax specifies how a program is represented internally, usually losing irrelevant details from the concrete syntax such as whitespace, comments etc.
+A language has both a concrete syntax and an abstract syntax. The concrete syntax specifies how a user interacts with the language, be it textually, graphically or otherwise. The abstract syntax specifies how a program is represented internally, usually losing irrelevant details from the concrete syntax such as whitespace, comments etc.
 \\
 \\
-An instance of a program creates a tree like structure, with nodes being instances of types from the abstract syntax, and edges being the references between them. This is called an abstract syntax tree. It is a tree as every type in the AS apart from the topmost "program" object should have a parent item, representing the containment in the concrete syntax. Some languages allow cross-referencing, these are references across the tree such as to reference a function declaration from it's call. Although the addition of these would mean the graph is no longer a tree, and some authors prefer to use the term abstract syntax graph, we do not distinguish the cases here and use AST throughout.
+An abstract syntax tree is a representation of a program in the abstract syntax. Nodes represent the language concepts appearing in the program and edges are the references between them. Two types of reference appear:
+\begin{itemize}
+\item Containment: Nodes that are syntactically contained by this node. An example in a GPL might be a reference to the Expression node representing the condition of an If-Statement node.
+\item Cross-reference: References to nodes which exist independently of this node. An example in a GPL may be a Function-Call node referencing the relevant Function-Definition node. 
+\end{itemize}
+The edges that represent containment references give the graph it's tree structure and name.
 \subsubsection{AST Formalisms}\label{astFormalisms}
 There have been many attempts to formalise ASTs. The 3 most popular language workbenches use 3 different formalisms: \begin{itemize}
 \item \emph{Xtext} - EMF Ecore~\cite{emf}, this is particularly relevant to this project and so described in detail in Section \ref{emf}
@@ -193,7 +197,7 @@ Projectional editors do not use a parser. Instead the user interacts with the AS
 %%Projcetional editing: Interact directly with AST, the editor then creates some representation of the AST, a projection, to display to the user and for them to interact with. No grammar or parser.
 %Web Textual editors, LSP
 \subsection{Xtext}\label{xtext}
-Xtext~\cite{xtext} is an example of a language workbench, and is a plugin for the Eclipse IDE. It allows a user to create a new language project, selecting which facets they would like to generate for the language, choosing from: an Eclipse plugin, a textual web editor, an Intellij plugin and language testing support. The language designer then specifies their language's concrete syntax using Xtext's grammar language, a DSL which is similar to extended Bakus-Naur form. They can also specify other aspects of the language such as how it should be translated into an existing general purpose language and validators.
+Xtext~\cite{xtext} is an example of a language workbench, and is a plugin for the Eclipse IDE. It allows a user to create a new language project, selecting which facets they would like to generate for the language, choosing from: an Eclipse plugin, a textual web editor, an Intellij plugin and language testing support. The language designer then specifies their language's concrete syntax using Xtext's grammar language, a DSL which is similar to extended Bakus-Naur form. They can also specify other aspects of the language such as how it should be translated into an existing GPL and validators.
 \\
 \\
 Once this is done the language designer can "generate language artefacts" which will create the facets selected when creating the project. 
@@ -389,14 +393,14 @@ Given a language definition $\{\mathbb{T},\mathbb{D}\}$ we define:\\
 \textbf{AST Node Definition} = $\{t,C,R,A\}$ 
 \begin{itemize}
 \item $t\in \mathbb{T}$ - The type of this node in the language
-\item $C$ - A finite set of references (definition below), the node's \emph{containment} references, that is the children nodes of this node which may not exist independently of this node. An example in a general purpose language might be a reference to an Expression node from within an If Statement node.
-\item $R$ - A finite set of references (definition below), the node's \emph{cross} references, that is references to other nodes which exist independently of this node. An example in a general purpose language may be a Function Call node may cross reference a Function Definition node.
+\item $C$ - A finite set of references features (definition below), the node's \emph{containment} references.
+\item $R$ - A finite set of reference features (definition below), the node's \emph{cross-references}.
 \item $A$ - A finite set of attributes (definition below), the actual data of the node.
 \end{itemize}
 %
-\textbf{Reference Definition} = $\{n,t,R\}$ 
+\textbf{Reference Feature Definition} = $\{n,t,R\}$ 
 \begin{itemize}
-\item $n$ - A string giving the name of this reference.
+\item $n$ - A string giving the name of this reference feature.
 \item $t\in \mathbb{T}$ - The node type of the nodes being referenced 
 \item $R$ - A finite list of AST nodes such that $\{t',C',R',A'\} \in R \implies t'=t$
 \end{itemize}
@@ -748,7 +752,7 @@ This language is a subset of the programming language Pascal~\cite{pascal}, that
 This language could perhaps be used to simulate the coalescing of particles performing random walks on graphs for example. 
 \\
 \\
-The language was designed and chosen to evaluate the performance of web editor generation on a general purpose language, and also to evaluate the flexibility of the possible projections, node graphs having a clear non-textual visual representation which we would like to use.
+The language was designed and chosen to evaluate the performance of web editor generation on a GPL, and also to evaluate the flexibility of the possible projections, node graphs having a clear non-textual visual representation which we would like to use.
 \\
 \\
 The process for creating the editor was slightly more involved than the other two as we wanted to use the d3 JavaScript library~\cite{d3} to display and edit the node graph primitives. In order to achieve this we had to override the standard ViewRetriever object which is responsible for creating the view objects sent as response to get-node requests (as discussed in \ref{viewObject}). We add a check to see if the tree node requested is a node graph, and if so return a special view object with the type "NodeGraph", listing the vertices and edges of the graph in a form that d3 can plot. A single line was then changed in the generated GraphPeServlet file to make use of this.
