@@ -485,13 +485,13 @@ I now explain how this API is implemented in the automatically generated languag
 The generated server hosts a Java HTTP servlet. In order to make API calls the client is expected to send get requests to the url pattern specified by the language designer in the generated \emph{MyDslPeServlet.xtend} file (/pe-service/ by default). The client uses a http parameter serviceType to choose the API call to make, and adds other parameters as required by the method. The server responds with standard http error codes if an issue is encountered or  otherwise with a JSON object containing the response of the call.
 \\
 \\
-To get files and project details, the language server injects the FileResourceHandler and ResourceBaseProvider objects specified in the \emph{MyDslPeFileResourceHandler.xtend} and \emph{MyDslResourceBaseProvider.xtend} files. These objects define operations to get and save EMF resources from a "resource id" (we use PROJECTNAME/FILENAME) so that arbitrary persistence layers can be used. By default these correspond to storing files in their textual representation at /user-files/PROJECT_NAME/FILE_NAME.LANGUAGE_EXTENSION relative to the language server, so that loading a file is equivalent to parsing the stored textual representation into an AST, and saving uses the parser rules to create a textual representation from the AST. From a retrieved EMF resource we can retrieve the EObject representing the root node of the AST that file represents.
+To get files and project details, the language server injects the FileResourceHandler and ResourceBaseProvider objects specified in the \emph{MyDslPeFileResourceHandler.xtend} and \emph{MyDslResourceBaseProvider.xtend} files. These objects define operations to get and save EMF resources from a "resource ID" (we use PROJECTNAME/FILENAME) so that arbitrary persistence layers can be used. By default these correspond to storing files in their textual representation at /user-files/PROJECT_NAME/FILE_NAME.LANGUAGE_EXTENSION relative to the language server, so that loading a file is equivalent to parsing the stored textual representation into an AST, and saving uses the parser rules to create a textual representation from the AST. From a retrieved EMF resource we can retrieve the EObject representing the root node of the AST that file represents.
 \\
 \\
 The EObject retrieved closely matches an AST as we described in our modelling assumptions, containing reference features linking to other EObjects and attributes. When we first open a file and retrieve it's EObject we must annotate the tree with unique identifiers as discussed in \ref{apiDesign}, which we do recursively from the root. We also construct two maps, one from these identifiers to the respective annotated node, and another from the EObjects themselves to the nodeIds. The first of these maps allows us to efficiently find nodes referenced by API calls, the second allows us to find the nodeId of a node even if we obtain it by following the unannotated EObject's references directly. These maps are kept up to date incrementally as nodes are added and removed from the tree.
 \\
 \\
-Modifying nodes is done by looking up the relevant EObject using the nodeID to EObject map and then making the relevant changes to the EObject itself.
+Modifying nodes is done by looking up the relevant EObject using the nodeID to EObject map, and then making the relevant changes to the EObject itself.
 %EObject contains all the attributes and reference types as well as some constraints on the node so already have AST in effect
 %From these nodes we create a tree where children of a node are all those contained only in containment references, that is every node is only in this tree once
 %We annotate it with node identifiers which we do when we first open the file
@@ -518,46 +518,46 @@ Modifying nodes is done by looking up the relevant EObject using the nodeID to E
 
 \section{Projection Specification Language}\label{EditorLanguage}
 \subsection{Overview}
-The real power of a projectional editor lies in it's ability to allow a user to interact with a programming language in an intuitive way using projections that are designed alongside the language. In this section I present a DSL developed to rapidly specify custom projections for ASTs of an arbitrary language. We use this in our Xtext extension to allow language designers to create such specifications for their own languages, however, like the API discussed in Section \ref{api}, this language was designed independently of the Xtext extension, and so could be used within other language workbenches.
+The real power of a projectional editor lies in it's ability to allow a user to interact with a programming language in an intuitive way using projections that are designed alongside the language. In this section I present a DSL developed to rapidly specify custom projections for ASTs of an arbitrary language. We use this in our Xtext extension to allow language designers to create such specifications for their own languages. Like the API discussed in Section \ref{api}, this language was designed independently of the extension, and so could be used to extend other language workbenches.
 %Ultimately the goal being to provide a standard way for language designers to define projections for their language within a language workbench which can then be used in the automatic generation of a web projectional editor.
 \\
 \\
-The relevant requirements from Section \ref{requirements} are \RSetup (ease of setup), \RCustom (customisability), and \RFamiliarity (familiarity). Specifically in this context that translates to ensuring that the designed language is simple and easy to use, requiring as little time as possible to learn. The language should also be as powerful and flexible as possible in terms of the projections it can define.
+The relevant requirements from Section \ref{requirements} are \RSetup (ease of setup), \RCustom (customisability), and \RFamiliarity (familiarity). Here these translate to ensuring that the designed language is easy to use, requiring as little time as possible to learn. The language should also be as powerful and flexible as possible in terms of the projections it can define.
 
 \subsection{Design}
 
 It seemed clear that using a combination of HTML and JavaScript to specify projections would be the most natural thing to do. The HTML can then be sent to the user and displayed within the client application. Depending on the implementation, this approach could allow much flexibility, as HTML and JavaScript themselves do, while also keeping the proprietary part of the editor specification language smaller. Both of which align with our requirements. For further inspiration we looked at MPS's editor specification language.
 
 \subsubsection{MPS Editor Language}
-The MPS language workbench has it's own editor language~\cite{mpsEditorLanguage} which is used to specify projections for a language's "concepts" (their term for our nodes). The language works simply as follows: For each concept a user uses cells to build up the look of the projection. These cells may contain the following:
+The MPS language workbench has it's own editor language~\cite{mpsEditorLanguage} which is used to specify projections for a language's "concepts" (their term for our node types). For each concept, cells are used to build up the look of the projection. The available cells are:
 \begin{enumerate}
 \item Constant cell - Displays a constant string value
-\item Collection cells - containers for more cells to build up further structure
+\item Collection cell - Containers for more cells to build up further structure
 \item Property cell - Space to display and edit attributes textually
-\item Child cells - to display the projection of a child
-\item Referent cells - to display a custom view of a child
-\item Child List cell - as per child cell but displays all children of the same type, allowing the user to customise how they are separated etc.
-\item Indentation cells - empty space, different from constant cell only in that indent size is managed by global editor settings
-\item UI Component cell - holds a custom UI JComponent written by the language desinger, doesn't store state
-\item Model access - allows custom access to an attribute of a node, the language designer specifies a get, set and validate method indicating how the cell should reflect the node's attribute and how changes to the cell should set the relevant attribute. Validate gives a boolean function indicating whether or not the node is in a valid configuration.
-\item Custom cell - the language designer can create a custom cell by implementing the EditorCell interface in MPS
+\item Child cell - Display the projection of a child
+\item Referent cell - Display a custom view of a child
+\item Child list cell - As child cell but for reference types which contain multiple children. Allows the user to customise the list layout.
+\item Indentation cell - Whitespace, the size is managed by global editor settings.
+\item UI component cell - Displays a JComponent written by the language desinger, doesn't store state
+\item Model access - Like a property cell except the text that is displayed here reflects the node's attribute using custom getters, setters and validation functions.
+\item Custom cell - Custom cells can be created by implementing an EditorCell interface in Java
 \end{enumerate}
 %
 We allow this to inform the design of our own language as follows. First we notice that most of the cells are used to control the layout of the editor, we can use HTML for this purpose and so can ignore these cells. The remaining functionality this language offers then is:
 \begin{enumerate}
-\item Properties/Attribute access - Some way to access the attributes of a node, displaying them to the user and allowing them to edit them.  (Covering here the Property cells and Model Access cells)
-\item Reference access - Some way to specify where a node's children (references) are displayed, and specifying how they should be displayed (as per the Child, Child List and Referent cells of MPS)
+\item Properties/Attribute access - Some way to access the attributes of a node, displaying them to the user and allowing them to edit them.  (property cells and model access cells)
+\item Reference access - Some way to specify where a node's children (references) are displayed, and specifying how they should be displayed (child, child list and referent cells)
 \end{enumerate}
 Using MPS's idea of placeholder cells, we decide to augment HTML with additional tags which will, like the cells in MPS, be replaced at runtime with the relevant HTML to display attributes or projections of child node. With regards to the placeholder cells in MPS, one nice feature is the ability to customise how these actually appear, with attributes we can use "Model Access" cells to completely customise how a user interacts with the attribute and similarly with "referent" cells the language designer can define different projections to display child nodes from within another projection. This functionality aligns with our goal to ensure our language is as flexible as possible, and so we will attempt to give similar functionality to our own language.
 
 \subsection{Language Specification}
-I will now give a brief overview of the editor language specification, before presenting it in full and then covering important aspects in greater detail. 
+I now give a brief overview of the editor language specification, before presenting it in full and covering important aspects in greater detail. 
 \\
 \\
-The editor language allows the language designer to specify one or more named projections for each node type, using HTML to describe the layout and JavaScript to describe how the projection should be populated with the node's attributes and how to detect edits to these. If a node contains references to other nodes, these can be inserted into the projection by means of additional annotations within the HTML, which will be replaced with projections for the referenced nodes. The language also allows the declaration of components which represent reusable pieces of a projection which may be used across different projections to allow code reusability. 
+The editor language allows the language designer to specify one or more named projections for each node type, using HTML to describe the layout, and JavaScript to describe how attribute values should be displayed and edited. If a node contains references to other nodes, these can be inserted into the projection by means of additional annotations within the HTML, which will be replaced with projections for the referenced nodes. The language also allows the declaration of components which represent reusable pieces of a projection which may be used across different projections to allow code reusability. 
 \\
 \\
-The complete specification for the language follows, using extended BNF with the addition of the standard regular expression symbols *,?,+ for succinctness. I will then discuss the different parts of the language in more detail.
+The complete specification for the language follows, using extended BNF with the addition of the standard regular expression symbols *,?,+ for succinctness.
 
 \setlength{\grammarparsep}{12pt plus 1pt minus 1pt} % increase separation between rules
 \setlength{\grammarindent}{5em} % increase separation between LHS/RHS 
@@ -590,7 +590,7 @@ The complete specification for the language follows, using extended BNF with the
 
 <HtmlAnnotation> ::= `<<' (<TagId> |<ChildId>|<ComponentId>) `>>'
 
-<Js	Annotation> ::= `<<' <TagId> `>>'
+<JsAnnotation> ::= `<<' <TagId> `>>'
 
 <HtmlSnippet> ::= `['<CodeLiteral>`]'
 \alt `['<CodeLiteral> <HtmlAnnotation> (<CodeLiteral> <HtmlAnnotation>)*  <CodeLiteral> `]'
@@ -622,7 +622,7 @@ A declaration can contain definitions of different projections for the node and 
 Projection declarations exist within a Node declaration. Each projection declaration is named and specifies a way in which this node type can be viewed and controlled.
 \\
 \\
-Multiple projections can be defined for a single node. When referencing children etc we can then specify which projection we retrieve using it's name. This is similar to the referant cell behaviour of MPS, but our approach, having named the projection and defining it as a part of the node type being referenced, allows us to reuse this view from within other nodes, making this method preferable.
+Multiple projections can be defined for a single node. When referencing children we specify which projection to retrieve using it's name. This is similar to the referant cell behaviour of MPS, but our approach, having named the projection and defining it as a part of the node type being referenced, allows us to reuse this projection elsewhere too.
 \\
 \\
 The body of a projection declaration contains a view, and optionally, attribute controllers and component declarations.
@@ -630,16 +630,16 @@ The body of a projection declaration contains a view, and optionally, attribute 
 \\
 The view attribute defines how the projection should look on screen. This is achieved using a HTML snippet delimited by square brackets. \todo{Square braces don't make sense for JS, should change this if have time} These HTML snippets can also include the following additional annotations:
 \begin{itemize}
-\item <<!CHILDNAME:PROJECTION\_NAME!>> : Indicates the reference with the name CHILDNAME should have its PROJECTION\_NAME projection inserted here. Used as the child node cells are in MPS. If the reference feature references multiple nodes then some default list view will show the set of children, each using the specified projection. Unlike in MPS I am not allowing customisation of the list layout itself at present, but this is a clear target for the future given more time.
+\item <<!CHILDNAME:PROJECTION\_NAME!>> : Indicates the reference with the name CHILDNAME should have its PROJECTION\_NAME projection inserted here. Used as the child node cells are in MPS. If the reference feature references multiple nodes then some default list view will show the set of children, each using the specified projection. Unlike in MPS I am not allowing customisation of the list layout itself at present, but this is a clear target for future iterations.
 \item <<\%COMPONENTNAME \%>> : Inserts the component COMPONENTNAME, enabling reuse of code.
 \item <<\%COMPONENTNAME:ATTRIBUTE\_NAME \%>> : As above but if the component has an attribute controller (see below) attached to it then it uses this to populate the nodes attribute ATTRIBUTE\_NAME
-\item <<\$ID\$>>: This tag is used to indicate an Id property of a HTML element. HTML elements must have unique id's and so we must assign them dynamically.
+\item <<\$ID\$>>: This tag is used to indicate an ID property of a HTML element. HTML elements must have unique IDs and so we must assign them dynamically.
 \end{itemize}
 
 \subsubsection{Component}
 
 
-A component looks similar to a  Projection with an optional attribute controller, and may be declared globally or within a node so as to allow code reuse.
+A component looks similar to a Projection with an optional attribute controller, and may be declared globally or within a node so as to allow code reuse.
 \\
 \\
 The purpose of components is to allow for code reuse for common functionality such as text boxes for custom datatypes etc.
@@ -666,12 +666,17 @@ For example a text box:
 This component can then be placed in a projection and assigned to control the value of an attribute for the projected node.
 
 \subsection{Implementation}
-The \emph{.editor} language was implemented using the standard version of the language workbench Xtext. This involved specifying the language's grammar in Xtext's grammar specification language, (given in the appendix \ref{editorLanguageGrammar}), and also specifying the compilation process for the language. The result is a plugin for both Eclipse and Intellij which includes an editor for the language complete with syntax highlighting, context completion etc. making writing a \emph{.editor} file much easier. The \emph{.editor} language compiles into a Java representation of itself which can then be used by the language server to create view objects to send to the client application.
+The \emph{.editor} language was implemented using Xtext. This involved specifying the language's grammar in Xtext's grammar language, (given in the appendix \ref{editorLanguageGrammar}), and specifying the compilation process. The result was a pair of plugins for Eclipse and Intellij which include editors for the language with syntax highlighting, context completion etc. making writing a \emph{.editor} file easier. The \emph{.editor} language compiles into a Java representation of itself which can be used as required.
 \\
 \\
-With regards to our final tool, we have taken the generated \emph{.editor} Eclipse plugin and merged this with the main Xtext plugin. This means that our extended Xtext plugin provides syntax highlighting, context hints etc. for \emph{.editor} files directly, and also automatically compiles these into their Java representation to be used by the language server at runtime.
-\todo{screenshot here of syntax highlighting?}
-\todo{More explanation about how generated?}
+Our final tool merges the generated \emph{.editor} Eclipse plugin with the main Xtext plugin. Our extended Xtext plugin then provides syntax highlighting, context hints etc. for \emph{.editor} files directly, and also automatically compiles these into their Java representation to be used by the language server at runtime to generate customHtml Projection objects to send to the client as discussed in \ref{apiNodeStateTransfer} \& \ref{viewObject}.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=\linewidth]{./Screenshots/EditorLanguagePluginScreenshot.png}
+  \caption{Editing a \emph{.editor} file using the extended Xtext Eclipse plugin.}
+  \label{fig:editorEditor}
+\end{figure}
 
 \section{Fetching Node State}\label{viewObject}
 
