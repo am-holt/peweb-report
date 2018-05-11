@@ -680,17 +680,17 @@ Our final tool merges the generated \emph{.editor} Eclipse plugin with the main 
 
 \section{Fetching Node State}\label{viewObject}
 
-Having discussed the \emph{.editor} language it is now worth discussing how this is used by the extension to send information about a node's state to a client using the get-node API call as was touched upon in \ref{apiNodeStateTransfer}. 
+Having discussed the \emph{.editor} language we now discuss how it is used by the extension to send information about a node's state to a client using the get-node API call as was touched upon in \ref{apiNodeStateTransfer}. 
 \\
 \\
-When a node is retrieved the server looks to see if a main projection is specified for the node in the Java representation of the \emph{.editor} file which is generated automatically by the plugin. If so, we use the current state of the node requested and it's children to recursively build a custom view object with the following signature which we then send to the client application:
+When a node is retrieved the server looks to see if a main projection is specified for the node in the project's \emph{.editor} file. If so, we use the current state of the AST to recursively build a CustomViewDescriptor with the following signature which we send to the client:
 \lstinputlisting[language=TypeScript, tabsize=2 ]{Listings/custom-view-descriptor.ts}
 %Listing
 %Explain Listing ?
 \todo{Needs more description here?}
 If a node doesn't contain a main projection we instead create and send a default projection with the following specification: 
 \lstinputlisting[language=TypeScript, tabsize=2 ]{Listings/default-view-descriptor.ts}
-This allows the language designer to save time as they can run the editor application without having to specify any projections at all, or just customise projections for some select nodes. 
+This allows the language designer to save time as they can run the editor application without having to specify any projections at all, or just customise projections for select nodes. 
 %Explain listing
 
 
