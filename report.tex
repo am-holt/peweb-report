@@ -365,15 +365,14 @@ MyDslPeWebSetup.xtend & Creates the language injector itself, which will be used
 In this section I present the design of a server-side web API to allow a client to display and interact with projections for an arbitrary language. It is this API which the generated language servlets implement in my Xtext extension. 
 \\
 \\
-The API specification is dependent only on general modelling assumptions made in \ref{apiAssumptions} and so may be used in future to extend other language workbenches or to build bespoke web projectional editors for existing languages.
+The API specification is dependent only on general modelling assumptions made in \ref{apiAssumptions}, and so may be used in future to extend other language workbenches, or to build bespoke web projectional editors for existing languages.
 \subsection{Modelling Assumptions}\label{apiAssumptions}
-\todo{Better to display this section in terms of a model diagram?}
-As this API will be targeting arbitrary languages it is first important to make assumptions about the form of an AST within a programming language. To do this we studied the AST formalisms used by the three most popular language workbenches, given in Section~\ref{astFormalisms}, and ensured the model our API uses is consistent with these. We also make certain assumptions about the structure of a "project", or collection of files, within a language. The resulting modelling assumptions are:
+As this API will be targeting arbitrary languages it was first important to make assumptions about the form of an AST within a programming language. To do this we studied the AST formalisms used by three popular language workbenches, given in Section~\ref{astFormalisms}, and ensured the model our API used was consistent with these. We also made assumptions about the structure of a "project", or collection of files, within a language. The resulting modelling assumptions were:
 \\
 \\
 \textbf{Programming Language Definition} = $\{\mathbb{T},\mathbb{D}\}$ 
 \begin{itemize}
-\item $\mathbb{T}$ - Node Types, a finite set of strings representing the different possible node types which may occur within an AST for the language.
+\item $\mathbb{T}$ - Node Types, a finite set of strings representing the node types which may occur within an AST for the language.
 \item $\mathbb{D}$ - Data Types, a finite set of strings representing the different primitive datatypes which may occur within an AST for the language. Note the assumption was made that values of these datatypes are all serialisable as strings, a fair assumption as most languages are entirely driven by the parsing of strings.
 \end{itemize}
 %
@@ -415,17 +414,36 @@ Given a language definition $\{\mathbb{T},\mathbb{D}\}$ we define:\\
 \end{itemize}
 %
 \subsection{Design}\label{apiDesign}
-I now discuss the design of the API itself, giving it's full specification in the appendix. When designing this API it was necessary to consider the relevant requirements for the project's ultimate goal as given in \ref{requirements}. The requirements to produce a lightweight (\RLightweight) and customisable (\RCustom) editor are clearly relevant here.
-\\
-\\
-The first consideration was how best to transport the state of the AST between client and server. Existing solutions in textual web editing, such as within LSP or Xtext's own default web editor implementation rely on first synchronising the client with the server by sending the full contents of a document as a string. Further requests or edits are then handled by referencing positions within the document as line/position numbers or ranges. This pattern of synchronisation followed by incremental updates between client and server has the advantage of minimising the data transmitted. In order to do this on ASTs directly however, we need some way of referencing nodes within a tree. We achieve this by annotating each node within an AST on the server side with a unique identifier. If the client is then aware of this labelling we can use it to communicate incremental changes between client and server, such as changes to attribute values.
-\\
-\\
-Having decided upon this annotation of the ASTs in order to reference incremental updates, we next look at the initial synchronization. In order to keep the client application as lightweight as possible (as per \RLightweight) we wish to minimise the data synchronised onto the client. We notice that the client only ever needs to maintain state relating to the parts of the AST(s) that they are actively interacting with. With a textual representation, this is very difficult to determine, and by default we assume the user wishes to display the entire textual contents of a file. However, a projectional editor has no such issue. At any given time a user is interacting only with projections of the AST, these projections define explicitly which nodes of the AST, and which attributes within these, are relevant and should be displayed. Hence we have no need to synchronise all details of the AST with the client initially, only as and when these are required by a projection.
-\\
-\\
-With this in mind then, initial synchronisation happens as follows. Upon opening a file the client application requests a "skeleton" tree, consisting only of node names (generated by the language server, using certain attribute values or the node's type) and their unique identifiers. This can be used for navigation within the file, enabling the user to request projections for subtrees they wish to edit instead of for the whole file. Through some means then, a subtree is selected to be displayed, the client makes a request to fetch that subtree's root node using the ID from the client's skeleton tree, and the server responds with the attributes and references which will be displayed within the projection for that node in some format. From here we are ready to begin transmitting only incremental changes made within this projection between client and server. In the case that the user wishes to edit a different subtree we can then ask for the values relevant to that node using it's ID from the skeleton tree which we can keep cached.
-\todo{Include a diagram here}
+I now discuss the design of the API itself, giving it's full specification in the appendix. When designing the API it was necessary to consider the requirements for generated editors to be lightweight (\RLightweight) and customisable (\RCustom).
+
+\subsubsection{Overview}
+Inspiration was taken from LSP and Xtext's own default web editor implementation, which use the following pattern to open and edit documents:
+\begin{enumerate}
+\item Synchronise the file between client and server.
+\item Incrementally make edits, referencing positions within a document using line/position numbers and ranges to synchronise changes between client and server. 
+\end{enumerate}
+%
+This pattern of synchronisation followed by incremental updates minimises data transmitted and so is desirable to meet R3. To achieve this with ASTs, some way of referencing edit positions is required, so we annotate each node on the server side with a unique identifier. We then proceed as follows:
+\begin{enumerate}
+\item On opening a file, the server sends a "skeleton tree" to the client. This tree shows the nodeIds, and names (generated by the language server using certain attribute values or the node's type) of the AST nodes, linked by the containment references of the AST.
+\item The client requests a node to edit, using it’s ID. 
+\item The server responds with the information required to edit that node. (see \ref{apiNodeStateTransfer})
+\item The client sends incremental updates to the server as edits are made. e.g. update-attribute "Name" of node ID 6 to "NewName"
+\item If the client wishes to open a projection for a different subtree, return to step 2.
+\end{enumerate}{
+Step 2 allows a user to edit subtrees of the AST instead of the whole file, reducing the data transferred from the server, and allowing different projections to be used to edit nodes when viewed in the context of different subtrees. The node might be chosen by allowing the user to navigate the skeleton tree.
+
+%I now discuss the design of the API itself, giving it's full specification in the appendix. When designing this API it was necessary to consider the relevant requirements for the project's ultimate goal as given in \ref{requirements}. The requirements to produce a lightweight (\RLightweight) and customisable (\RCustom) editor are clearly relevant here.
+%\\
+%\\
+%The first consideration was how best to transport the state of the AST between client and server. Existing solutions in textual web editing, such as within LSP or Xtext's own default web editor implementation rely on first synchronising the client with the server by sending the full contents of a document as a string. Further requests or edits are then handled by referencing positions within the document as line/position numbers or ranges. This pattern of synchronisation followed by incremental updates between client and server has the advantage of minimising the data transmitted. In order to do this on ASTs directly however, we need some way of referencing nodes within a tree. We achieve this by annotating each node within an AST on the server side with a unique identifier. If the client is then aware of this labelling we can use it to communicate incremental changes between client and server, such as changes to attribute values.
+%\\
+%\\
+%Having decided upon this annotation of the ASTs in order to reference incremental updates, we next look at the initial synchronization. In order to keep the client application as lightweight as possible (as per \RLightweight) we wish to minimise the data synchronised onto the client. We notice that the client only ever needs to maintain state relating to the parts of the AST(s) that they are actively interacting with. With a textual representation, this is very difficult to determine, and by default we assume the user wishes to display the entire textual contents of a file. However, a projectional editor has no such issue. At any given time a user is interacting only with projections of the AST, these projections define explicitly which nodes of the AST, and which attributes within these, are relevant and should be displayed. Hence we have no need to synchronise all details of the AST with the client initially, only as and when these are required by a projection.
+%\\
+%\\
+%With this in mind then, initial synchronisation happens as follows. Upon opening a file the client application requests a "skeleton" tree, consisting only of node names (generated by the language server, using certain attribute values or the node's type) and their unique identifiers. This can be used for navigation within the file, enabling the user to request projections for subtrees they wish to edit instead of for the whole file. Through some means then, a subtree is selected to be displayed, the client makes a request to fetch that subtree's root node using the ID from the client's skeleton tree, and the server responds with the attributes and references which will be displayed within the projection for that node in some format. From here we are ready to begin transmitting only incremental changes made within this projection between client and server. In the case that the user wishes to edit a different subtree we can then ask for the values relevant to that node using it's ID from the skeleton tree which we can keep cached.
+%\todo{Include a diagram here}
 
 \subsubsection{Transferring Node State}\label{apiNodeStateTransfer}
 To actually display and interact with an AST, the client needs both information about the current state of the relevant nodes, and how to project this state. There are two approaches to doing this which place different requirements on the client.
@@ -433,28 +451,28 @@ To actually display and interact with an AST, the client needs both information 
 \item Require the client application has definitions for the possible projections, so given the state of a node, and the name of the projection to use, the client can create the projection itself.
 \item Information about the projection should be sent along with the state of the node, then the client need not know anything about the language or projections at compile time, as these are supplied by the language server.
 \end{enumerate}
-Both approaches have advantages, the first allows for more flexibility in the projections that can be written, and if a projection is to be used by many nodes reduces the amount of data to be retrieved from the language server. The second approach however keeps the size of the client application much smaller, especially if the language is large and requires many different projection types. Since projection specification is inherently associated with a language, it is also the case that only the second approach allows a client application to remain language independent while still being able to display language specific projections.
+The first allows for more flexibility in the projections that can be written, and if a projection is to be used by many nodes reduces the amount of data to be retrieved from the language server. The second approach keeps the size of the client application much smaller, especially if the language is large and requires many different projection types. Since projection specification is inherently associated with a language, it is also the case that only the second approach allows a client application to remain language independent while still being able to display language specific projections.
 \\
 \\
-Because both have advantages, in line with our \RCustom requirement to allow as much flexibility as possible for language designers, we decide to design this API such that both approaches are possible.
+Because both have advantages, in line with our \RCustom requirement we design this API such that both approaches are possible.
 \\
 \\
-To achieve this the API specifies that a node fetch response should simply be as an arbitrary JSON~\cite{json} object with a type field. The client should be capable of decoding the object based upon it's type. We make use of two language independent node-fetch types in this project which can be assumed to be standard, and should prove sufficient for most use cases. Language designers can still however create new node-fetch types for the language server to use, provided they extend the client application accordingly to handle these new types. 
+To achieve this the API specifies that a node fetch response should simply be an arbitrary JSON~\cite{json} object with a type field. The client should be capable of decoding the object based upon it's type. We make use of two language independent node-fetch types in this project which can be assumed to be standard, and should prove sufficient for most use cases. Language designers can still however create new node-fetch types for the language server to use, provided they extend the client application accordingly to handle these new types. 
 \\
 \\
 The two standard types are:
 \begin{itemize}
 \item \emph{Default Projection}: The client is given all the attributes and references for the node which it then presents to the user in any meaningful way as decided by the client application.
-\item \emph{CustomHtml Projection}: This method involves sending not only relevant attributes for the node to the client, but also sending HTML to specify how it should be projected. The intention is that these will be automatically generated by the projection specification language given in Section \ref{EditorLanguage}.
+\item \emph{CustomHtml Projection}: This method involves sending not only relevant attributes for the node to the client, but also sending HTML to specify how it should be projected. These will be automatically generated by the projection specification language given in Section \ref{EditorLanguage}.
 \end{itemize}
 We discuss these in more detail in Section \ref{viewObject}.
 \subsubsection{Making Changes to a Node}
 
-We notice from our modelling assumptions that a node consists of a series of attributes, \textit{containment} reference features and \textit{cross-reference} reference features. In order to make changes to nodes we thus provide 3 methods in our API to modify these. Each method takes as parameter the project name, file name and nodeId of the node being modified so that the server doesn't have to store state regarding which nodes clients have requested and are editing. The methods are as follows: 
+From our modelling assumptions a node consists of a series of attributes, containment reference features and cross-reference features. To make changes to nodes we provide 3 methods in our API to modify these. Each method takes as parameter the project name, file name and nodeId of the node being modified so the server doesn't have to store state regarding which nodes clients have requested and are editing. The methods are as follows: 
 \begin{itemize}
 \item \emph{update-attribute} : Takes the attribute name  of the node and it's new value (as a string, using our assumption here that all datatypes in a language are serializable as such). 
-\item \emph{add-reference} : Takes the reference feature name as a parameter. In the case of a cross-reference we also expect a child-id parameter, that is, the identifier of the node we wish to cross reference. The language server then adds this reference. In the case of a containment reference no additional parameters are required and the language server creates a new node of the type specified by the reference feature's type. The language server assigns this a fresh identifier and sends the skeleton subtree rooted at this new node back to the client so it may update it's skeleton tree. (This response allows the language server to create children for the newly created node if required as a side-effect)
-\item \emph{remove-reference} : Takes the reference feature name and ID of the node to remove as parameter. It then removes the reference from the feature, and if it was a part of a containment reference then it deletes the node from the tree and removes all cross references to it from other nodes.
+\item \emph{add-reference} : Takes the reference feature name as a parameter. In the case of a cross-reference we also expect a child-id parameter, that is, the identifier of the node we wish to cross reference. The language server then adds this reference. In the case of a containment reference we specify the type of node to add and the language server creates a new node of this type and references it from the parent. The language server assigns this a fresh identifier and sends the skeleton subtree rooted at this new node back to the client so it may update it's skeleton tree. (This response allows the language server to create children for the newly created node if required as a side-effect)
+\item \emph{remove-reference} : Takes the reference feature name and ID of the node to remove as parameter. It removes the reference from the feature, and if it was a part of a containment reference, it deletes the node from the tree, removing all cross references to it from other nodes.
 \end{itemize} 
 %\\
 %\\
@@ -464,16 +482,16 @@ Following the update of a node we can check that we have left it in a valid stat
 I now explain how this API is implemented in the automatically generated language servers from my Xtext extension.
 \\
 \\
-The generated server hosts a Java HTTP servlet. In order to make API calls the client is expected to send get requests to the url pattern specified by the language designer in the generated \emph{MyDslPeServlet.xtend} file, which, by default, is /pe-service/. The client uses a http parameter serviceType to choose the API call to make, and adds other parameters to the request as required by the API call made. The server responds with standard http error codes if there is a mistake with the request parameters or in the execution of the method or otherwise with a JSON object containing the response of the call.
+The generated server hosts a Java HTTP servlet. In order to make API calls the client is expected to send get requests to the url pattern specified by the language designer in the generated \emph{MyDslPeServlet.xtend} file (/pe-service/ by default). The client uses a http parameter serviceType to choose the API call to make, and adds other parameters as required by the method. The server responds with standard http error codes if an issue is encountered or  otherwise with a JSON object containing the response of the call.
 \\
 \\
-In order to get files and project details, the language server injects the FileResourceHandler and ResourceBaseProvider objects specified in the \emph{MyDslPeFileResourceHandler.xtend} and \emph{MyDslResourceBaseProvider.xtend} files. These objects define operations to get and save EMF resources from a "resource id" (we use PROJECTNAME/FILENAME) so that arbitrary persistence layers can be used. By default these correspond to storing files in their textual representation at /user-files/PROJECT_NAME/FILE_NAME.LANGUAGE_EXTENSION relative to the language server, so that loading a file is equivalent to parsing the stored textual representation into an AST, and saving uses the parser rules to create a textual representation from the AST. Retrieving a file using the method in the FileResourceHandler results in an EMF Resource object, from which we can retrieve the EObject which represents the root node of the AST that file represents.
+To get files and project details, the language server injects the FileResourceHandler and ResourceBaseProvider objects specified in the \emph{MyDslPeFileResourceHandler.xtend} and \emph{MyDslResourceBaseProvider.xtend} files. These objects define operations to get and save EMF resources from a "resource id" (we use PROJECTNAME/FILENAME) so that arbitrary persistence layers can be used. By default these correspond to storing files in their textual representation at /user-files/PROJECT_NAME/FILE_NAME.LANGUAGE_EXTENSION relative to the language server, so that loading a file is equivalent to parsing the stored textual representation into an AST, and saving uses the parser rules to create a textual representation from the AST. From a retrieved EMF resource we can retrieve the EObject representing the root node of the AST that file represents.
 \\
 \\
-The EObject retrieved closely matches an AST as we described in our modelling assumptions, containing reference features linking to other EObjects and attributes. When we first open a file and retrieve it's EObject all that remains then is to annotate the tree with unique identifiers as discussed in \ref{apiDesign} which we do recursively from the root. We also construct two additional maps, one from these identifiers to the respective annotated node, and another from the EObjects themselves to the nodeIds. The first of these maps allows us to efficiently find nodes referenced by API calls, the second allows us to find the nodeId of a node even if we obtain it by following the unannotated EObject's references directly. These maps are kept up to date incrementally as nodes are added and removed from the tree.
+The EObject retrieved closely matches an AST as we described in our modelling assumptions, containing reference features linking to other EObjects and attributes. When we first open a file and retrieve it's EObject we must annotate the tree with unique identifiers as discussed in \ref{apiDesign}, which we do recursively from the root. We also construct two maps, one from these identifiers to the respective annotated node, and another from the EObjects themselves to the nodeIds. The first of these maps allows us to efficiently find nodes referenced by API calls, the second allows us to find the nodeId of a node even if we obtain it by following the unannotated EObject's references directly. These maps are kept up to date incrementally as nodes are added and removed from the tree.
 \\
 \\
-Modifying nodes is then done by looking up the relevant node using the nodeID to EObject map and then making the relevant changes to the EObject itself.
+Modifying nodes is done by looking up the relevant EObject using the nodeID to EObject map and then making the relevant changes to the EObject itself.
 %EObject contains all the attributes and reference types as well as some constraints on the node so already have AST in effect
 %From these nodes we create a tree where children of a node are all those contained only in containment references, that is every node is only in this tree once
 %We annotate it with node identifiers which we do when we first open the file
