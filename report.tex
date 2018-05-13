@@ -67,15 +67,74 @@
 \newcommand{\RFamiliarity}{R5\xspace}
 
 %\newcommand{\todo}[1]{==TODO: #1 ==}
-\title{Generating online projectional editors to improve productivity of
-Domain Specific Language users (an extension to language engineering
-workbenches)}
-\author{Alexander Holt}
-\maketitle
 
+\begin{titlepage}
+    \begin{center}
+        \vspace*{1cm}
+        
+        \Huge
+        \textbf{Generating online projectional editors to improve productivity of Domain Specific Language users}
+        
+        \vspace{0.5cm}
+        \LARGE
+        An extension to language engineering workbenches
+        
+        
+        \vspace{1.5cm}
+        
+        \includegraphics[width=0.4\textwidth]{uniLogo.png}
+        \vspace{1.5cm}
+        
+        \textbf{Alexander Holt}\\
+		%Oriel College
+        \vfill
+        \Large
+        Final Honour School of Mathematics \& Computer Science - Part C\\
+        \vspace{0.4cm}
+        May 2018
+        
+        
+        
+    \end{center}
+\end{titlepage}
+
+%\title{
+%{Generating online projectional editors to improve productivity of
+%Domain Specific Language users (an extension to language engineering
+%workbenches)}\\
+
+%{\includegraphics[scale=0.1]{uniLogo.png}}}
+%\author{Alexander Holt}
+%\maketitle
+\clearpage
 %\include{requirements}
-\section*{Abstract}
-\todo{To write}
+\thispagestyle{plain}
+\begin{center}
+    \Large
+    \textbf{Generating online projectional editors to improve productivity of Domain Specific Language users}
+    
+    \vspace{0.4cm}
+    \large
+    An extension to language engineering workbenches
+    
+    \vspace{0.4cm}
+    \textbf{Alexander Holt}
+    
+    \vspace{0.9cm}
+    \textbf{Abstract}
+\end{center}
+This project discusses the generation of web-based, projectional editor applications for arbitrary domain specific languages (DSLs). A server-side web API for editing abstract syntax trees and retrieving projections of a language's abstract syntax is specified. Also presented is a new DSL for rapidly specifying projections of a language's abstract syntax using HTML and JavaScript, so as to be easily displayed in a web-browser. 
+\\
+\\
+The API and DSL are demonstrated in an extension to the language workbench Xtext, which, for an arbitrary language definition, is able to automatically generate a server implementing the API, serving projections specified using the DSL to a client application (for which a default implementation is also presented), creating a projectional editor for the language.
+\\
+\\
+The extension is evaluated to measure the flexibility and usability of it's approach to editor generation. The impact of the resultant editors on domain experts with little or no experience coding is also measured, comparing the productivity of such users using a generated projectional editor against a textual editor. 
+
+
+
+% both in terms of it's flexibility and ease-of-use to a language designer creating a projectional editor, and the impact the resultant editors may have on the accessibility of DSLs to domain experts with little or no experience of coding. 
+
 \clearpage
 \tableofcontents
 \clearpage
@@ -88,7 +147,7 @@ Domain Specific Languages (DSLs) are programming languages which have been creat
 As these languages usually target very specific domains, much effort has been put into simplifying their creation, reducing the outlay of time this requires and so justifying their use in smaller teams or projects. Tools which do this are called language workbenches. Language workbenches usually offer an IDE for language designers to specify the concrete syntax or structure of a language, build an editor for instances of it, and then a generator or compiler to convert it into a GPL. Language workbenches offer varying degrees of automation in completing these tasks.
 \\
 \\
-Most GPls are input using textual representations, however other editing approaches exist. One such approach is projectional editing, in which users interact with a programming language's internal representation, it's abstract syntax tree, directly. This is achieved using projections, which specify how this structure should be interacted with on screen, potentially with text, but possibly with tables, diagrams or anything else befitting the domain. 
+Most GPLs are input using textual representations, however other editing approaches exist. One such approach is projectional editing, in which users interact with a programming language's internal representation, it's abstract syntax tree, directly. This is achieved using projections, which specify how this structure should be interacted with on screen, potentially with text, but possibly with tables, diagrams or anything else befitting the domain. 
 \\
 \\
 Projectional editing is a particularly useful concept for DSLs, which are often used to model domains that have clear non-textual representations. Projections can also reduce the syntax a user is required to learn, which is useful when a DSL may only be used by an individual sporadically and without extensive training.
@@ -97,22 +156,19 @@ Projectional editing is a particularly useful concept for DSLs, which are often 
 
 \subsubsection{Problem To Address}\label{problem}
 
-This project seeks to address the following problem. An often cited use case for DSLs is to enable domain experts to write code to solve issues within their domain in an efficient manner. However, these experts are not necessarily experienced at writing code. To those without prior experience, traditional, textually based programming can seem alienating and complex. Resulting in a situation where "Statements like [...] 'Domain experts aren't programmers' [...] are often-overheard prejudices" which Markus Voelter suggests "hinder the adoption of DSLs" for such use cases~\cite[pg.45]{dslEngineering}.
-\\
-\\
-Projectionally editing code alleviates this problem, allowing the user to interact with the code in a way which is intuitive and familiar, and crucially can be made to not look like code. However, although a projectionally based language workbench, MPS~\cite{mps}, exists, it is geared towards projections which look primarily like textual code, which we are trying to prevent in the case of interacting with users as described above. There is also a significant feature disparity between it and it's parser-based rivals. One feature it is notably lacking is the ability to generate a web-based editor application which is particularly appealing for our use case as we discuss in \ref{motivation}.
+An often cited use case for DSLs is to enable domain experts to write code to solve issues within their domain in an efficient manner. However, these experts are not necessarily experienced at writing code. To those without prior experience, traditional, textually based programming can seem alienating and complex, resulting in a situation where "Statements like [...] 'Domain experts aren't programmers' [...] are often-overheard prejudices", which Markus Voelter suggests "hinder the adoption of DSLs" for such use cases~\cite[pg.45]{dslEngineering}.
 
 \subsubsection{Project Goal}\label{goal}
-This project's goal was to extend an existing language workbench, or to create a new one, with the capability of generating a web-based, projectional editor for any DSL specified in that workbench. 
+To make DSLs more accessible for the types of users discussed in \ref{problem}, we wish to extend an existing language workbench with the capability of generating a web-based, projectional editors for DSLs specified in that workbench. 
 
 \subsubsection{Motivation}\label{motivation}
-Currently, the ability to automatically generate a projectional editor as a web application for an arbitrary language specification, does not exist in any major \todo{change this to any I know of?} language workbench. However, I believe this functionality would be useful for the following reasons:
+This functionality would be useful for the following reasons:
 \begin{itemize}
-\item Web editing is particularly useful for DSLs, speeding up the deployment of newly created languages by reducing the need to share/install IDEs or plugins after every iteration of the language (which are likely to change frequently in their infancy). 
-\item Projectional editors can reduce, and in some cases completely eliminate, the time required by a user to learn the syntax of a language. This is useful for DSLs where the language is likely only used for a small part of a project and will not be commonly known.
-\item Crucially, the combination of these features is ideal for addressing the problem laid out in Section \ref{problem}. A web editor ensures that there is no need to install or use an IDE for the language, which are often notoriously complex. A projectional editor may then allow them to interact with the language in an environment they are used to, perhaps by filling in forms and tables or drawing a diagram.  
+\item Web editing speeds up the deployment of newly created languages by reducing the need to share/install IDEs or plugins after every iteration of the language (which are likely to change frequently in their infancy). 
+\item Projectional editors can reduce the syntax a user must learn, and present DSLs in ways befitting the domain.
+\item Crucially, the combination of these features is ideal for addressing the problem laid out in Section \ref{problem}. A web editor ensures that there is no need to install or use an IDE for the language, which are often notoriously complex. A projectional editor would then allow them to interact with the language in an environment they are used to, perhaps by filling in forms and tables or drawing a diagram.  
 \end{itemize} 
-As further affirmation to the potential usefulness of this feature, we look at the existing Sprotty framework being developed by Typefox~\cite{sprotty}, a prominent group of contributors to the open-source language workbench Xtext~\cite{xtext}. Sprotty aims to provide graphical views of textual code by integrating with language servers produced by Xtext. A web based projectional editor could not only offer this view, but also allow the user to interact with this view directly to modify their code, which is clearly far more powerful. 
+%As further affirmation to the potential usefulness of this feature, we look at the existing Sprotty framework being developed by Typefox~\cite{sprotty}, a prominent group of contributors to the open-source language workbench Xtext~\cite{xtext}. Sprotty aims to provide graphical views of textual code by integrating with language servers produced by Xtext. A web based projectional editor could not only offer this view, but also allow the user to interact with this view directly to modify their code, which is clearly far more powerful. 
 
 \subsubsection{Requirements}\label{requirements}
 To be able to evaluate the final implementation I here set out the necessary requirements we should meet in order to fulfil our goal: 
@@ -124,6 +180,15 @@ To be able to evaluate the final implementation I here set out the necessary req
 \item{\textbf{R4: Intuitive Editor} - As before we are specifically targeting less technically inclined users, and so any default interface should be as intuitive as possible for non-developers.}
 \item{\textbf{R5: Familiarity} - The process for creating a new language and accompanying editor should be as familiar to the language designer as possible. They should have to learn as few new technologies/languages/processes as possible.}
 \end{itemize}
+\subsection{Related Work}
+MPS~\cite{mps},  is a popular open-source language workbench that can produce standalone projectional editors, but it cannot generate web editors and is geared towards projections which look primarily like textual code. Papers by Voelter et al. and Berger et al.~\cite{projEditControlledExperiment,towardsUserFriendlyProjEditors}, have attempted to evaluate the efficiency of projectional editing using MPS, but both are solely focussed on users with existing experience writing code.  
+\\
+\\
+Typefox, a prominent group of contributors to the open-source language workbench Xtext~\cite{xtext} are developing the Sprotty framework~\cite{sprotty}. Sprotty aims to provide graphical views of textual code by integrating with language servers produced by Xtext. A web based projectional editor could not only offer this view, but also allow the user to interact with this view directly to modify their code, which is clearly far more powerful.
+\\
+\\
+The Concrete Editor~\cite{concrete} is a tool for defining DSLs and creating web based projectional editors for them using HTML. However, the produced editors are extremely limited in the types of projections they can display, and as a language workbench it is very incomplete, notably offering no way to generate a language. It is also lacking support and documentation, it's official forum, for example, only had 8 threads at time writing.
+\todo{DO I include this on concrete editor or not? It does seem very similar to thing I have achieved which maybe detracts}
 
 \subsection{Contributions}
 
@@ -131,7 +196,7 @@ In order to achieve the project's goal my contributions can be split into 3 key 
 
 \begin{enumerate}
 \item The specification of a server-side web API to allow a client application to edit an arbitrary programming language projectionally.
-\item The development of a DSL for specifying projections of an arbitrary programming language's abstract syntax tree, which may easily be displayed and interacted with within a web browser.
+\item The development of a DSL for specifying projections of an arbitrary programming language's abstract syntax, which may easily be displayed and interacted with from within a web browser.
 \item The extension of the language workbench Xtext~\cite{xtext} such that, given a language specification of a DSL, it can automatically generate a web application capable of using (1) to projectionally edit the language using projections specified with (2).
 \end{enumerate}
 
