@@ -848,23 +848,29 @@ This language could for example be used to simulate the coalescing of particles 
 The language was designed to evaluate the performance of web editor generation on a GPL, and also to evaluate the flexibility of the possible projections, node graphs having a clear non-textual visual representation which we'd like to use.
 \\
 \\
-The process for creating the editor was more involved than the other two as we wanted to use the D3.js JavaScript library~\cite{d3} to display and edit node graph primitives. To achieve this we had to override the standard ViewRetriever object which is responsible for creating the JSON objects sent as response to get-node requests (see Section \ref{viewObject}). We add a check to see if the tree node requested is a node graph, and if so return a special view object with the type "NodeGraph", listing the vertices and edges of the graph in a form that D3.js can plot. A single line was then changed in the generated GraphPeServlet file to use the overridden ViewRetriever instead of the default one.
-\todo{List the new type sent?}
-\begin{figure}[h!]
-  \centering
-  \includegraphics[width=\linewidth]{./Screenshots/graphUI25Narrow.png}
-  \caption{The PasGraph language editor displaying several statements}
-  \label{fig:pasgraphUI1}
-\end{figure}
+The process for creating the editor was more involved than the other two as we wanted to use the D3.js JavaScript library~\cite{d3} to display and edit node graph primitives. To achieve this, in the back-end we:
+\begin{itemize}
+\item Overrode the standard ViewRetriever object (responsible for creating the responses to get-node requests, see Section 6), adding a check to see if the AST node requested is a NodeGraphConstant. If so a special get-node response object with the type "NodeGraph", listing the vertices and edges of the graph in a form that D3.js can plot, is returned. 
+\item Changed the viewRetriever declaration in the  generated GraphPeServlet file to use our overridden ViewRetriever.
+\end{itemize}
+In the front-end we:
+\begin{itemize}
+\item Added a self contained Angular component which, when given a NodeGraph get-node response, would plot the graph using a D3.js force simulation and allow a user to interact with it.
+\item Added the NodeGraph case to the main editor component which chooses which editor component should display the response of a get-node request.
+\end{itemize}
+As the front end uses a separate service for interacting with the API, it was easy to create the graph component and ensure interactions with it updated the AST correctly. For example, when the user clicks in an empty space, an add-reference request is sent to the server to create a vertex child, and upon receiving a success response a vertex is then added to the diagram.
 \begin{figure}[h!]
   \centering
   \includegraphics[width=\linewidth]{./Screenshots/graphUIgraph2narrow.png}
-  \caption{The PasGraph language editor projecting a graph constant}
+  \caption{The PasGraph language editor projecting a graph constant as a D3.js ForceSimulation}
   \label{fig:pasgraphUI2}
 \end{figure}
-\\
-\\
-The front end was modified with the addition of a self contained component which, when given a NodeGraph view object, would plot the graph using a D3.js force simulation and allow a user to interact with it. Using the edit service it was easy to allow interaction with this graph to update the AST, for example, when the user clicks in an empty space, an add-reference request is sent to the server to create a vertex child, and upon receiving a success response a vertex is then added to the diagram. The only other required change in the front end was to add the NodeGraph case in the main editor component which chooses which component to use based on the type of a get-node response.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=\linewidth]{./Screenshots/graphUI25Narrow.png}
+  \caption{The PasGraph language editor displaying several statements using a textual projection}
+  \label{fig:pasgraphUI1}
+\end{figure}
 \\
 \\
 All in all the creation of the editor was still straightforward. Almost all of the additional code required for the complex projection was written in entirely separate components which were easy to integrate with the existing code. The remaining projections were created using the editor language as normal and so as a whole the editor creation process was still fairly quick. This demonstrates that the extension has successfully achieved \RSetup and \RCustom, the tool allowing quick specification of nodes with simple projections, but allowing arbitrary web technologies to create more complex projections which can easily be integrated if required. 
@@ -873,8 +879,7 @@ All in all the creation of the editor was still straightforward. Almost all of t
 The method used here also indicates an advantage that these web projectional editors have over their non-web-based projectional counterparts. In the graph node example we send to the front end a list of vertices and edges which are then displayed, but we could have sent any JSON object we'd wanted. If the projection we desired were more complex, say including a 3D view of some simulation, we could have exploited this behaviour to have the server conduct any expensive calculations/preprocessing required by the projection and sent this within the view object. This could substantially reduce the hardware requirements for the language user's machine if complex projections are required.
 \\
 \\
-\todo{rewrite this section or bin it}
-One issue noticed in the implementation of this language is that new projection types cannot be mixed with those specified in the \emph{.editor} file. This means that the visual projection of the graph could only be used when editing the graph in isolation of the rest of the tree, and at other times a textual representation was required. However this could easily be solved by modifying the protocol for getting a node, so that instead of asking for and expecting a single view object containing all projection information of the children, the client must recursively ask for these, enabling it to display children using different front end components.
+One issue noticed in the implementation of this language is that new projection types cannot be mixed with those specified in the \emph{.editor} file. This means that the visual projection of the graph could only be used when editing a NodeGraphConstant in isolation of the rest of the tree, and at other times a textual representation was required. However this could be easily be solved by modifying the get-node response so instead of the server building a single get-node response including the projections of the child nodes, placeholders are used so the client must recursively ask for these, enabling it to display children using different front end components.
 %
 %
 %Screenshots of projections
