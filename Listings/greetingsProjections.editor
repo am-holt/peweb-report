@@ -1,0 +1,29 @@
+
+//Model nodes have one containment reference feature, greetings
+Node Model{
+	Projection main{
+		view: [<h1>Greetings:</h1>  <<!greetings:shortened!>> ]
+	}
+}
+
+//Greeting nodes have one attribute, name
+Node Greeting{
+	
+	//This projection will be used when viewing a Greeting node as the root of a subtree
+	Projection main{
+		view: [ This is a greeting for <<%textBox:name%>> !]
+	}
+	
+	//This projection is used in the Model's main projection
+	Projection shortened{
+		view: [Hello <<%textBox:name%>> !]
+	}
+}
+
+//A simple textbox with no validation
+Component textBox{
+	view:[<input type=\"text\" id=<<$input$>>>]
+	get:[document.getElementById(<<$input$>>).value]
+	set:[document.getElementById(<<$input$>>).value = X]
+	validate:[]
+}

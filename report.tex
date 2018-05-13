@@ -583,7 +583,7 @@ Modifying nodes is done by looking up the relevant EObject using the nodeID to E
 
 \section{Projection Specification Language}\label{EditorLanguage}
 \subsection{Overview}
-The real power of a projectional editor lies in it's ability to allow a user to interact with a programming language in an intuitive way using projections that are designed alongside the language. In this section I present a DSL developed to rapidly specify custom projections for ASTs of an arbitrary language. We use this in our Xtext extension to allow language designers to create such specifications for their own languages. Like the API discussed in Section \ref{api}, this language was designed independently of the extension, and so could be used to extend other language workbenches.
+The real power of a projectional editor lies in it's ability to allow a user to interact with a programming language in an intuitive way using projections that are designed alongside the language. In this section I present a DSL developed to rapidly specify custom projections for ASTs (as modelled in \ref{apiAssumptions})of an arbitrary language. We use this in our Xtext extension to allow language designers to create such specifications for their own languages. Like the API discussed in Section \ref{api}, this language was designed independently of the extension, and so could be used to extend other language workbenches.
 %Ultimately the goal being to provide a standard way for language designers to define projections for their language within a language workbench which can then be used in the automatic generation of a web projectional editor.
 \\
 \\
@@ -671,9 +671,24 @@ The complete specification for the language follows, using extended BNF with the
 \end{grammar}
 
 \emph{Note}: Terminal rules for CodeLiteral and ID have been omitted for the sake of brevity.
-
+Here is a small example of a projection specification for a simple greetings language. The specified projection should look something like in \ref{fig:greetingProjection}.
 \subsubsection{Examples}
-Example \emph{.editor} files can be found in Appendix \ref{expressionLanguageDefEditor}, \ref{questionnaireLanguageDefEditor} and \ref{pascalLanguageDefEditor}.
+\lstinputlisting[tabsize=2]{Listings/greetingsProjections.editor}
+\begin{figure}[t!]
+  \centering
+  \begin{subfigure}[b]{0.45\linewidth}
+    \includegraphics[width=\linewidth]{./Screenshots/greetingsProjection1.png}
+    \caption{A Model node}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.45\linewidth}
+	\includegraphics[width=\linewidth]{./Screenshots/greetingsProjection2.png}
+    \caption{A Greeting node}
+  \end{subfigure}
+  \caption{An imagining of the specified main projections for a Model with 2 Greeting references}
+  \label{fig:greetingProjection}
+\end{figure}
+
+Further example \emph{.editor} files can be found in Appendix \ref{expressionLanguageDefEditor}, \ref{questionnaireLanguageDefEditor} and \ref{pascalLanguageDefEditor}.
 
 
 \subsubsection{Node}
