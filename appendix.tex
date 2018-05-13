@@ -168,6 +168,19 @@
 \item message:String - If not valid returns a message indicating why
 \end{itemize}
 
+\subsubsection{validate-file}
+
+\emph{Parameters}: 
+\begin{itemize}
+\item project-name:String - URI of the project the node resides in
+\item file-name:String - URI of the file the node resides in
+\end{itemize}
+\emph{Response}: 
+\begin{itemize}
+\item invalidNodes : [(String,Boolean,String)] - List of invalid nodeIds and messages indicating why they are not valid
+\end{itemize}
+
+
 \section{Projection Specification Language Grammar}\label{editorLanguageGrammar}
 \lstinputlisting[ tabsize=2 ]{Listings/EditorLanguage.xtext}
 
