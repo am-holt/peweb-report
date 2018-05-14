@@ -130,6 +130,12 @@ The API and DSL are demonstrated in an extension to the language workbench Xtext
 \\
 \\
 The extension is evaluated to measure the flexibility and usability of it's approach to editor generation. The impact of the resultant editors on domain experts with little or no experience coding is also measured, comparing the productivity of such users using a generated projectional editor against a textual editor. 
+\begin{center}
+	\vspace {1.5cm}
+    \Large
+    \textbf{Acknowledgement}
+\end{center}
+I'd like to thank my supervisor Seyyed Madasar Shah for all of his help and guidance over the course of this project.
 
 
 
@@ -532,16 +538,19 @@ The two standard types are:
 \end{itemize}
 We discuss these in more detail in Section \ref{viewObject}.
 \subsubsection{Making Changes to a Node}
-
-From our modelling assumptions a node consists of a series of attributes, containment reference features and cross-reference features. To make changes to nodes we provide 3 methods in our API to modify these. Each method takes as parameter the project name, file name and nodeId of the node being modified so the server doesn't have to store state regarding which nodes clients have requested and are editing. The methods are as follows: 
+We provide 3 methods in our API to modify a node's attributes, containment reference features and cross-reference features. Each method uses projectName, fileName \& nodeId parameters to indicate which node the changes should be made to. The methods are: 
 \begin{itemize}
-\item \emph{update-attribute}: Takes the attribute name  of the node and it's new value (as a string, using our assumption here that all datatypes in a language are serializable as such). 
-\item \emph{add-reference}: Takes the reference feature name as a parameter. In the case of a cross-reference we also expect a child-id parameter, that is, the identifier of the node we wish to cross reference. The language server then adds this reference. In the case of a containment reference we specify the type of node to add and the language server creates a new node of this type and references it from the parent. The language server assigns this a fresh identifier and sends the skeleton subtree rooted at this new node back to the client so it may update it's skeleton tree. (This response allows the language server to create children for the newly created node if required as a side-effect)
-\item \emph{remove-reference} : Takes the reference feature name and ID of the node to remove as parameter. It removes the reference from the feature, and if it was a part of a containment reference, it deletes the node from the tree, removing all cross references to it from other nodes.
+\item \emph{update-attribute}: Updates a node's attribute
+\item \emph{add-reference}: Either adds a cross-reference to an existing node, or creates a new node within a containment feature
+\item \emph{remove-reference} : Removes references, in the case of a containment reference it removes all cross-references to the deleted node.
 \end{itemize} 
 %\\
 %\\
-Following the update of a node we can check that we have left it in a valid state using the \emph{validate-node} method which takes as parameter the project name, file name and nodeId of a node and returns an object which either signals that the node is in a valid state OR that it isn't and a string with the error message. In the case of removing a containment reference, as other nodes may have cross referenced it, we must instead use the \emph{validate} method, which will return a list of every node which is not in a valid state with the matching error strings.
+After the update of a node we can use validation methods to check the state of the AST:
+\begin{itemize}
+\item \emph{validate-node}: Checks if a single node is in a valid state, returning an error message if not. To be used after a cross-reference is added or an attribute updated
+\item \emph{validate}: Checks all nodes in the AST for a valid state, returning the respective error messages for those that aren't. Used after a containment reference is added or deleted.
+\end{itemize}
 
 \subsection{Implementation in Xtext}
 I now explain how this API is implemented in the automatically generated language servers from my Xtext extension.
@@ -1011,8 +1020,7 @@ I am happy with what I have achieved in the given time frame, but the evaluation
 \item Conducting evaluation on the performance of the projectional editor's produced in comparison to their textual counterparts. This could be done by designing a range of languages and measuring performance on files of various sizes.
 \item Modifying the UI on the default client application so that navigation is clearer, perhaps by styling the buttons differently. Evaluation would then have to be done to ensure the changes were effective.
 \end{itemize}
-\subsection{Acknowledgement}
-I'd like to thank my supervisor Seyyed Madasar Shah for all of his help and guidance over the course of this project.
+
 \clearpage
 
 \printbibliography
