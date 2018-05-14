@@ -535,8 +535,8 @@ We discuss these in more detail in Section \ref{viewObject}.
 
 From our modelling assumptions a node consists of a series of attributes, containment reference features and cross-reference features. To make changes to nodes we provide 3 methods in our API to modify these. Each method takes as parameter the project name, file name and nodeId of the node being modified so the server doesn't have to store state regarding which nodes clients have requested and are editing. The methods are as follows: 
 \begin{itemize}
-\item \emph{update-attribute} : Takes the attribute name  of the node and it's new value (as a string, using our assumption here that all datatypes in a language are serializable as such). 
-\item \emph{add-reference} : Takes the reference feature name as a parameter. In the case of a cross-reference we also expect a child-id parameter, that is, the identifier of the node we wish to cross reference. The language server then adds this reference. In the case of a containment reference we specify the type of node to add and the language server creates a new node of this type and references it from the parent. The language server assigns this a fresh identifier and sends the skeleton subtree rooted at this new node back to the client so it may update it's skeleton tree. (This response allows the language server to create children for the newly created node if required as a side-effect)
+\item \emph{update-attribute}: Takes the attribute name  of the node and it's new value (as a string, using our assumption here that all datatypes in a language are serializable as such). 
+\item \emph{add-reference}: Takes the reference feature name as a parameter. In the case of a cross-reference we also expect a child-id parameter, that is, the identifier of the node we wish to cross reference. The language server then adds this reference. In the case of a containment reference we specify the type of node to add and the language server creates a new node of this type and references it from the parent. The language server assigns this a fresh identifier and sends the skeleton subtree rooted at this new node back to the client so it may update it's skeleton tree. (This response allows the language server to create children for the newly created node if required as a side-effect)
 \item \emph{remove-reference} : Takes the reference feature name and ID of the node to remove as parameter. It removes the reference from the feature, and if it was a part of a containment reference, it deletes the node from the tree, removing all cross references to it from other nodes.
 \end{itemize} 
 %\\
@@ -778,13 +778,21 @@ If the language designer wishes to use some other method to define projections t
 
 
 \section{Client Application}\label{clientApp}
-Here I present an implementation of a client application, written using the Angular framework~\cite{angular}, for use with a language server implementing the API from Section \ref{api}. This application serves as the default front end for projectional editors which have been generated using our extension to Xtext. 
+Here I present an implementation of a client application, written using the Angular framework~\cite{angular}, for use with a language server implementing the API from Section \ref{api}. This application serves as the default front end for projectional editors which have been generated using our Xtext extension. 
 
 \subsection{Design}
-The client application was designed to offer a simple interface with all default functionality, supporting both Default and Custom view types as discussed earlier. The application was written using the Angular framework and TypeScript, as this offered all the features needed and is very popular. This means plenty of documentation is available and it should be easy for language designers to extend.\todo{reword}
+The client application was designed to offer a simple interface with all default functionality, supporting both default and \emph{.editor} specified projections. The application was written using the Angular framework and TypeScript, as these offered all the features required and are very popular. This means plenty of documentation is available and it should be easy for language designers to extend.
 \\
 \\
-Extensibility was one of the biggest considerations when writing this application. As this will be the UI with which a language's end users directly interact with, we expect a language designer will want to make changes to match their companies/institutions styling and also to build in other  deployment dependent features, like user authentication or training materials etc. To this end, the application is built in a very modular fashion, so that it is easy to modify and extend. This was easy to achieve using Angular components and services. Notably, all interaction with the language server via the API is written as a separate service which maybe imported into a different application implementation. Likewise the actual display and editing of a node via a projection is a separate Angular component, and so may easily be imported and placed within a different client application.
+Extensibility was one of the biggest considerations when writing this application. As this will be the UI with which a language's end users directly interact with, we expect a language designer will want to make changes to match their companies/institutions styling and also to build in other deployment dependent features, like user authentication or training materials etc. To this end, the application is built in a very modular fashion, so that it is easy to modify and extend. This was achieved using a modular design comprising of self-contained Angular components and services. Notably, all interaction with the language server via the API is written as a separate service, and the display of projections are a well-contained component, so both maybe imported into different application implementations. 
+\\
+\\
+The projection display component takes a get-node response as input and based on the type of the response displays another component:
+\begin{itemize}
+\item \emph{default} - For each attribute a labelled textbox element is placed, and for each reference feature a list of the referenced nodes with remove buttons and an add-reference selector is displayed.
+\item \emph{custom} - The htmlView is displayed and functionality is added to the add/remove reference components using the id's found in the referenceControllers. A JavaScript interpreter is used to evaluate attribute's setters, displaying their initialValues. The interpreter is also used to convert their getter \& validator methods into unevaluated function variables which are added to a polling method to check for changes (we don't want to use the interpreter itself in the polling method as it is relatively slow). If the polling function detects a valid attribute modification, an update-attribute API call is made.
+\end{itemize}
+Supporting new get-node response types can be done by writing a new Angular component to display the response type, and modifying the projection display component to select it when relevant.
 \subsubsection{UI}
 The UI takes some inspiration from the online IDE Theia~\cite{theia} with navigation happening on the left hand side leaving a large space for the projections on the right. The intention was for this default UI to be as simple and clean as possible, so that it if a language designer doesn't require additional features, or specific styling, the default UI should be appropriate. It was also designed to be easy to use. These two considerations reflect requirements \RSetup and \RIntuitive respectively.
 \begin{figure}[h!]
@@ -794,9 +802,7 @@ The UI takes some inspiration from the online IDE Theia~\cite{theia} with naviga
   \label{fig:webUI}
 \end{figure}
 %
-%\subsection{View Implementation}
 %
-\todo{Discuss implementation of views here?}
 %>Asynchronous calls, separating services and response code to separate concerns so easy to make new UI as desired
 %>Discuss 2 kinds of view and implementation
 %>Evaluate Performance
