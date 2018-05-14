@@ -247,10 +247,10 @@ An abstract syntax tree is a representation of a program in the abstract syntax.
 \end{itemize}
 The edges that represent containment references give the graph it's tree structure and name.
 \subsubsection{AST Formalisms}\label{astFormalisms}
-There have been many attempts to formalise ASTs. The 3 most popular language workbenches use 3 different formalisms: \begin{itemize}
+There have been many attempts to formalise ASTs. Three of the most popular language workbenches use different formalisms: \begin{itemize}
 \item \emph{Xtext} - EMF Ecore~\cite{emf}, this is particularly relevant to this project and so described in detail in Section \ref{emf}
-\item \emph{Spoofax} - ATerm~\cite{aterm} \todo{Do I need more info here?}
-\item \emph{MPS} - Structure Language~\cite{mpsStructureLanguage} \todo{Do I need more info here?}
+\item \emph{Spoofax} - ATerm~\cite{aterm} 
+\item \emph{MPS} - Structure Language~\cite{mpsStructureLanguage}
 \end{itemize}
 %What is? 3 formalisations: EMF,Aterms, MPS etc. from DSL engineering book
 %Summary of all 3
@@ -289,9 +289,6 @@ The Eclipse Modelling Framework~\cite{emf} contains an Ecore component to descri
 \item \emph{EObject} - An instance of an EClass, each node in an AST will be an EObject
 \item \emph{EFactory} - Creates EObjects given an EClass
 \end{itemize}
-\todo{give example?}
-\\
-\\
 When Xtext generates a language, an Ecore model is created. The conversion process from grammar to model is nuanced but essentially an EClass is created for each parser rule, with the same attributes and references listed inside that rule. When Xtext then parses an input file written in the new language, it creates an instance of the Ecore model as a series of EObjects.
 %Move this into AST discussion?
 %Internally Xtext uses EMF so go into little more detail about that here?
@@ -717,7 +714,7 @@ Multiple projections can be defined for a single node. When referencing children
 The body of a projection declaration contains a view, and optionally, attribute controllers and component declarations.
 \\
 \\
-The view attribute defines how the projection should look on screen. This is achieved using a HTML snippet delimited by square brackets. \todo{Square braces don't make sense for JS, should change this if have time} These HTML snippets can also include the following additional annotations:
+The view attribute defines how the projection should look on screen. This is achieved using a HTML snippet delimited by square brackets. These HTML snippets can also include the following additional annotations:
 \begin{itemize}
 \item <<!CHILDNAME:PROJECTION\_NAME!>> : Indicates the reference with the name CHILDNAME should have its PROJECTION\_NAME projection inserted here. Used as the child node cells are in MPS. If the reference feature references multiple nodes then some default list view will show the set of children, each using the specified projection. Unlike in MPS I am not allowing customisation of the list layout itself at present, but this is a clear target for future iterations.
 \item <<\%COMPONENTNAME \%>> : Inserts the component COMPONENTNAME, enabling reuse of code.
