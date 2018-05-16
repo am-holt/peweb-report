@@ -139,7 +139,7 @@
 \end{itemize}
 \emph{Response}: 
 \begin{itemize}
-\item ast:StructureTree - If containment (e.g. not cross reference) returns a tree of the ID's and names of nodes in the AST rooted at the newly created child node. Required as then the creation of the child node may as a side effect create it's own children
+\item ast:StructureTree - If containment (i.e. not cross reference) returns a tree of the ID's and names of nodes in the AST rooted at the newly created child node. Required as then the creation of the child node may as a side effect create it's own children
 \end{itemize}
 
 \subsubsection{remove-ref}
@@ -182,30 +182,31 @@
 
 
 \section{Projection Specification Language Grammar}\label{editorLanguageGrammar}
+The grammar for the \emph{.editor} language, specified using Xtext's grammar language:
 \lstinputlisting[ tabsize=2 ]{Listings/EditorLanguage.xtext}
 
 \section{Expression Language Definition}\label{expressionLanguageDef}
-\subsection{Grammar}
+\subsection{Xtext Grammar Specification}
 \lstinputlisting[ tabsize=2 ]{Listings/Arithmetic/Arithmetic.xtext}
 
-\subsection{Projections}\label{expressionLanguageDefEditor}
+\subsection{Projections (.editor file)}\label{expressionLanguageDefEditor}
 \lstinputlisting[ tabsize=2 ]{Listings/Arithmetic/Projections.editor}
 
 \section{Questionnaire Language Definition}\label{questionnaireLanguageDef}
 
-\subsection{Grammar}
+\subsection{Xtext Grammar Specification}
 \lstinputlisting[ tabsize=2 ]{Listings/Question/Q.xtext}
 
-\subsection{Projections}\label{questionnaireLanguageDefEditor}
+\subsection{Projections (.editor file)}\label{questionnaireLanguageDefEditor}
 \lstinputlisting[ tabsize=2 ]{Listings/Question/Projections.editor}
 
 
 \section{PasGraph Language Definition}\label{pascalLanguageDef}
 
-\subsection{Grammar}
+\subsection{Xtext Grammar Specification}
 \lstinputlisting[ tabsize=2 ]{Listings/Graph/Graph.xtext}
 
-\subsection{Projections}\label{pascalLanguageDefEditor}
+\subsection{Projections (.editor file)}\label{pascalLanguageDefEditor}
 \lstinputlisting[ tabsize=2 ]{Listings/Graph/Projections.editor}
 
 
@@ -257,7 +258,7 @@ Definitely the second one
 \textit{The web editor?}
 \\
 \\
-Yep.Because having dropdowns made [input easier], you just had to recognise what section to put in as opposed to having to memorise exactly what to type so you just have to be familiar with it as opposed to knowing exactly what to enter. Also not having to put in the brackets in the right places was a massive help.
+Yep. Because having dropdowns made [input easier], you just had to recognise what section to put in as opposed to having to memorise exactly what to type so you just have to be familiar with it as opposed to knowing exactly what to enter. Also not having to put in the brackets in the right places was a massive help.
 \\
 \\
 \textit{If I were to ask you to come again in a weeks time and I were to ask you to create another questionnaire to a given brief but didn't give you the training materials, how confident would you be creating that firstly with the textual editor?}
@@ -396,7 +397,7 @@ If all the necesary sections were there, then yes. If there were other things th
 \textit{And with the textual, Eclipse editor what do you think the minimal amount of training you would have had to receive? If I'd have sent you an exisiting questionnaire and then a task do you think you could have worked out how to write a specification from the example?}
 \\
 \\
-I believe so yes,but I think if it's the kind of thing you'd keep coming back and forth from, it'd still take a lit of time to relearn it unless you were consistently coding.
+I believe so yes, but I think if it's the kind of thing you'd keep coming back and forth from, it'd still take a little bit of time to relearn it unless you were consistently coding.
 \\
 \\
 \textit{And what about the web editor, do you think you could have used that without any of the documentation you received today?}
