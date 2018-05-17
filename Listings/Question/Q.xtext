@@ -8,48 +8,36 @@ Questionnaire:
 Section:
 	'Section' name=ID'{'
 		sectionContents+=SectionContents+
-	'}' (nextSection=NextSection)?
-;
+	'}' (nextSection=NextSection)? ;
 
 SectionContents:
-	Question | Title | Description
-;
+	Question | Title | Description ;
 
 Title:
-	'Title' title=STRING
-;
+	'Title' title=STRING ;
 
 Description:
-	'Description' description=STRING
-;
+	'Description' description=STRING ;
 
 Question:
-	MultipleChoiceQuestion | TextQuestion
-;
+	MultipleChoiceQuestion | TextQuestion ;
 
 MultipleChoiceQuestion:
 	'MultipleChoiceQuestion' question=STRING '{' 
 		( answers +=MultipleChoiceAnswer)*
-	'}'
-;
+	'}' ;
 
 MultipleChoiceAnswer:
-	'Answer' answer=STRING (goto=SectionReference)?
-;
+	'Answer' answer=STRING (goto=SectionReference)? ;
 	
 TextQuestion:
-	'TextQuestion' question=STRING (description=STRING)? ('{' 
-	'}')?
-;
+	'TextQuestion' question=STRING (description=STRING)? ('{' '}')? ;
 
 NextSection:
-	SectionReference | {EndOfQuestionnaire} EndOfQuestionnaire
-;
+	SectionReference | {EndOfQuestionnaire} EndOfQuestionnaire ;
 
 SectionReference:
-	'goto' section=[Section]
-;
+	'goto' section=[Section] ;
 
 EndOfQuestionnaire:
-	'End'
-;
+	'End' ;

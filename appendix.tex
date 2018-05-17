@@ -4,10 +4,10 @@
 %\usepackage{amsmath}
 %\usepackage{syntax}
 %\usepackage{pdfpages}
-%
+%\usepackage{array}
 %\usepackage[T1]{fontenc}
 %\usepackage{lmodern}
-%
+%\usepackage{multirow}
 %%all used by listings
 %\usepackage{listings}
 %\usepackage{xcolor}   % for \textcolor
@@ -21,13 +21,13 @@
 %  commentstyle=\color{gray}\ttfamily,
 %  keywordstyle=\color{blue}\ttfamily
 %}
-%
+%%
 %\usepackage{color}
 %\definecolor{lightgray}{rgb}{.9,.9,.9}
 %\definecolor{darkgray}{rgb}{.4,.4,.4}
 %\definecolor{purple}{rgb}{0.65, 0.12, 0.82}
 %\lstdefinelanguage{TypeScript}{
-%  keywords={break, case, catch, class,constructor, continue, debugger, default, delete, do, else,export, false, finally, for, function, if,implements, in, instanceof, new, null, return, switch,static, this, throw, true, try, typeof, var, void, while, with},
+%  keywords={break, case, catch, class,constructor, continue, debugger, default, delete, do, lse,export, false, finally, for, function, if,implements, in, instanceof, new, null, return, witch,static, this, throw, true, try, typeof, var, void, while, with},
 %  morecomment=[l]{//},
 %  morecomment=[s]{/*}{*/},
 %  morestring=[b]',
@@ -41,183 +41,149 @@
 %  sensitive=true
 %}
 %
-%%End of used by listings
-%
-%
+%%%End of used by listings
+%%
+%%
 %\begin{document}
+%%\chapter{Appendix}
+
+\section{Full API Specification}\label{fullApiSpec}
+
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{| m{2.5cm}| m{2.3cm} | m{10.2cm} |}
+\hline
+Method &  &  \\
+\hline \hline
 %
-%\chapter{Appendix}
+\multirow{2}{*}{ls-projects} & \multirow{1}{*}{\emph{Parameters}} & N/A \\ \cline{2-3}
+			& \multirow{1}{*}{\emph{Response}} & \emph{projectnames}: String[] - Returns a list of URIs for available projects on the webserver \\ \hline \hline 
+%
+\multirow{2}{*}{add-project} & \multirow{1}{*}{\emph{Parameters}} & \emph{name}: String - Desired URI for the project to create \\ \cline{2-3}
+			& \multirow{1}{*}{\emph{Response}} & N/A \\ \hline \hline
+%
+\multirow{2}{*}{get-project} & \multirow{1}{*}{\emph{Parameters}} & \emph{project-name}:String - Desired URI for the project to retrieve\\ \cline{2-3}
+			& \multirow{1}{*}{\emph{Response}} & \emph{files}: String[] - List of URIs for files contained within the project \\ \hline \hline
+%			
+\multirow{3}{*}{add-file} & \multirow{2}{*}{\emph{Parameters}} & \emph{project-name}: String - URI for the project the file should reside in \\ \cline{3-3}
+ & & \emph{file-name}: String - Desired URI (relative to project) for the file to add \\ \cline{2-3}
+			& \multirow{1}{*}{\emph{Response}} & N/A \\ \hline \hline
 
-\section{Projectional Editor Web API}
-\subsection{Full API Specification}\label{fullApiSpec}
-\subsubsection{ls-projects}
+\multirow{3}{*}{get-file} & \multirow{2}{*}{\emph{Parameters}} & \emph{project-name}: String - URI of the project the file is in \\ \cline{3-3}
+ & & \emph{file-name}: String - URI (relative to project) of the file to retrieve \\ \cline{2-3}
+			& \multirow{1}{*}{\emph{Response}} & \emph{ast}: StructureTree - The file's "skeleton" tree consisting of nodeId's and node names to be used for navigation. \\ \hline \hline 	
+			
+\multirow{3}{*}{save-file} & \multirow{2}{*}{\emph{Parameters}} & \emph{project-name}: String - URI of the project the file resides in \\ \cline{3-3}
+ & & \emph{file-name}: String -  URI (relative to project) of the file to save \\ \cline{2-3}
+			& \multirow{1}{*}{\emph{Response}} & N/A \\ \hline \hline	
+			
+\multirow{5}{*}{get-node} & \multirow{3}{*}{\emph{Parameters}} & \emph{project-name}: String - URI of the project the node resides in \\ \cline{3-3}
+ & & \emph{file-name}: String -  URI (relative to project) of the file the node resides in \\ \cline{3-3}
+ & & \emph{node-id}: String -  The identifier of the node to retrieve \\ \cline{2-3}
+			& \multirow{2}{*}{\emph{Response}} & \emph{type}: String - A string describing to the client the kind of projection to be used \\ \cline{3-3}
+ & & Arbitrary other attributes maybe included as required to describe the projection for this node\\ \cline{2-3}
+			 \hline \hline	
 
-\emph{Parameters}: N/A
-\\
-\emph{Response}: 
-\begin{itemize}
-\item projectnames:String[] - Returns a list of URIs for available projects on the webserver
-\end{itemize} 
+\multirow{6}{*}{update-attribute} & \multirow{5}{*}{\emph{Parameters}} & \emph{project-name}: String - URI of the project the node resides in \\ \cline{3-3}
+ & & \emph{file-name}: String -  URI (relative to project) of the file the node resides in \\ \cline{3-3}
+ & & \emph{node-id}: String -  The identifier of the node being modified \\ \cline{3-3}
+ & & \emph{attribute-name}: String - The name of the attribute being modified \\ \cline{3-3}
+ & & \emph{value}: String - The new value of the attribute \\ \cline{2-3}
+			& \multirow{1}{*}{\emph{Response}} & N/A \\
+			 \hline \hline
+			 
+\multirow{8}{*}{add-reference} & 
+ \multirow{7}{*}{\emph{Parameters}} 
+   & \emph{project-name}: String - URI of the project the node resides in \\ \cline{3-3}
+ & & \emph{file-name}: String -  URI (relative to project) of the file the node resides in \\ \cline{3-3}
+ & & \emph{node-id}: String -  The identifier of the node to add the reference to \\ \cline{3-3}
+ & & \emph{reference-name}: String - The name of the reference feature to add a new node to \\ \cline{3-3}
+ & & \emph{cross-reference}: Boolean - Whether or not the feature we are adding is a cross reference  \\ \cline{3-3}
+ & & \emph{child-id}: String - If this is a cross reference we include the node ID of the node we are adding the reference too \\ \cline{3-3}
 
-\subsubsection{add-project}
+			 
+\end{tabular}
+\end{table}
 
-\emph{Parameters}: 
-\begin{itemize}
-\item name:String - Desired URI for the project to create
-\end{itemize}
-\emph{Response}: N/A
+\begin{table}[h!]
+\centering
+\begin{tabular}{| m{2.5cm}| m{2.3cm} | m{10.2cm} |}
+\hline
 
-\subsubsection{get-project}
-\emph{Parameters}: 
-\begin{itemize}
-\item project-name:String - Desired URI for the project to retrieve
-\end{itemize}
-\emph{Response}: 
-\begin{itemize}
-\item files:String[] - List of URIs for files contained within the project 
-\end{itemize}
+ & & \emph{child-type}: String - If this is not a cross reference we create a new node and reference that. Here we select the type of the new node\\ \hline
+& \multirow{1}{*}{\emph{Response}} 
+   & \emph{ast}: StructureTree - If containment (i.e. not cross-reference) returns a tree of the ID's and names of nodes in the AST rooted at the newly created child node. Required as then the creation of the child node may as a side effect create it's own children \\
+			 \hline \hline						 
 
-\subsubsection{add-file}
-\emph{Parameters}: 
-\begin{itemize}
-\item project-name:String - URI for the project the file should reside in
-\item file-name:String - Desired URI (relative to project) for the file to add
-\end{itemize}
-\emph{Response}: N/A
+\multirow{7}{*}{remove-reference} & \multirow{6}{*}{\emph{Parameters}} & \emph{project-name}: String - URI of the project the node resides in \\ \cline{3-3}
+ & & \emph{file-name}: String -  URI (relative to project) of the file the node resides in \\ \cline{3-3}
+ & & \emph{node-id}: String -  The identifier of the node to remove the reference from \\ \cline{3-3}
+ & & \emph{reference-name}: String - The name of the reference feature from which a reference will be removed \\ \cline{3-3}
+ & & \emph{reference-file}: String - The URI of the file containing the node we are referencing \\ \cline{3-3}
+ & & \emph{reference-node}: String - The node identifier for the node being referenced \\ \cline{2-3}
+			& \multirow{1}{*}{\emph{Response}} & N/A \\
+			 \hline \hline
+			 
+\multirow{5}{*}{validate-node} & \multirow{3}{*}{\emph{Parameters}} & \emph{project-name}: String - URI of the project the node resides in \\ \cline{3-3}
+ & & \emph{file-name}: String -  URI (relative to project) of the file the node resides in \\ \cline{3-3}
+ & & \emph{node-id}: String -  The identifier of the node to validate \\ \cline{2-3}
+			& \multirow{2}{*}{\emph{Response}} &  \emph{valid}: Boolean - Is the current node's state valid \\ \cline{3-3} 
+ & & \emph{message}: String - If not valid, returns a message indicating why \\ \cline{2-3}
+			 \hline \hline
 
-\subsubsection{get-file}
-\emph{Parameters}: 
-\begin{itemize}
-\item project-name:String - URI of the project the file is in
-\item file-name:String - URI (relative to project) of the file to retrieve
-\end{itemize}
-\emph{Response}: 
-\begin{itemize}
-\item ast:StructureTree - The file's "skeleton" tree consisting of nodeId's and names for these nodes to be used for navigation.
-\end{itemize}
+\multirow{3}{*}{validate-file} & \multirow{2}{*}{\emph{Parameters}} & \emph{project-name}: String - URI of the project the file resides in \\ \cline{3-3}
+ & & \emph{file-name}: String - URI of the file to check\\ \cline{2-3}
+			& \multirow{1}{*}{\emph{Response}} & \emph{invalid-nodes} : [(String,Boolean,String)] - List of invalid nodeIds and messages indicating why they are not valid \\
+			 \hline 
+\end{tabular}
+\end{table}
 
-\subsubsection{save-file}
-\emph{Parameters}: 
-\begin{itemize}
-\item project-name:String - URI of the project the file resides in
-\item file-name:String - URI (relative to project) of the file to save
-\end{itemize}
-\emph{Response}: N/A
-
-\subsubsection{get-node}
-\emph{Parameters}: 
-\begin{itemize}
-\item project-name:String - URI of the project the node resides in
-\item file-name:String - URI (relative to project) of the file the node resides in
-\item node-id:String - The identifier of the node to retrieve
-\end{itemize}
-\emph{Response}: 
-\begin{itemize}
-\item type:String - A string describing to the client the kind of projection to be used
-\item Arbitrary other attributes maybe included as required to describe the projection for this node.
-\end{itemize}
-\subsubsection{update-attribute}
-\emph{Parameters}: 
-\begin{itemize}
-\item project-name:String - URI of the project the node resides in
-\item file-name:String - URI (relative to project) of the file the node resides in
-\item node-id:String - The identifier of the node being modified
-\item attribute-name:String - The name of the attribute being modified
-\item value:String - The new value of the attribute
-\end{itemize}
-\emph{Response}: N/A
-\subsubsection{add-reference}
-\emph{Parameters}: 
-\begin{itemize}
-\item project-name:String - URI of the project the node resides in
-\item file-name:String - URI (relative to project) of the file the node resides in
-\item node-id:String - The identifier of the node to add the reference to
-\item reference-name:String - The name of the reference feature to add a new node to
-\item cross-reference:Boolean - Whether or not the feature we are adding is a cross reference
-\item child-id:String - If this is a cross reference we include the node ID of the node we are adding the reference too
-\item child-type:String - If this is not a cross reference we create a new node and reference that. Here we select the type of the new node
-\end{itemize}
-\emph{Response}: 
-\begin{itemize}
-\item ast:StructureTree - If containment (i.e. not cross reference) returns a tree of the ID's and names of nodes in the AST rooted at the newly created child node. Required as then the creation of the child node may as a side effect create it's own children
-\end{itemize}
-
-\subsubsection{remove-ref}
-\emph{Parameters}: 
-\begin{itemize}
-\item project-name:String - URI of the project the node resides in
-\item file-name:String - URI of the file the node resides in
-\item node-id:String - The identifier of the node to remove the reference from
-\item reference-name:String - The name of the reference feature from which a reference will be removed
-\item reference-file:String - The URI of the file containing the node we are referencing
-\item reference-node:String - The node identifier for the node being referenced
-\end{itemize}
-\emph{Response}: N/A
-
-\subsubsection{validate-node}
-
-\emph{Parameters}: 
-\begin{itemize}
-\item project-name:String - URI of the project the node resides in
-\item file-name:String - URI of the file the node resides in
-\item node-id:String - The identifier of the node to validate
-\end{itemize}
-\emph{Response}: 
-\begin{itemize}
-\item valid:Boolean - Is the current node's state valid
-\item message:String - If not valid returns a message indicating why
-\end{itemize}
-
-\subsubsection{validate-file}
-
-\emph{Parameters}: 
-\begin{itemize}
-\item project-name:String - URI of the project the node resides in
-\item file-name:String - URI of the file the node resides in
-\end{itemize}
-\emph{Response}: 
-\begin{itemize}
-\item invalidNodes : [(String,Boolean,String)] - List of invalid nodeIds and messages indicating why they are not valid
-\end{itemize}
-
+\section{Testing}
+\subsection{Example API Service Unit Tests}\label{apiUnitTest}
+An excerpt of the unit test file for the remove-reference API call, written using Java's unit testing framework JUnit:
+\lstinputlisting[ language=Java,tabsize=2 ]{Listings/Testing/RemoveNodeReferenceServiceTest.java}
+\subsection{.editor Parsing Unit Tests}\label{editorLanguageTests}
+An excerpt from the \emph{.editor} unit test file to ensure the grammar is defined and parsed correctly:
+\lstinputlisting[showstringspaces=false,language=Xtend, tabsize=2 ]{Listings/Testing/EditorLanguageParsingTest.xtend}
 
 \section{Projection Specification Language Grammar}\label{editorLanguageGrammar}
 The grammar for the \emph{.editor} language, specified using Xtext's grammar language:
-\lstinputlisting[ tabsize=2 ]{Listings/EditorLanguage.xtext}
+\lstinputlisting[ language=Xtext, tabsize=2 ]{Listings/EditorLanguage.xtext}
 
 \section{Expression Language Definition}\label{expressionLanguageDef}
 \subsection{Xtext Grammar Specification}
-\lstinputlisting[ tabsize=2 ]{Listings/Arithmetic/Arithmetic.xtext}
+\lstinputlisting[ language=Xtext, tabsize=2 ]{Listings/Arithmetic/Arithmetic.xtext}
 
 \subsection{Projections (.editor file)}\label{expressionLanguageDefEditor}
-\lstinputlisting[ tabsize=2 ]{Listings/Arithmetic/Projections.editor}
+\lstinputlisting[ language=Editor, tabsize=2 ]{Listings/Arithmetic/Projections.editor}
 
 \section{Questionnaire Language Definition}\label{questionnaireLanguageDef}
 
 \subsection{Xtext Grammar Specification}
-\lstinputlisting[ tabsize=2 ]{Listings/Question/Q.xtext}
+\lstinputlisting[ language=Xtext, tabsize=2 ]{Listings/Question/Q.xtext}
 
 \subsection{Projections (.editor file)}\label{questionnaireLanguageDefEditor}
-\lstinputlisting[ tabsize=2 ]{Listings/Question/Projections.editor}
+\lstinputlisting[ language=Editor, tabsize=2 ]{Listings/Question/Projections.editor}
 
 
 \section{PasGraph Language Definition}\label{pascalLanguageDef}
 
 \subsection{Xtext Grammar Specification}
-\lstinputlisting[ tabsize=2 ]{Listings/Graph/Graph.xtext}
+\lstinputlisting[ language=Xtext, tabsize=2 ]{Listings/Graph/Graph.xtext}
 
 \subsection{Projections (.editor file)}\label{pascalLanguageDefEditor}
-\lstinputlisting[ tabsize=2 ]{Listings/Graph/Projections.editor}
+\lstinputlisting[ language=Editor, tabsize=2 ]{Listings/Graph/Projections.editor}
 
 
 
-\includepdf[pages=1,scale=.75,pagecommand=\section{Questionnaire Evaluation Materials}\label{questionnaireEval} \subsection{Training Material}]{./Appendix/QuestionnaireTraining.pdf}
-\includepdf[pages=2-,scale=.8,pagecommand={\thispagestyle{plain}}]{./Appendix/QuestionnaireTraining.pdf}
+\includepdf[frame=true,offset= 0 -1cm, pages=1,scale=.73,pagecommand=\section{Questionnaire Evaluation Materials}\label{questionnaireEval} \subsection{Training Material}]{./Appendix/QuestionnaireTraining2.pdf}
+\includepdf[frame=true,pages=2-,scale=.8,pagecommand={\thispagestyle{plain}}]{./Appendix/QuestionnaireTraining2.pdf}
 
-\includepdf[pages=1,scale=.8,pagecommand=\subsection{Task Sheet}]{./Appendix/QuestionnaireTasks.pdf}
-\includepdf[pages=2-,scale=.8,pagecommand={\thispagestyle{plain}}]{./Appendix/QuestionnaireTasks.pdf}
+\includepdf[frame=true,offset= 0 -0.6cm,pages=1,scale=.75,pagecommand=\subsection{Task Sheet}]{./Appendix/QuestionnaireTasks.pdf}
+\includepdf[frame=true,pages=2-,scale=.8,pagecommand={\thispagestyle{plain}}]{./Appendix/QuestionnaireTasks.pdf}
 
-\includepdf[pages=-,scale=.8,pagecommand=\subsection{Interview Questions}]{./Appendix/InterviewQuestions.pdf}
+\includepdf[frame=true,offset= 0 -0.6cm,pages=-,scale=.75,pagecommand=\subsection{Interview Script}]{./Appendix/InterviewQuestions.pdf}
 
 \section{Questionnaire Evaluation Results}\label{questionnaireEvalResults}
 

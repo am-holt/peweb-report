@@ -7,6 +7,8 @@
 \usepackage{graphicx}
 \usepackage{subcaption}
 \usepackage{array}
+\usepackage{multirow}
+
 
 \usepackage[title]{appendix}
 \usepackage[T1]{fontenc}
@@ -52,6 +54,64 @@
   stringstyle=\color{red}\ttfamily,
   sensitive=true
 }
+
+\lstdefinelanguage{MWE2}{
+  keywords={module, Workflow, component, var},
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]',
+  morestring=[b]",
+  ndkeywords={import},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  sensitive=true
+}
+
+\lstdefinelanguage{Editor}{
+  keywords={Node, Projection, view, get, set, validate,Component},
+  morecomment=[l]{//},
+  morestring=[s]{<<}{>>},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red},
+  sensitive=true
+}
+
+\lstdefinelanguage{Xtend}{
+  keywords={import,package,static,extends,class,void,val,def, Workflow, component},
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]{'''},
+  morestring=[b]",
+  ndkeywords={module},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  sensitive=true
+}
+
+\lstdefinelanguage{Xtext}{
+  keywords={grammar,import,hidden,generate},
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]',
+  morestring=[b]",
+  ndkeywords={module},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  sensitive=true
+}
+
 
 %End of used by listings
 
@@ -123,13 +183,26 @@
     \vspace{0.9cm}
     \textbf{Abstract}
 \end{center}
-This project discusses the generation of web-based, projectional editor applications for arbitrary domain specific languages (DSLs). A server-side web API for editing abstract syntax trees and retrieving projections of a language's abstract syntax is specified. Also presented is a new DSL for rapidly specifying projections of a language's abstract syntax using HTML and JavaScript, so as to be easily displayed in a web-browser. 
+Domain Specific Langauages (DSLs) enable domain experts to write code to solve issues within their domain in an efficient manner. However, to those without prior experience in software development, traditional, text-based programming can seem alienating and complex.
 \\
 \\
-The API and DSL are demonstrated in an extension to the language workbench Xtext, which, for an arbitrary language definition, is able to automatically generate a server implementing the API, serving projections specified using the DSL to a client application (for which a default implementation is also presented), creating a projectional editor for the language.
+In projectional editing, users interact with the internal representation of a programming language: the abstract syntax tree, directly, using views called projections. Projections might use text, tables, diagrams or anything else befitting the domain.
 \\
 \\
-The extension is evaluated to measure the flexibility and usability of its approach to editor generation. The impact of the resultant editors on domain experts with little or no experience coding is also measured, comparing the productivity of such users using a generated projectional editor against a textual editor. This lead to a significant improvement in time taken on DSL programming tasks, with times for longer tasks on average being reduced by almost 40\%.
+In this project, we discuss the generation of customisable, web-based, projectional editors for DSLs, which may be used to make the language more accessible to non-developer end-users. To this end, we specify a server-side web API for communicating changes to, and projections of, an abstract syntax tree between a client and server. We also present a new DSL for rapidly specifying projections of a language's abstract syntax using HTML, so as to be easily displayed in a web-browser. 
+\\
+\\
+The API and DSL are demonstrated in an extension to the language workbench Xtext, which, for an arbitrary language definition, is able to automatically generate a server implementing the API, serving projections specified using the DSL to a client application (for which a default implementation is also presented), creating a projectional editor for the language with very little additional effort from the language designer. 
+\\
+\\
+The extension is evaluated to measure the flexibility and usability of its approach to editor generation. The impact of the resultant editors on domain experts with little or no experience coding is also measured, comparing the productivity of such users using a generated projectional editor against a textual editor. A significant improvement in productivity for DSL programming tasks was observed, with times for longer tasks on average being reduced by almost 40%.
+%This project discusses the generation of web-based, projectional editor applications for arbitrary domain specific languages (DSLs). A server-side web API for editing abstract syntax trees and retrieving projections of a language's abstract syntax is specified. Also presented is a new DSL for rapidly specifying projections of a language's abstract syntax using HTML and JavaScript, so as to be easily displayed in a web-browser. 
+%\\
+%\\
+%The API and DSL are demonstrated in an extension to the language workbench Xtext, which, for an arbitrary language definition, is able to automatically generate a server implementing the API, serving projections specified using the DSL to a client application (for which a default implementation is also presented), creating a projectional editor for the language.
+%\\
+%\\
+%The extension is evaluated to measure the flexibility and usability of its approach to editor generation. The impact of the resultant editors on domain experts with little or no experience coding is also measured, comparing the productivity of such users using a generated projectional editor against a textual editor. This lead to a significant improvement in time taken on DSL programming tasks, with times for longer tasks on average being reduced by almost 40\%.
 \begin{center}
 	\vspace {1.5cm}
     \Large
@@ -229,8 +302,8 @@ An IDE is an application designed to improve software development, usually by pr
 \\
 Two popular Java IDEs are:
 \begin{itemize}
-\item Eclipse IDE~\cite{eclipse}, an open-source IDE developed by the Eclipse Foundation~\cite{eclipseFoundation}.
-\item Intellij IDEA~\cite{intellij}, an IDE developed by JetBrains~\cite{jetbrains} with an open-source "community" variant.
+\item Eclipse IDE~\cite{eclipse}, an open-source IDE developed by the Eclipse Foundation.
+\item Intellij IDEA~\cite{intellij}, an IDE developed by JetBrains with an open-source "community" variant.
 \end{itemize}
 %
 \subsection{Language Workbenches}
@@ -247,8 +320,8 @@ A language has both a concrete syntax and an abstract syntax. The concrete synta
 \\
 An abstract syntax tree is a representation of a program in the abstract syntax. Nodes represent the language concepts appearing in the program and edges are the references between them. Two types of reference appear:
 \begin{itemize}
-\item Containment: Nodes that are syntactically contained by this node. An example in a GPL might be a reference to the Expression node representing the condition of an If-Statement node.
-\item Cross-reference: References to nodes which exist independently of this node. An example in a GPL may be a Function-Call node referencing the relevant Function-Declaration node. 
+\item \emph{Containment} - Nodes that are syntactically contained by this node. An example in a GPL might be a reference to the Expression node representing the condition of an If-Statement node.
+\item \emph{Cross-reference} - References to nodes which exist independently of this node. An example in a GPL may be a Function-Call node referencing the relevant Function-Declaration node. 
 \end{itemize}
 The edges that represent containment references give the graph its tree structure and name.
 \subsubsection{AST Formalisms}\label{astFormalisms}
@@ -299,7 +372,7 @@ When Xtext generates a language, an Ecore model is created. The conversion proce
 %Internally Xtext uses EMF so go into little more detail about that here?
 \subsubsection{MWE2}
 %Move this into Xtext section?
-The Modelling Workflow Engine 2~\cite{mwe2} is a declarative language with a simple syntax, used primarily to define workflows by declaring object instances, assigning attribute values and references, and then invoking these objects in order. An example file from its documentation~\cite{mwe2} which reads an Ecore model, renames all the classes inside, and then saves the model is given below: \lstinputlisting[tabsize=2]{Listings/mweExample.mwe2}
+The Modelling Workflow Engine 2~\cite{mwe2} is a declarative language with a simple syntax, used primarily to define workflows by declaring object instances, assigning attribute values and references, and then invoking these objects in order. An example file from its documentation~\cite{mwe2} which reads an Ecore model, renames all the classes inside, and then saves the model is given below: \lstinputlisting[language=MWE2, tabsize=2]{Listings/mweExample.mwe2}
 The components in an MWE2 file are all Java classes implementing an IWorkflowComponent interface containing an invoke method which is called on component creation. The invoke method takes a context parameter which is passed from object to object, enabling interaction between components.
 \\
 \\
@@ -377,7 +450,7 @@ This creates an Xtext language project, shown in Figure
 \\
 \\
 The MWE2 file for the language looks as follows:
-\lstinputlisting[ tabsize=2 ]{Listings/GenerateMyDsl.mwe2}
+\lstinputlisting[language=MWE2, tabsize=2 ]{Listings/GenerateMyDsl.mwe2}
 It contains information on the language configuration and how facets for the language should be generated. As we selected the PE facet when creating the project, notice peWeb is enabled in this file. Because of this, when the user generates the language in the standard way, by running this MWE2 workflow, the peWeb project will automatically be populated with all the necessary files to run a server for web-based projectional editing. This results in the peWeb project looking like it does in Figure 
 \begin{figure}[h!]
   \centering
@@ -558,7 +631,7 @@ After the update of a node we can use validation methods to check the state of t
 I now explain how this API is implemented in the language servers generated by my Xtext extension.
 \\
 \\
-The generated server hosts a Java HTTP servlet. To make API calls, the client sends GET requests to the url pattern specified in the generated \emph{MyDslPeServlet.xtend} file. A HTTP parameter serviceType specifies the API call to make, and other parameters should be present as required by the method. The server responds with standard HTTP error codes if an issue is encountered or otherwise with a JSON object containing the response of the call.
+The generated server hosts a Java HTTP servlet. To make API calls, the client sends POST requests to the url pattern specified in the generated \emph{MyDslPeServlet.xtend} file, with the call's type and parameters as the request's query string. The server responds with standard HTTP error codes if an issue is encountered or otherwise with a JSON object containing the response of the call.
 \\
 \\
 To get files and project details, the language server injects the FileResourceHandler and ResourceBaseProvider objects specified in the \emph{MyDslPeFileResourceHandler.xtend} and \emph{MyDslResourceBaseProvider.xtend} files. These objects define operations to get and save EMF resources from a "resource ID" (we use PROJECTNAME/FILENAME) so that arbitrary persistence layers can be used. By default these correspond to storing files in their textual representation. From a retrieved EMF resource we can retrieve the EObject representing the root node of the AST that file represents.
@@ -568,6 +641,10 @@ The EObject retrieved resembles an AST as described by our modelling assumptions
 \\
 \\
 Modifying nodes is achieved by looking up the relevant EObject using the nodeID to EObject map, and making the changes to the EObject itself.
+\\
+\\
+\todo{check}
+The objects implementing the API method calls were unit-tested using a mock ECore model and JUnit~\cite{junit} (a Java unit-testing framework) to ensure correctness. An excerpt from one of a test file is found in Appendix~\ref{apiUnitTest}.
 %EObject contains all the attributes and reference types as well as some constraints on the node so already have AST in effect
 %From these nodes we create a tree where children of a node are all those contained only in containment references, that is every node is only in this tree once
 %We annotate it with node identifiers which we do when we first open the file
@@ -687,7 +764,7 @@ The complete specification for the language follows, using extended BNF.
 
 \subsubsection{Examples}
 Here is a small example of a projection specification for a simple greetings language. The specified projection should look something like in Figure~\ref{fig:greetingProjection}.
-\lstinputlisting[tabsize=2]{Listings/greetingsProjections.editor}
+\lstinputlisting[language=Editor,showstringspaces=false, tabsize=2]{Listings/greetingsProjections.editor}
 \begin{figure}[t!]
   \centering
   \begin{subfigure}[b]{0.45\linewidth}
@@ -752,12 +829,15 @@ An attribute controller dictates how an attribute's value should be get and set 
 An attribute controller has three methods, get, set, and validate. Get expects a JS snippet which evaluates to a string, e.g. it retrieves the value of the attribute from the projection/component. Set expects a JS snippet which will be executed in an environment where the value of the attribute is assigned to the variable X, this can then be used to initialise attribute values in the view. Validate expects a JS snippet which will be executed in an environment where the value of the attribute is assigned to X also and should evaluate to either true or false to indicate whether or not this is a valid value. 
 \\
 \\
-For example a text box: 
-\lstinputlisting[tabsize=2]{Listings/TextBox.editor}
+For example a text box which checks for no spaces: 
+\lstinputlisting[language=Editor,showstringspaces=false,tabsize=2]{Listings/TextBox.editor}
 This component can then be placed in a projection and assigned to control the value of an attribute for the projected node.
 
 \subsection{Language Implementation}
 The \emph{.editor} language was implemented using Xtext. This involved specifying the language's grammar in Xtext's grammar language (given in the appendix \ref{editorLanguageGrammar}) and specifying the compilation process. The result was a pair of plugins for Eclipse and Intellij which include editors for the language with syntax highlighting, context completion etc. making writing a \emph{.editor} file easier. The \emph{.editor} language compiles into a Java representation of itself which can be used as required.
+\\
+\\
+The language's grammar and parser are tested for correctness using Xtext parsing tests which make use of JUnit to unit-test the automatically generated parser against expected input files. An excerpt from the test file is found in Appendix \ref{editorLanguageTests}.
 \\
 \\
 Our final tool merges the generated \emph{.editor} Eclipse plugin with the main Xtext plugin. Our extended Xtext plugin then provides syntax highlighting, context hints etc. for \emph{.editor} files directly, and also automatically compiles these into their Java representation to be used by the language server at runtime to generate get-node response objects to send to the client as discussed in \ref{apiNodeStateTransfer} and \ref{viewObject}.

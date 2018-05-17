@@ -96,7 +96,7 @@ Component textBox{
 }
 
 Component shortTextBox{
-	view:[<input type="text" style=\"width: 40px;\" id=<<$input$>>>]
+	view:[<input type="text" style="width: 40px;" id=<<$input$>>>]
 	get:[document.getElementById(<<$input$>>).value]
 	set:[document.getElementById(<<$input$>>).value = X]
 	validate:[]
@@ -117,5 +117,5 @@ Component string{
 }
 
 Component boldSpan{
-	view:[<span style=\"font-size: xx-large;font-weight: bolder;\">]
+	view:[<span style="font-size: xx-large;font-weight: bolder;">]
 }

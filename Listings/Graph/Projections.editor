@@ -143,16 +143,15 @@ Node WhileStmt{
 }
 
 
-
 Component shortTextBox{
-	view:[<input type=\"text\" style=\"width: 40px;\" id=<<$input$>>>]
+	view:[<input type="text" style="width: 40px;" id=<<$input$>>>]
 	get:[document.getElementById(<<$input$>>).value]
 	set:[document.getElementById(<<$input$>>).value = X]
 	validate:[]
 }
 
 Component numberBox{
-	view:[<input type=\"number\" style=\"width: 40px;\" id=<<$input$>>>]
+	view:[<input type="number" style="width: 40px;" id=<<$input$>>>]
 	get:[document.getElementById(<<$input$>>).value]
 	set:[document.getElementById(<<$input$>>).value = X]
 	validate:[]
@@ -167,7 +166,7 @@ Component string{
 
 
 Component textBox{
-	view:[<input type=\"text\" id=<<$input$>>>]
+	view:[<input type="text" id=<<$input$>>>]
 	get:[document.getElementById(<<$input$>>).value]
 	set:[document.getElementById(<<$input$>>).value = X]
 	validate:[]

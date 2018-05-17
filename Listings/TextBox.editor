@@ -2,5 +2,5 @@ Component textBox{
 	view:[<input type="text" id=<<$input$>> >]
 	get:[document.getElementById(<<$input$>>).value]
 	set:[document.getElementById(<<$input$>>).value = X]
-	validate:[]
+	validate:[return (X.indexOf(" ") == -1)]
 }

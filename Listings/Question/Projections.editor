@@ -100,14 +100,14 @@ Node SectionContents{
 
 
 Component textBox{
-	view:[<input type=\"text\" id=<<$input$>>>]
+	view:[<input type="text" id=<<$input$>>>]
 	get:[document.getElementById(<<$input$>>).value]
 	set:[document.getElementById(<<$input$>>).value = X]
 	validate:[]
 }
 
 Component longTextBox{
-	view:[<input type=\"text\" id=<<$input$>>>]
+	view:[<input type="text" id=<<$input$>>>]
 	get:[document.getElementById(<<$input$>>).value]
 	set:[document.getElementById(<<$input$>>).value = X]
 	validate:[]
@@ -115,7 +115,7 @@ Component longTextBox{
 
 Component string{
 	view:[<span id=<<$input$>>> </span>]
-	get:[document.getElementById(<<$input$>>).innerHTML]
-	set:[]
+	get:[]
+	set:[document.getElementById(<<$input$>>).innerHTML = X]
 	validate:[]
 }

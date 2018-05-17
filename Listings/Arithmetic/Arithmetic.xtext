@@ -37,8 +37,7 @@ Multiplication returns Expression:
 	PrimaryExpression (({Multi.left=current} '*' | {Div.left=current} '/') right=PrimaryExpression)*;
 
 SumExpression :
-	'sum(' indexVariable=DeclaredParameter ',' lower=INT ',' upper=INT ',' expr=Expression')'
-;
+	'sum(' indexVariable=DeclaredParameter ',' lower=INT ',' upper=INT ',' expr=Expression')';
 
 PrimaryExpression returns Expression:
 	SumExpression |
