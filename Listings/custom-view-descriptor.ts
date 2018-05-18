@@ -48,8 +48,8 @@ export class ReferenceController{
 	//Whether or not this reference represents a crossReference
 	crossReference :boolean;
 
-	//The possible nodes this reference could cross reference
 	//Present iff crossReference == true
+	//The possible nodes this reference could cross reference
 	possibleCrossReferences : NodeReference[];
 
 	//Present iff crossReference == false
