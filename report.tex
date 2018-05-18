@@ -183,26 +183,34 @@
     \vspace{0.9cm}
     \textbf{Abstract}
 \end{center}
-Domain Specific Langauages (DSLs) enable domain experts to write code to solve issues within their domain in an efficient manner. However, to those without prior experience in software development, traditional, text-based programming can seem alienating and complex.
+Domain Specific Languages (DSLs) enable domain experts to write code to solve computational problems. However, to those without  prior experience in software development, traditional text-based programming can seem alienating and complex.
 \\
 \\
-In projectional editing, users interact with the internal representation of a programming language: the abstract syntax tree, directly, using views called projections. Projections might use text, tables, diagrams or anything else befitting the domain.
+In projectional editing, users interact with the internal representation of a programming language: the abstract syntax tree, directly, using views called projections. Projections might use text, tables, diagrams, equations, graphs or anything else befitting the language.
 \\
 \\
-In this project, we discuss the generation of customisable, web-based, projectional editors for DSLs, which may be used to make the language more accessible to non-developer end-users. To this end, we specify a server-side web API for communicating changes to, and projections of, an abstract syntax tree between a client and server. We also present a new DSL for rapidly specifying projections of a language's abstract syntax using HTML, so as to be easily displayed in a web-browser. 
+To make using DSLs more accessible to non-programmers, we investigate customisable, web-based, projectional program editors. To this end, we specify a web-based API for communicating changes to, and projections of, an abstract syntax tree. We also present a new DSL for rapidly specifying custom projections of an abstract syntax tree, in HTML, so a web-browser can become a projectional program editor.
 \\
 \\
-The API and DSL are demonstrated in an extension to the language workbench Xtext, which, for an arbitrary language definition, is able to automatically generate a server implementing the API, serving projections specified using the DSL to a client application (for which a default implementation is also presented), creating a projectional editor for the language with very little additional effort from the language designer. 
+The API and DSL are implemented as part of an extension to the language engineering workbench Xtext. In the extension, an arbitrary language grammar defined in Xtext is translated into a web application that uses the API and custom projections specified using our DSL. This creates a web-based projectional editor for a given language with very little additional effort from the language designer, which can make programming with the language more widely accessible.
+%The API and DSL are developed into an extension of the Xtext language engineering workbench. In the extension, an arbitrary language grammar defined in Xtext is translated into a web application that uses the API and custom projections. This creates a web-based projectional editor for a given language with very little additional effort from the language designer, which make programming with that DSL more widely accessible.
 \\
 \\
-The extension is evaluated to measure the flexibility and usability of its approach to editor generation. The impact of the resultant editors on domain experts with little or no experience coding is also measured, comparing the productivity of such users using a generated projectional editor against a textual editor. A significant improvement in productivity for DSL programming tasks was observed, with times for longer tasks on average being reduced by almost 40%.
-%This project discusses the generation of web-based, projectional editor applications for arbitrary domain specific languages (DSLs). A server-side web API for editing abstract syntax trees and retrieving projections of a language's abstract syntax is specified. Also presented is a new DSL for rapidly specifying projections of a language's abstract syntax using HTML and JavaScript, so as to be easily displayed in a web-browser. 
+The extension is evaluated to measure the flexibility and usability of the approach. The impact of the resultant editors on domain experts with little experience coding is also measured, comparing a generated projectional editor against a textual editor. A significant improvement in productivity for DSL programming tasks was observed, with times for certain tasks being reduced by almost 40\%, on average.
+%Domain Specific Langauages (DSLs) enable domain experts to write code to solve issues within their domain in an efficient manner. However, to those without prior experience in software development, traditional, text-based programming can seem alienating and complex.
 %\\
 %\\
-%The API and DSL are demonstrated in an extension to the language workbench Xtext, which, for an arbitrary language definition, is able to automatically generate a server implementing the API, serving projections specified using the DSL to a client application (for which a default implementation is also presented), creating a projectional editor for the language.
+%In projectional editing, users interact with the internal representation of a programming language: the abstract syntax tree, directly, using views called projections. Projections might use text, tables, diagrams or anything else befitting the domain.
 %\\
 %\\
-%The extension is evaluated to measure the flexibility and usability of its approach to editor generation. The impact of the resultant editors on domain experts with little or no experience coding is also measured, comparing the productivity of such users using a generated projectional editor against a textual editor. This lead to a significant improvement in time taken on DSL programming tasks, with times for longer tasks on average being reduced by almost 40\%.
+%In this project, we discuss the generation of customisable, web-based, projectional editors for DSLs, which may be used to make the language more accessible to non-developer end-users. To this end, we specify a server-side web API for communicating changes to, and projections of, an abstract syntax tree between a client and server. We also present a new DSL for rapidly specifying projections of a language's abstract syntax using HTML, so as to be easily displayed in a web-browser. 
+%\\
+%\\
+%The API and DSL are demonstrated in an extension to the language workbench Xtext, which, for an arbitrary language definition, is able to automatically generate a server implementing the API, serving projections specified using the DSL to a client application (for which a default implementation is also presented), creating a projectional editor for the language with very little additional effort from the language designer. 
+%\\
+%\\
+%The extension is evaluated to measure the flexibility and usability of its approach to editor generation. The impact of the resultant editors on domain experts with little or no experience coding is also measured, comparing the productivity of such users using a generated projectional editor against a textual editor. A significant improvement in productivity for DSL programming tasks was observed, with times for longer tasks on average being reduced by almost 40%.
+
 \begin{center}
 	\vspace {1.5cm}
     \Large
@@ -220,7 +228,7 @@ I would like to thank my supervisor Seyyed Madasar Shah for all of his help and 
 
 \section{Introduction}
 
-Domain Specific Languages (DSLs) are programming languages which have been created to solve problems within a specific application domain. Having been built with specific domain problems in mind, they are able to improve both productivity and clarity in a way that libraries for general purpose languages (GPLs) can not. 
+Domain Specific Languages (DSLs) are programming languages which have been created to solve problems within a specific application domain. Having been built with specific domain problems in mind, they are able to improve both productivity and clarity in a way that libraries for general purpose languages (GPLs) cannot. 
 \\
 \\
 As these languages usually target very specific domains, much effort has been put into simplifying their creation, reducing the outlay of time this requires and so justifying their use in smaller teams or projects. Tools which do this are called language workbenches. Language workbenches usually offer an IDE for language designers to specify the concrete syntax or structure of a language, build an editor for instances of it, and build a compiler to convert it into a GPL. Language workbenches offer varying degrees of automation in completing these tasks.
@@ -238,7 +246,7 @@ Projectional editing is a particularly useful concept for DSLs, which are often 
 An often cited use case for DSLs is to enable domain experts to write code to solve issues within their domain in an efficient manner. However, these experts are not necessarily experienced at writing code. To those without prior experience, traditional, textually based programming can seem alienating and complex, resulting in a situation where "Statements like [...] 'Domain experts aren't programmers' [...] are often-overheard prejudices", which Markus Voelter suggests "hinder the adoption of DSLs" for such use cases~\cite[pg.45]{dslEngineering}.
 
 \subsubsection{Project Goal}\label{goal}
-To make DSLs more accessible for the types of language end-users discussed in Section \ref{problem}, we wish to extend an existing language workbench with the capability of generating web-based, projectional editors for DSLs specified in that workbench. 
+To make DSLs more accessible for the types of language end-users discussed in Section \ref{problem}, this project aims to extend an existing language workbench with the capability of generating web-based, projectional editors for DSLs specified in that workbench. 
 
 \subsubsection{Motivation}\label{motivation}
 In general, web-based projectional editors would be useful for DSLs as:
@@ -259,9 +267,9 @@ To be successful, the final implementation should meet the following requirement
 
 \begin{itemize}
 \item \textbf{R1: Quick to setup} - It should be quick and easy for a language designer to create a projectional editor. Just as language workbenches automatically create Eclipse plugins or standalone IDEs with little or no input from the user, our editors should be generated automatically, so the designer need only worry about language specific concerns.
-\item \textbf{R2: Customisable} - The editors should be highly customisable. We should aim to deliver as much as possible to the language designer "for free" while ensuring the applications can be modified easily if required. 
+\item \textbf{R2: Customisable} - The editors should be highly customisable. The extension should aim to deliver as much as possible to the language designer "for free" while ensuring the applications can be modified easily if required. 
 \item \textbf{R3: Lightweight Editor} - By default the generated editors should be as lightweight as possible. Although always a necessary concern with web applications, this is especially important here, as they are specifically targeting less technically inclined users using unpredictable computing resources.
-\item \textbf{R4: Intuitive Editor} - The generated editors are specifically targeting less technically inclined users, and so any default editor UI should be as intuitive as possible for non-developers.
+\item \textbf{R4: Intuitive Editor} - The generated editors are targeting less technically inclined users, so the tool should be capable of generating interfaces that are intuitive for non-developers.
 \item \textbf{R5: Familiarity} - The process for creating a new language and accompanying editor should be as familiar to the language designer as possible. They should have to learn as few new technologies/languages/processes as possible.
 \end{itemize}
 \subsection{Related Work}
@@ -284,12 +292,12 @@ The contributions made in this project can be split into three key areas:
 
 
 \subsection{Organisation} 
-Section \ref{technicalBackground} discusses the necessary technical background for the project. Across Sections \ref{generation} to \ref{clientApp} the design and implementation of the Xtext extension is discussed, each section focussing on a different aspect of the tool. Section \ref{evaluation} presents an evaluation the final tool's effectiveness, before the report concludes with a critical review of the requirements from \ref{requirements}, and an outline of possible future work in Section \ref{conclusion}. 
+Section \ref{technicalBackground} discusses the necessary technical background for the project. Across Sections \ref{generation} to \ref{clientApp} the design and implementation of the Xtext extension is discussed, each section focussing on a different aspect of the tool. Section \ref{evaluation} presents an evaluation of the final tool's effectiveness, before the report concludes with a critical review of the requirements from \ref{requirements}, and an outline of possible future work in Section \ref{conclusion}. 
 
 %In Section \ref{technicalBackground} I begin by discussing the necessary technical background. Across Sections \ref{generation} to \ref{clientApp} I then discuss the design and implementation of my Xtext extension, each section focussing on a different aspect of the tool. In Section \ref{evaluation} I evaluate the final tool's effectiveness, before concluding with a critical review of the requirements from \ref{requirements} and then outlining possible ventures for future work in Section \ref{conclusion}. 
 
 \section{Technical Background}\label{technicalBackground}
-Here the technical background required for the project is presented.
+The technical background required for the project is presented in this section.
 %More information on language workbenches?
 %Seperate IDE from Eclipse?
 %Projectional Editing?
@@ -355,7 +363,7 @@ The language workbench Xtext~\cite{xtext} is a plugin for the Eclipse IDE. It al
 Once this is done, the language designer can "generate language artefacts" which will create the facets selected when creating the project. 
 \\
 \\
-I now briefly discuss some of the technologies used within Xtext.
+Some of the technologies used within Xtext are now briefly discussed.
 %\\
 %\\
 %Web editor generation?
@@ -416,7 +424,7 @@ The final tool takes the form of an extension to the language workbench Xtext. A
 The default client application, discussed in Section \ref{clientApp}, can be hosted by the generated language server to act as the editor's front end. 
 
 \subsection{Benefits of integration with Xtext}\label{integrationWithXtext}
-The decision to extend Xtext was primarily made as, by extending an existing language workbench, it was not necessary to rewrite all the core functionality of a workbench from scratch, and instead focus could be placed on the implementation of projectional editing. Extending an existing popular workbench shows consideration of \RFamiliarity (familiarity), and Xtext was a prime candidate for a number of reasons:
+The decision to extend Xtext was primarily made as, by extending an existing language workbench, it was not necessary to rewrite all the core functionality of a workbench from scratch, and instead focus could be placed on the implementation of projectional editing. Extending a popular workbench shows consideration of \RFamiliarity (familiarity), and Xtext was a prime candidate for a number of reasons:
 \begin{itemize}
 \item It is open-source and so easy to modify.
 \item Being one of the most popular language workbenches, it has much support available.
@@ -424,7 +432,7 @@ The decision to extend Xtext was primarily made as, by extending an existing lan
 \end{itemize}
 
 \subsection{The Generation Process}
-The process of generating a projectional editor for a new language using the plugin is now discussed. To meet \RSetup (easy setup), the generation process was designed to be as simple as possible, so a language designer can concentrate their efforts on the DSL specification. It was also designed to be as similar as possible to the process of setting up a textual web editor in Xtext, to satisfy \RFamiliarity.
+This subsection discusses the process of generating a projectional editor for a new language using the plugin. To meet \RSetup (easy setup), the generation process was designed to be as simple as possible, so a language designer can concentrate their efforts on the DSL specification. It was also designed to be as similar as possible to the process of setting up a textual web editor in Xtext, to satisfy \RFamiliarity.
 \\
 \\
 The language designer first creates an Xtext project as normal, using the Eclipse new project wizard as shown in Figure \ref{fig:newProjectWiz},
@@ -449,7 +457,8 @@ This creates an Xtext language project, shown in Figure
   \includegraphics[width=\linewidth]{./Screenshots/newProjectScreen.png}
   \caption{A new Xtext project with an empty peWeb project.}
   \label{fig:newProjectScreen}
-\end{figure} \ref{fig:newProjectScreen}, with a \emph{.xtext} file to specify the DSL's grammar and a \emph{.MWE2} file to describe the generation of the selected facets as usual. A number of empty projects are created which will contain the files generated by the grammar definition. Notice the \emph{org.xtext.example.mydsl.peWeb} project, which will eventually contain the projectional web editor files. For now it only contains a Maven~\cite{maven} \emph{.pom} file, which is used for dependency management, and has automatically been configured with the dependencies required by a generated editor.\clearpage 
+\end{figure} \ref{fig:newProjectScreen}, with a \emph{.xtext} file to specify the DSL's grammar and a \emph{.MWE2} file to describe the generation of the selected facets as usual. A number of empty projects are created which will contain the files generated by the grammar definition. Notice the \emph{org.xtext.example.mydsl.peWeb} project, which will eventually contain the projectional web editor files. For now it only contains a Maven~\cite{maven} \emph{.pom} file, which is used for dependency management, and has automatically been configured with the dependencies required by a generated editor.
+\clearpage
 \noindent The MWE2 file for the language looks as follows:
 \lstinputlisting[language=MWE2, tabsize=2 ]{Listings/GenerateMyDsl.mwe2}
 It contains information on the language configuration, and how facets for the language should be generated. As the projectional editor facet was selected when creating the project, notice peWeb is enabled in this file. Because of this, when the user generates the language in the standard way, by running this MWE2 workflow, the peWeb project will automatically be populated with all the necessary files to run a server for web-based projectional editing. This results in the peWeb project looking like it does in Figure 
@@ -472,22 +481,22 @@ Projections.editor & An empty file to specify projections for the language using
 \hline
 MyDslPeServlet.xtend & A HTTP servlet which implements the projectional web API discussed later.\\
 \hline
-ServerLauncher.xtend & A servlet container to host \emph{MyDslPeWebServlet}. When ran this starts the language server \\
+ServerLauncher.xtend & A servlet container to host \emph{MyDslPeWebServlet}. When ran this starts the server. \\
 \hline
-MyDslPeFileResourceHandler.xtend & Allows the language designer to specify how files should be read or written, so arbitrary persistence layers can be used. This defaults to writing and reading files with the language's extension in the location given by  \emph{MyDslResourceBaseProvider} \\
+MyDslPeFileResourceHandler.xtend & Allows the language designer to specify how files should be read or written, so arbitrary persistence layers can be used. This defaults to writing and reading files with the language's extension in the location given by  \emph{MyDslResourceBaseProvider}. \\
 \hline
 MyDslResourceBaseProvider.xtend & Used to specify how file URIs should be generated for a specified resource in the language. Defaults to assuming the resource is in a user-files folder at the location of the server.\\
 \hline
 MyDslPeWebModule.xtend & Allows binding of additional components in the language injector. This is where \emph{MyDslResourceHandler} and \emph{MyDslResourceBaseProvider} are registered.\\
 \hline
-MyDslPeWebSetup.xtend & Creates the language injector itself, which will be used to inject information about the specified language into the otherwise generic language server implementation\\
+MyDslPeWebSetup.xtend & Creates the language injector itself, which will be used to inject information about the specified language into the otherwise generic editor server implementation.\\
 \hline
 pom.xml & Specifies the project's dependencies so that Maven may retrieve them.\\
 \hline
 \end{tabular}
 \caption{Automatically generated files inside the peweb project following language generation.}
 \label{Tab:generatedFiles}
-\end{table}All of these files, with the exception of the \emph{Projections.editor} and \emph{MyDslPeServlet}, are required by Xtext's default textual web integration, and so will be familiar to existing Xtext users. The \emph{FileResourceHandler} and \emph{ResourceBaseProvider} files are not automatically generated in the textual case, despite being required. Here, by assuming a simple implementation of saving to the local file system, these files are generated automatically, and so enable language designers to get an editor running much more quickly (they can be changed manually if required). At this point, the language designer simply points the \emph{serverLauncher} to the location of a client application to host (we present a default implementation in \ref{clientApp}), optionally specify custom projections in the \emph{.editor} file using the DSL from Section \ref{EditorLanguage}, and then web editor for their language is ready to run.
+\end{table}All of these files, with the exception of the \emph{Projections.editor} and \emph{MyDslPeServlet}, are required by Xtext's default textual web integration, and so will be familiar to existing Xtext users. The \emph{FileResourceHandler} and \emph{ResourceBaseProvider} files are not automatically generated in the textual case, despite being required. Here, by assuming a simple implementation of saving to the local file system, these files are generated automatically, and so enable language designers to get an editor running much more quickly (they can be changed manually if required). At this point, the language designer simply points the \emph{serverLauncher} to the location of a client application to host (a default implementation is presented in \ref{clientApp}), optionally specify custom projections in the \emph{.editor} file using the DSL from Section \ref{EditorLanguage}, and then the web editor for their language is ready to run.
 %Maybe y generating like this at runtime we can use properties of the language. right now only name but could modify other things too.
 %>Fact they are displayed to user means easily extensible matching requirement \RCustom
 %>Talk about how the files generated are all commented (TODO) so clear what they are for and so easy to customise \RCustom
@@ -579,7 +588,7 @@ This pattern of synchronisation followed by incremental updates, minimises data 
 \item The client sends incremental updates to the server as edits are made. e.g. \emph{update-attribute} "Name" of node ID 6 to "NewName".
 \item If the client wishes to open a projection for a different subtree, return to step 2.
 \end{enumerate}{
-Step 2 allows a user to edit subtrees of the AST instead of the whole file, reducing the data transferred from the server, and allowing different projections to be used to edit nodes when viewed in the context of different subtrees. The node might be chosen by allowing the user to navigate the skeleton tree.
+Step 2 allows a user to edit subtrees of the AST instead of the whole file, reducing the data transferred from the server, and allowing different projections to be used to edit nodes when viewed in the context of different subtrees. The subtree might be chosen by allowing the user to navigate the skeleton tree.
 
 %I now discuss the design of the API itself, giving its full specification in the appendix. When designing this API it was necessary to consider the relevant requirements for the project's ultimate goal as given in \ref{requirements}. The requirements to produce a lightweight (\RLightweight) and customisable (\RCustom) editor are clearly relevant here.
 %\\
@@ -605,7 +614,7 @@ The first allows for more flexibility in the projections that can be written, an
 Because both have advantages, in line with \RCustom (customisability), the API is designed so both approaches are possible.
 \\
 \\
-The API specifies that a get-node response should simply be an arbitrary JSON~\cite{json} object with a type field. The client should be capable of decoding the object based upon its type. We make use of two language independent get-node types in this project, which can be assumed to be standard, and should prove sufficient for most use cases. Language designers can still however create new node-fetch types for their editor servers to use, provided they extend the client application accordingly to handle these new types. 
+The API specifies that a \emph{get-node} response should simply be an arbitrary JSON~\cite{json} object with a type field. The client should be capable of decoding the object based upon its type. Two language independent \emph{get-node} types are used in this project, which can be assumed to be standard, and should prove sufficient for most use cases. Language designers can still however create new \emph{get-node} types for their editor servers to use, provided they extend the client application accordingly to handle these new types. 
 \\
 \\
 The two standard types are:
@@ -625,18 +634,18 @@ Three methods are provided in the API to modify a node's attributes, containment
 %\\
 After the update of a node, validation methods can be used to check the state of the AST:
 \begin{itemize}
-\item \emph{validate-node}: Checks if a single node is in a valid state, returning an error message if not. To be used after a cross-reference is added or an attribute updated
+\item \emph{validate-node}: Checks if a single node is in a valid state, returning an error message if not. To be used after a cross-reference is added or an attribute updated.
 \item \emph{validate-file}: Checks all nodes in the AST, returning the respective error messages for those that are not in a valid state. Used after a containment reference is added or deleted.
 \end{itemize}
 
 \subsection{Implementation in Xtext}
-The implementation of the API in a projectional editor server generated by the Xtext extension is now discussed.
+The implementation of the API in projectional editor servers generated by the Xtext extension are now discussed.
 \\
 \\
 The generated server hosts a Java HTTP servlet. To make API calls, the client sends POST requests to the URL pattern specified in the generated \emph{MyDslPeServlet.xtend} file, with the call's type and parameters as the request's query string. The server responds with standard HTTP error codes if an issue is encountered, or otherwise with a JSON object containing the response of the call.
 \\
 \\
-To get files and project details, the server injects the FileResourceHandler and ResourceBaseProvider objects specified in the \emph{MyDslPeFileResourceHandler.xtend} and \emph{MyDslResourceBaseProvider.xtend} files. These objects define operations to get, and save EMF resources from a "resource ID" (we use PROJECTNAME/FILENAME) so that arbitrary persistence layers can be used. By default these correspond to storing files in their textual representation. From a retrieved EMF resource we can retrieve the EObject representing the root node of the AST that file represents.
+To get files and project details, the server injects the FileResourceHandler and ResourceBaseProvider objects specified in the \emph{MyDslPeFileResourceHandler.xtend} and \emph{MyDslResourceBaseProvider.xtend} files. These objects define operations to get, and save EMF resources from a "resource ID" (\emph{project-name}/\emph{file-name} is used) so that arbitrary persistence layers can be used. By default these correspond to storing files in their textual representation. From a retrieved EMF resource we can retrieve the EObject representing the root node of the AST that file represents.
 \\
 \\
 The EObject retrieved resembles an AST as described by our modelling assumptions, containing reference features linking to other EObjects and attributes. When we first open a file and retrieve its EObject, we must annotate the tree with unique identifiers as discussed in \ref{apiDesign}, which we do recursively from the root. We also construct two maps, one from these identifiers to the respective annotated nodes, and another from the EObjects themselves to the node identifiers. The first of these maps allows us to efficiently find nodes referenced by API calls, the second allows us to find the identifier of a node even if we obtain it by following an EObject's references directly. These maps are kept up to date incrementally as nodes are added and removed from the tree.
@@ -645,7 +654,7 @@ The EObject retrieved resembles an AST as described by our modelling assumptions
 Modifying nodes is achieved by looking up the relevant EObject using the identifier to EObject map, and making the changes to the EObject itself.
 \\
 \\
-Each API method is implemented using a separate object. These objects were individually unit-tested using a mock ECore model, and JUnit~\cite{junit} (a Java unit-testing framework) to ensure correctness. An excerpt from the remove-reference's test file is found in Appendix~\ref{apiUnitTest}.
+Each API method is implemented in a separate object. These objects were individually unit-tested using a mock ECore model, and JUnit~\cite{junit} (a Java unit-testing framework) to ensure correctness. An excerpt from the \emph{remove-reference}'s test file is found in Appendix~\ref{apiUnitTest}.
 %EObject contains all the attributes and reference types as well as some constraints on the node so already have AST in effect
 %From these nodes we create a tree where children of a node are all those contained only in containment references, that is every node is only in this tree once
 %We annotate it with node identifiers which we do when we first open the file
@@ -672,7 +681,7 @@ Each API method is implemented using a separate object. These objects were indiv
 \newpage
 \section{Projection Specification Language}\label{EditorLanguage}
 \subsection{Overview}
-The real power of a projectional editor stems from its ability to allow a user to interact with a programming language, in an intuitive way using projections that were designed alongside the language. This section presents a DSL developed to rapidly specify custom projections for ASTs (as modelled in Section \ref{apiAssumptions}) of an arbitrary language. This is used in the Xtext extension, to allow language designers to optionally create such specifications for their own languages. Like the API discussed in Section \ref{api}, this language was designed independently of the extension, and so could be used to extend other language workbenches, or to specify projections for bespoke projectional web editors for existing languages.
+The real power of a projectional editor stems from its ability to allow a user to interact with a programming language in an intuitive way, using projections that were designed alongside the language. This section presents a DSL developed to rapidly specify custom projections for ASTs (as modelled in Section \ref{apiAssumptions}) of an arbitrary language. This is used in the Xtext extension, to allow language designers to optionally create such specifications for their own languages. Like the API discussed in Section \ref{api}, this language was designed independently of the extension, and so could be used to extend other language workbenches, or to specify projections for bespoke projectional web editors for existing languages.
 %Ultimately the goal being to provide a standard way for language designers to define projections for their language within a language workbench which can then be used in the automatic generation of a web projectional editor.
 \\
 \\
@@ -680,7 +689,7 @@ The relevant requirements from Section \ref{requirements} were \RSetup (ease of 
 
 \subsection{Design}
 
-The language using a combination of HTML and JavaScript to specify projections seemed a clear choice, these being easily displayed/executed in a web browser. Both are very expressive, and their usage would keep the proprietary part of the DSL smaller, which aligned with the language's requirements. For further inspiration, MPS's editor specification language was examined.
+Using a combination of HTML and JavaScript to specify projections seemed a clear choice for the language, these being easily displayed/executed in a web browser. Both are very expressive, and their usage would keep the proprietary part of the DSL smaller, which aligned with the language's requirements. For further inspiration, MPS's editor specification language was examined.
 
 \subsubsection{MPS Editor Language}
 The MPS language workbench has its own editor language~\cite{mpsEditorLanguage} which is used to specify projections for a language's "concepts" (their term for our node types). For each concept, cells are used to build up the look of the projection. The available cells are:
@@ -688,9 +697,9 @@ The MPS language workbench has its own editor language~\cite{mpsEditorLanguage} 
 \item Constant cell - Displays a constant string value.
 \item Collection cell - Containers for more cells to build up further structure.
 \item Property cell - Space to display and edit attributes textually.
-\item Child cell - Display the projection of a child.
-\item Referent cell - Display a custom view of a child.
-\item Child list cell - A child cell for reference types which contain multiple children. Allows the user to customise the list layout.
+\item Child cell - Displays the projection of a child.
+\item Referent cell - Displays a custom view of a child.
+\item Child list cell - A child cell for reference types which contain multiple children. Allows the language designer to customise the list layout.
 \item Indentation cell - Whitespace, the size is managed by global editor settings.
 \item UI component cell - Displays a JComponent written by the language desinger, cannot store state.
 \item Model access - Like a property cell, except the text that is displayed reflects the node's attribute using custom getters, setters and validation functions.
@@ -711,7 +720,7 @@ The final \emph{.editor} language is now presented.
 The editor language allows the language designer to specify one or more named projections for each node type, using HTML to describe the layout, and JavaScript to describe how attribute values should be displayed and edited. If a node contains references to other nodes, their projections can be inserted into a projection, by means of additional annotations within the HTML. The language also allows the declaration of components, which represent reusable pieces of a projection. 
 \\
 \\
-The complete specification for the language is given overleaf, using extended BNF.
+The complete specification for the language is given overleaf, using extended BNF and regular expressions in the terminal rules.
 \newpage
 \setlength{\grammarparsep}{12pt plus 1pt minus 1pt} % increase separation between rules
 \setlength{\grammarindent}{5em} % increase separation between LHS/RHS 
@@ -824,7 +833,7 @@ The import section at the start of the file allows the user to import other \emp
 An attribute controller dictates how an attribute's value should be retrieved and set within the projection. A controller also allows a local validation function which can modify the view if an input is invalid/valid. This is achieved using JavaScript snippets with additional <<\$\emph{ID}\$>> annotations to reference elements specified in the view.
 \\
 \\
-An attribute controller has three methods, get, set, and validate. Get expects a JS snippet which evaluates to a string, e.g. it retrieves the value of the attribute from the projection/component. Set expects a JS snippet which will be executed in an environment where the value of the attribute is assigned to the variable X, this is used to initialise attribute values in the view. Validate expects a JS snippet which will be executed in an environment where the value of the attribute is assigned to X also and should evaluate to either true or false to indicate whether or not this is a valid value. 
+An attribute controller has three methods, get, set, and validate. Get expects a JS snippet which evaluates to a string, e.g. it retrieves the value of the attribute from the projection/component. Set expects a JS snippet which will be executed in an environment where the value of the attribute is assigned to the variable X, this is used to initialise attribute values in the view. Validate expects a JS snippet which will be executed in an environment where the value of the attribute is assigned to X also, and should evaluate to either true or false to indicate whether or not this is a valid value. 
 \\
 \\
 For example a text box which checks for no spaces: 
@@ -848,7 +857,7 @@ The final tool merges the generated \emph{.editor} Eclipse plugin with the main 
 \end{figure}
 
 \section{Fetching Node State}\label{viewObject}
-Responses to get-node requests (discussed in Section \ref{apiNodeStateTransfer}), communicating AST node states and projections to a client, are now discussed. 
+Responses to \emph{get-node} requests (discussed in Section \ref{apiNodeStateTransfer}), communicating AST node states and projections to a client, are now discussed. 
 %send information about a node's state to a client using the get-node API call as was touched upon in \ref{apiNodeStateTransfer}. 
 %
 %We now discuss how the \emph{.editor} language is used by the extension to send information about a node's state to a client using the get-node API call as was touched upon in \ref{apiNodeStateTransfer}. 
@@ -869,15 +878,15 @@ If the language designer wishes to use some other method to define projections, 
 
 
 \section{Client Application}\label{clientApp}
-An implementation of a client application, to be used with a  server implementing  the API from Section \ref{api}, is discussed here. This application serves as the default front-end for projectional editors generated using the new Xtext extension. 
+This section discusses an implementation of a client application, to be used with a server implementing the API from Section \ref{api}. This application serves as the default front-end for projectional editors generated using the new Xtext extension. 
 
 %Here I present an implementation of a client application, written using the Angular framework~\cite{angular}, for use with a language server implementing the API from Section \ref{api}. This application serves as the default front-end for projectional editors generated using our Xtext extension. 
 
 \subsection{Design}
-The client application was designed to offer a simple interface with all default functionality, supporting both default, and \emph{.editor} specified projections. The application was written using the Angular framework~\cite{angular}, and TypeScript, as these offered all the features required, and are very popular. This means plenty of documentation is available and it should be easy for language designers to extend.
+The client application was designed to offer a simple interface with all default functionality, supporting both default, and \emph{.editor} specified projections. The application was written using the Angular framework~\cite{angular}, and TypeScript, as these offered all the features required, and are very popular. This means plenty of documentation is available and it should be easy for language designers to extend it.
 \\
 \\
-Extensibility was one of the biggest considerations when writing this application. As this will be the UI with which a language's end-users directly interact, we expect a language designer will want to make changes to match their company's/institution's styling, and also to build in other deployment dependent features, like user authentication or training materials. To this end, the application is built in a very modular fashion, using self-contained Angular components and services, so that it is easy to modify and extend. Notably, all interaction with the server via the API is written as a separate service, and the display of projections in a component dependent only on this service, so both maybe imported into different application implementations. 
+Extensibility was one of the biggest considerations when writing this application. As this will be the UI with which a language's end-users directly interact, we expect a language designer will want to make changes to match their company's/institution's styling, and also to build in other deployment-dependent features, like user authentication or training materials. To this end, the application is built in a very modular fashion, using self-contained Angular components and services, so that it is easy to modify and extend. Notably, all interaction with the server via the API is written as a separate service, and the display of projections in a component dependent only on this service, so both maybe imported into different application implementations. 
 \\
 \\
 The projection display component takes a \emph{get-node} response as input, and based on the type of the response, displays another component:
@@ -920,7 +929,7 @@ The expression language allows a user to define mathematical functions on variab
 The creation process for this language was fairly straightforward, the only required code being the standard grammar file, and \emph{.editor} file to specify projections. The process of writing the projections was simple for all node types except for summation and division nodes, which required the use of HTML tables to achieve the correct vertical positioning. It was difficult to find the correct HTML align attributes without any visual clues. In order to get the positioning just right, the HTML inspector in a browser was used to modify the alignment values until correct, which were then copied back into the \emph{.editor} file. This indicates that the \emph{.editor} file editor could be improved by some ability to peek at the projections as they are being written. A projectional editor for the language could do exactly that, and so it may be interesting to try and build one using the Xtext extension in the future.   
 \\
 \\
-Another finding was that the buttons used to remove references could be visually distracting. Reviewing alternate ways to display and interact with references might be worthwhile. A contextual menu to remove nodes, or having an "edit view", are 2 possible options, it is likely we would want this to be customisable in line with \RCustom.
+Another finding was that the buttons used to remove references could be visually distracting. Reviewing alternate ways to display and interact with references might be worthwhile, a contextual menu to remove nodes, or having an "edit view", are 2 possible options, but it is likely we would want this to be customisable in line with \RCustom.
 \begin{figure}[h!]
   \centering
   \includegraphics[width=\linewidth]{./Screenshots/arithmeticUI3.png}
@@ -972,7 +981,7 @@ The language was designed to review adding a more complex projection, node graph
 \\
 The process for creating the editor was more involved than the other two, as use of the D3.js JavaScript library~\cite{d3} was desired to display and edit node graph primitives. To achieve this, in the back-end:
 \begin{itemize}
-\item The standard ViewRetriever object (responsible for creating the responses to get-node requests, see Section 6) was overriden, adding a check to see if the AST node requested is a NodeGraphConstant. If so a special get-node response object, with the type "NodeGraph", listing the vertices and edges of the graph in a form that D3.js can plot, is returned. 
+\item The standard ViewRetriever object (responsible for creating the responses to get-node requests, see Section 6) was overriden, adding a check to see if the AST node requested was a NodeGraphConstant. If so a special get-node response object, with the type "NodeGraph", listing the vertices and edges of the graph in a form that D3.js can plot, was returned. 
 \item The viewRetriever declaration in the generated GraphPeServlet file was changed to use the overridden ViewRetriever.
 \end{itemize}
 In the front-end:
@@ -1077,7 +1086,7 @@ A final observation made was that only two of the respondents made use of copy a
 
 
 \subsubsection{Potential Issues With the Approach}
-One potential issue with this evaluation is that the tasks were repeated for both methods, and so extra familiarity with the task might have meant the 2nd attempt had an advantage. I attempted to combat this by getting two of the respondents to start with the web editor and the other three to start with the Eclipse editor. Users were also asked to read through the tasks thoroughly before either method, and to ensure they understood the specification fully. The tasks were designed so the specifications were unambiguous, requiring minimal thought beyond how to input it with the editor provided. Indeed the times were consistent between the two groups regardless of the starting method.
+One potential issue with this evaluation is that the tasks were repeated for both methods, and so extra familiarity with the task might have meant the 2nd attempt had an advantage. This was combated by getting two of the respondents to start with the web editor and the other three to start with the Eclipse editor. Users were also asked to read through the tasks thoroughly before either method, and to ensure they understood the specification fully. The tasks were designed so the specifications were unambiguous, requiring minimal thought beyond how to input it with the editor provided. Indeed the times were consistent between the two groups regardless of the starting method.
 \\
 \\
 Another potential issue was that the tasks were not necessarily representative of real use, as a clear specification was laid out for users to input. Without this, edit patterns maybe different, likely with more deletes and edits. A 3rd task in which respondents would be asked to modify an existing questionnaire file was considered for this reason. Unfortunately, this was cut to keep the time required of testers within an hour. Time also meant it was not possible to try more than one language, which would be another obvious extension given more respondents.
